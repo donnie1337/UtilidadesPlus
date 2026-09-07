@@ -25,7 +25,7 @@ public final class JoinQuitNotificationListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
-        announceLater(event.getPlayer(), true);
+        checkJoin(event.getPlayer(), 0);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -38,16 +38,31 @@ public final class JoinQuitNotificationListener implements Listener {
         }
     }
 
-    private void announceLater(Player player, boolean join) {
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (!player.isOnline() || !hasStaffCargo(player)) return;
-            String message = buildMessage(player, join);
-            for (Player viewer : Bukkit.getOnlinePlayers()) {
-                if (join ? preferences.receivesJoin(viewer) : preferences.receivesQuit(viewer)) {
-                    viewer.sendMessage(message);
-                }
-            }
-        }, 1L);
+    private void checkJoin(Player player, int attempt) {
+        if (!player.isOnline() || attempt >= 60) return;
+
+        if (!isAuthenticated(player)) {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> checkJoin(player, attempt + 1), 20L);
+            return;
+        }
+
+        if (!hasStaffCargo(player)) return;
+        String message = buildMessage(player, true);
+        for (Player viewer : Bukkit.getOnlinePlayers()) {
+            if (preferences.receivesJoin(viewer)) viewer.sendMessage(message);
+        }
+    }
+
+    private boolean isAuthenticated(Player player) {
+        Plugin auth = Bukkit.getPluginManager().getPlugin("AuthSystem");
+        if (auth == null || !auth.isEnabled()) return true;
+        try {
+            Method method = auth.getClass().getMethod("isAuthenticated", Player.class);
+            Object result = method.invoke(auth, player);
+            return result instanceof Boolean value && value;
+        } catch (ReflectiveOperationException | LinkageError ex) {
+            return false;
+        }
     }
 
     private boolean hasStaffCargo(Player player) {
