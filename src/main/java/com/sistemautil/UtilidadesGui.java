@@ -18,6 +18,7 @@ import java.util.List;
 
 public final class UtilidadesGui implements Listener {
     private static final String PERMISSION = "sistemautil.configurar";
+    private static final String COLOR_PERMISSION = "sistemautil.cor";
     private final SistemaUtil plugin;
     private final UtilidadesPreferences preferences;
 
@@ -35,7 +36,7 @@ public final class UtilidadesGui implements Listener {
         Inventory inventory = Bukkit.createInventory(null, size(), title());
         inventory.setItem(slot("entrada", 11), toggleItem(Material.LEVER, "Mensagens de entrada/saída", preferences.broadcastsJoinQuit(player)));
         inventory.setItem(slot("saida", 15), toggleItem(Material.PISTON, "Visualização de entrada/saída", preferences.receivesJoin(player) && preferences.receivesQuit(player)));
-        if (player.hasPermission("cargoplus.cor")) {
+        if (player.hasPermission(COLOR_PERMISSION)) {
             inventory.setItem(slot("cor", 13), colorItem(player));
         }
         player.openInventory(inventory);
@@ -64,7 +65,7 @@ public final class UtilidadesGui implements Listener {
             open(player);
             return;
         }
-        if (rawSlot == slot("cor", 13) && player.hasPermission("cargoplus.cor")) {
+        if (rawSlot == slot("cor", 13) && player.hasPermission(COLOR_PERMISSION)) {
             player.closeInventory();
             player.performCommand("cor");
         }
