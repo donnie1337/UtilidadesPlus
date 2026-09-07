@@ -1,4 +1,4 @@
-name: SistemaUtil
+name: UtilidadesPlus
 version: '1.0.0'
 main: com.sistemautil.SistemaUtil
 api-version: '26.2'
