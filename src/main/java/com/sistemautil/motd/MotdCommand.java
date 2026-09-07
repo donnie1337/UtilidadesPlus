@@ -13,7 +13,9 @@ import java.util.List;
 public final class MotdCommand implements CommandExecutor, TabCompleter {
     private final SistemaUtil plugin;
 
-    public MotdCommand(SistemaUtil plugin) { this.plugin = plugin; }
+    public MotdCommand(SistemaUtil plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -26,9 +28,8 @@ public final class MotdCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-            plugin.reloadConfig();
-            plugin.getMotd().recarregar();
-            sender.sendMessage(ChatColor.GREEN + "Configuração do MOTD recarregada!");
+            plugin.reloadConfigs();
+            sender.sendMessage(ChatColor.GREEN + "Configurações do SistemaUtil recarregadas!");
             return true;
         }
         sender.sendMessage(ChatColor.RED + "Subcomando desconhecido. Use /" + label + " reload");
