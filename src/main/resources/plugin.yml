@@ -1,0 +1,26 @@
+name: SistemaUtil
+version: '1.0.0'
+main: com.sistemautil.SistemaUtil
+api-version: '26.2'
+author: donnie1337
+description: Utilidades do servidor, incluindo MOTD e cor do chat.
+softdepend:
+  - SistemaPerm
+commands:
+  motdplus:
+    description: Recarrega a configuração do MOTD.
+    usage: /motdplus reload
+    aliases:
+      - motd
+    permission: sistemautil.motd.admin
+  cor:
+    description: Abre o menu para escolher a cor do texto do chat.
+    usage: /cor
+    permission: cargoplus.cor
+permissions:
+  sistemautil.motd.admin:
+    description: Permite recarregar o MOTD.
+    default: op
+  cargoplus.cor:
+    description: Permite escolher a cor do próprio texto no chat.
+    default: false
