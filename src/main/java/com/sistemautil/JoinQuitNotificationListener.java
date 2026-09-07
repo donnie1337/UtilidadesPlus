@@ -31,7 +31,11 @@ public final class JoinQuitNotificationListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
+
+        // receber.saida=false desativa as mensagens de saída para todos.
+        if (!preferences.globallyReceivesQuit()) return;
         if (!hasStaffCargo(event.getPlayer()) || !preferences.broadcastsQuit(event.getPlayer())) return;
+
         String message = buildMessage(event.getPlayer(), false);
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             if (preferences.receivesQuit(viewer)) viewer.sendMessage(message);
