@@ -7,7 +7,7 @@
 ativado: true
 
 # Permissão exigida para abrir/usar o sistema.
-permission: cargoplus.cor
+permission: sistemautil.cor
 
 # Cor usada quando o jogador ainda não possui uma escolha válida.
 default-color: branco
