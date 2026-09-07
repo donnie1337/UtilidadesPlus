@@ -3,9 +3,10 @@ version: '1.0.0'
 main: com.sistemautil.SistemaUtil
 api-version: '26.2'
 author: donnie1337
-description: Utilidades do servidor, incluindo MOTD.
+description: Utilidades do servidor, incluindo MOTD e preferências de entrada/saída.
 softdepend:
   - CargoPlus
+  - ChatPlus
 commands:
   motdplus:
     description: Recarrega a configuração do MOTD.
@@ -13,7 +14,14 @@ commands:
     aliases:
       - motd
     permission: sistemautil.motd.admin
+  configurar:
+    description: Abre o menu de configuração das utilidades pessoais.
+    usage: /configurar
+    permission: sistemautil.configurar
 permissions:
   sistemautil.motd.admin:
     description: Permite recarregar a configuração do MOTD.
     default: op
+  sistemautil.configurar:
+    description: Permite abrir o menu /configurar.
+    default: false
