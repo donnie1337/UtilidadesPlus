@@ -15,19 +15,21 @@ public final class SistemaUtil extends JavaPlugin {
     private MotdPlugin motd;
     private ServerTabManager tabManager;
     private UtilidadesPreferences utilidadesPreferences;
+    private UtilidadesGui utilidadesGui;
 
     @Override
     public void onEnable() {
         configManager.loadAll();
         utilidadesPreferences = new UtilidadesPreferences(this);
         utilidadesPreferences.load();
+        utilidadesGui = new UtilidadesGui(this, utilidadesPreferences);
 
         motd = new MotdPlugin(this);
         motd.enable();
 
         getServer().getPluginManager().registerEvents(new MotdListener(this), this);
         getServer().getPluginManager().registerEvents(new ServerCommandGuardListener(), this);
-        getServer().getPluginManager().registerEvents(new UtilidadesGui(this, utilidadesPreferences), this);
+        getServer().getPluginManager().registerEvents(utilidadesGui, this);
         getServer().getPluginManager().registerEvents(
                 new JoinQuitNotificationListener(this, utilidadesPreferences), this);
         tpsMonitor.start(this);
@@ -41,9 +43,8 @@ public final class SistemaUtil extends JavaPlugin {
             getCommand("motdplus").setTabCompleter(motdCommand);
         }
 
+        ConfigurarCommand configurarCommand = new ConfigurarCommand(utilidadesGui);
         if (getCommand("configurar") != null) {
-            ConfigurarCommand configurarCommand = new ConfigurarCommand(
-                    new UtilidadesGui(this, utilidadesPreferences));
             getCommand("configurar").setExecutor(configurarCommand);
             getCommand("configurar").setTabCompleter(configurarCommand);
         }
