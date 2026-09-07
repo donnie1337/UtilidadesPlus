@@ -33,8 +33,8 @@ public final class UtilidadesGui implements Listener {
         }
 
         Inventory inventory = Bukkit.createInventory(null, size(), title());
-        inventory.setItem(slot("entrada", 11), toggleItem(Material.LEVER, "Mensagem de entrada", preferences.receivesJoin(player)));
-        inventory.setItem(slot("saida", 15), toggleItem(Material.PISTON, "Mensagem de saída", preferences.receivesQuit(player)));
+        inventory.setItem(slot("entrada", 11), toggleItem(Material.LEVER, "Mensagens de entrada/saída", preferences.broadcastsJoinQuit(player)));
+        inventory.setItem(slot("saida", 15), toggleItem(Material.PISTON, "Visualização de entrada/saída", preferences.receivesJoin(player) && preferences.receivesQuit(player)));
         if (player.hasPermission("cargoplus.cor")) {
             inventory.setItem(slot("cor", 13), colorItem(player));
         }
@@ -50,16 +50,17 @@ public final class UtilidadesGui implements Listener {
 
         int rawSlot = event.getRawSlot();
         if (rawSlot == slot("entrada", 11)) {
-            boolean value = !preferences.receivesJoin(player);
-            preferences.setReceivesJoin(player, value);
-            player.sendMessage(value ? "§aMensagens de entrada ativadas." : "§cMensagens de entrada desativadas.");
+            boolean value = !preferences.broadcastsJoinQuit(player);
+            preferences.setBroadcastsJoinQuit(player, value);
+            player.sendMessage(value ? "§aSuas mensagens de entrada/saída agora são visíveis para todos." : "§cSuas mensagens de entrada/saída foram ocultadas dos outros jogadores.");
             open(player);
             return;
         }
         if (rawSlot == slot("saida", 15)) {
-            boolean value = !preferences.receivesQuit(player);
+            boolean value = !(preferences.receivesJoin(player) && preferences.receivesQuit(player));
+            preferences.setReceivesJoin(player, value);
             preferences.setReceivesQuit(player, value);
-            player.sendMessage(value ? "§aMensagens de saída ativadas." : "§cMensagens de saída desativadas.");
+            player.sendMessage(value ? "§aVisualização de entradas/saídas ativada." : "§cVisualização de entradas/saídas desativada.");
             open(player);
             return;
         }
