@@ -12,6 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.permissions.PermissionAttachment;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 public final class UtilidadesGui implements Listener {
     private static final String PERMISSION = "sistemautil.configurar";
     private static final String COLOR_PERMISSION = "sistemautil.cor";
+    private static final String LEGACY_COLOR_PERMISSION = "cargoplus.cor";
     private final SistemaUtil plugin;
     private final UtilidadesPreferences preferences;
 
@@ -67,7 +69,17 @@ public final class UtilidadesGui implements Listener {
         }
         if (rawSlot == slot("cor", 13) && player.hasPermission(COLOR_PERMISSION)) {
             player.closeInventory();
+            openColorCommand(player);
+        }
+    }
+
+    private void openColorCommand(Player player) {
+        PermissionAttachment attachment = player.addAttachment(plugin);
+        attachment.setPermission(LEGACY_COLOR_PERMISSION, true);
+        try {
             player.performCommand("cor");
+        } finally {
+            Bukkit.getScheduler().runTask(plugin, attachment::remove);
         }
     }
 
