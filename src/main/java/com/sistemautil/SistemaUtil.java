@@ -17,6 +17,7 @@ public final class SistemaUtil extends JavaPlugin {
         motd.enable();
 
         getServer().getPluginManager().registerEvents(new MotdListener(this), this);
+        getServer().getPluginManager().registerEvents(new ServerCommandGuardListener(), this);
         tpsMonitor.start(this);
 
         MotdCommand motdCommand = new MotdCommand(this);
