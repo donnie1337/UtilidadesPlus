@@ -10,23 +10,18 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 
-/**
- * Centraliza os arquivos de configuração externos do SistemaUtil.
- *
- * Os arquivos ficam em plugins/SistemaUtil/ e são criados automaticamente
- * na primeira inicialização do plugin. Alterações feitas pelo administrador
- * são preservadas em reinicializações e recargas.
- */
 public final class ConfigManager {
     private final JavaPlugin plugin;
     private final File dataFolder;
     private final File motdFile;
     private final File tabFile;
     private final File corFile;
+    private final File utilidadesFile;
 
     private FileConfiguration motd;
     private FileConfiguration tab;
     private FileConfiguration cor;
+    private FileConfiguration utilidades;
 
     public ConfigManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -34,6 +29,7 @@ public final class ConfigManager {
         this.motdFile = new File(dataFolder, "motd.yml");
         this.tabFile = new File(dataFolder, "tab.yml");
         this.corFile = new File(dataFolder, "cor.yml");
+        this.utilidadesFile = new File(dataFolder, "utilidades.yml");
     }
 
     public void loadAll() {
@@ -41,32 +37,19 @@ public final class ConfigManager {
         motd = load("motd.yml", motdFile);
         tab = load("tab.yml", tabFile);
         cor = load("cor.yml", corFile);
+        utilidades = load("utilidades.yml", utilidadesFile);
     }
 
-    public void reloadAll() {
-        loadAll();
-    }
-
-    public FileConfiguration motd() {
-        return motd;
-    }
-
-    public FileConfiguration tab() {
-        return tab;
-    }
-
-    public FileConfiguration cor() {
-        return cor;
-    }
+    public void reloadAll() { loadAll(); }
+    public FileConfiguration motd() { return motd; }
+    public FileConfiguration tab() { return tab; }
+    public FileConfiguration cor() { return cor; }
+    public FileConfiguration utilidades() { return utilidades; }
 
     private void ensureDataFolder() {
-        if (dataFolder.exists()) {
-            return;
-        }
-
+        if (dataFolder.exists()) return;
         if (!dataFolder.mkdirs() && !dataFolder.exists()) {
-            plugin.getLogger().warning(
-                    "Não foi possível criar a pasta de configurações: " + dataFolder.getAbsolutePath());
+            plugin.getLogger().warning("Não foi possível criar a pasta de configurações: " + dataFolder.getAbsolutePath());
         }
     }
 
@@ -76,8 +59,7 @@ public final class ConfigManager {
                 plugin.saveResource(resource, false);
             } catch (IllegalArgumentException exception) {
                 plugin.getLogger().log(Level.SEVERE,
-                        "O recurso padrão " + resource + " não está presente no JAR do SistemaUtil.",
-                        exception);
+                        "O recurso padrão " + resource + " não está presente no JAR do SistemaUtil.", exception);
             }
         }
 
@@ -90,8 +72,7 @@ public final class ConfigManager {
             }
         } catch (Exception exception) {
             plugin.getLogger().log(Level.WARNING,
-                    "Não foi possível carregar os valores padrão de " + resource + ".",
-                    exception);
+                    "Não foi possível carregar os valores padrão de " + resource + ".", exception);
         }
         return loaded;
     }
