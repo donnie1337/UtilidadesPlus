@@ -4,6 +4,8 @@ main: com.sistemautil.SistemaUtil
 api-version: '26.2'
 author: donnie1337
 description: Utilidades do servidor, incluindo MOTD.
+softdepend:
+  - CargoPlus
 commands:
   motdplus:
     description: Recarrega a configuração do MOTD.
