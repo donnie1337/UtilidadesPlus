@@ -2,7 +2,10 @@ package com.sistemautil.motd;
 
 import com.sistemautil.SistemaUtil;
 import org.bukkit.ChatColor;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +26,9 @@ public final class MotdCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-            plugin.reloadPlugin(sender);
+            plugin.reloadConfig();
+            plugin.getMotd().recarregar();
+            sender.sendMessage(ChatColor.GREEN + "Configuração do MOTD recarregada!");
             return true;
         }
         sender.sendMessage(ChatColor.RED + "Subcomando desconhecido. Use /" + label + " reload");
