@@ -34,18 +34,21 @@ public final class ServerTabManager {
     }
 
     public void updateAll() {
-        if (!plugin.getConfig().getBoolean("tab.ativado", true)) return;
+        if (!plugin.getConfig().getBoolean("ativado", true)) return;
 
         int online = Bukkit.getOnlinePlayers().size();
         int max = Bukkit.getMaxPlayers();
-        String address = plugin.getConfig().getString("tab.endereco-servidor", "play.seuservidor.com:25565");
+        String address = plugin.getConfig().getString("endereco-servidor", "play.seuservidor.com:25565");
 
-        String header = formatTabText(plugin.getConfig().getString("tab.header", "&6&lMEU SERVIDOR\n&7Seja bem-vindo!"), online, max, 0, address);
+        String header = formatTabText(plugin.getConfig().getString("header",
+                "&6&lMEU SERVIDOR\n&7Seja bem-vindo!"), online, max, 0, address);
+
         for (Player player : Bukkit.getOnlinePlayers()) {
             applyPlayer(player);
             int ping = Math.max(0, player.getPing());
-            String footer = formatTabText(plugin.getConfig().getString("tab.footer",
-                    "&8&m----------------------------------------\n&fJogadores online: &a%online%/%max%\n&fSeu ping: &a%ping%ms\n&fIP: &b%ip%"), online, max, ping, address);
+            String footer = formatTabText(plugin.getConfig().getString("footer",
+                    "&8&m----------------------------------------\n&fJogadores online: &a%online%/%max%\n&fSeu ping: &a%ping%ms\n&fIP: &b%ip%"),
+                    online, max, ping, address);
             player.setPlayerListHeaderFooter(header, footer);
         }
     }
@@ -59,14 +62,19 @@ public final class ServerTabManager {
         CargoData cargo = getCargoData(player);
         if (!cargo.available()) return;
 
-        String prefix = colorize(cargo.prefix());
+        String prefix = plugin.getConfig().getBoolean("tag.ativada", true)
+                && plugin.getConfig().getBoolean("tag.mostrar-no-tab", true)
+                ? colorize(cargo.prefix()) : "";
         String nameColor = colorize(cargo.nicknameColor());
         player.setPlayerListName(prefix + nameColor + player.getName());
 
-        Team team = player.getScoreboard().getEntryTeam(player.getName());
-        if (team != null) {
-            team.setPrefix(prefix);
-            team.setSuffix("");
+        if (plugin.getConfig().getBoolean("tag.ativada", true)
+                && plugin.getConfig().getBoolean("tag.mostrar-na-cabeca", true)) {
+            Team team = player.getScoreboard().getEntryTeam(player.getName());
+            if (team != null) {
+                team.setPrefix(prefix);
+                team.setSuffix("");
+            }
         }
     }
 
