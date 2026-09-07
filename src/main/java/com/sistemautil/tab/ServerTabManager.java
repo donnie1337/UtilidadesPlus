@@ -1,9 +1,9 @@
 package com.sistemautil.tab;
 
+import com.sistemautil.SistemaUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Team;
 
 import java.lang.reflect.Method;
@@ -13,10 +13,10 @@ import java.lang.reflect.Method;
  * A tag e a cor do nome vêm do CargoPlus. /cor afeta somente a mensagem do chat.
  */
 public final class ServerTabManager {
-    private final JavaPlugin plugin;
+    private final SistemaUtil plugin;
     private int taskId = -1;
 
-    public ServerTabManager(JavaPlugin plugin) {
+    public ServerTabManager(SistemaUtil plugin) {
         this.plugin = plugin;
     }
 
@@ -34,19 +34,19 @@ public final class ServerTabManager {
     }
 
     public void updateAll() {
-        if (!plugin.getConfig().getBoolean("ativado", true)) return;
+        if (!plugin.getTabConfig().getBoolean("ativado", true)) return;
 
         int online = Bukkit.getOnlinePlayers().size();
         int max = Bukkit.getMaxPlayers();
-        String address = plugin.getConfig().getString("endereco-servidor", "play.seuservidor.com:25565");
+        String address = plugin.getTabConfig().getString("endereco-servidor", "play.seuservidor.com:25565");
 
-        String header = formatTabText(plugin.getConfig().getString("header",
+        String header = formatTabText(plugin.getTabConfig().getString("header",
                 "&6&lMEU SERVIDOR\n&7Seja bem-vindo!"), online, max, 0, address);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             applyPlayer(player);
             int ping = Math.max(0, player.getPing());
-            String footer = formatTabText(plugin.getConfig().getString("footer",
+            String footer = formatTabText(plugin.getTabConfig().getString("footer",
                     "&8&m----------------------------------------\n&fJogadores online: &a%online%/%max%\n&fSeu ping: &a%ping%ms\n&fIP: &b%ip%"),
                     online, max, ping, address);
             player.setPlayerListHeaderFooter(header, footer);
@@ -62,14 +62,14 @@ public final class ServerTabManager {
         CargoData cargo = getCargoData(player);
         if (!cargo.available()) return;
 
-        String prefix = plugin.getConfig().getBoolean("tag.ativada", true)
-                && plugin.getConfig().getBoolean("tag.mostrar-no-tab", true)
+        String prefix = plugin.getTabConfig().getBoolean("tag.ativada", true)
+                && plugin.getTabConfig().getBoolean("tag.mostrar-no-tab", true)
                 ? colorize(cargo.prefix()) : "";
         String nameColor = colorize(cargo.nicknameColor());
         player.setPlayerListName(prefix + nameColor + player.getName());
 
-        if (plugin.getConfig().getBoolean("tag.ativada", true)
-                && plugin.getConfig().getBoolean("tag.mostrar-na-cabeca", true)) {
+        if (plugin.getTabConfig().getBoolean("tag.ativada", true)
+                && plugin.getTabConfig().getBoolean("tag.mostrar-na-cabeca", true)) {
             Team team = player.getScoreboard().getEntryTeam(player.getName());
             if (team != null) {
                 team.setPrefix(prefix);
