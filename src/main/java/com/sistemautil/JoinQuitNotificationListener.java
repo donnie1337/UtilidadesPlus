@@ -31,7 +31,7 @@ public final class JoinQuitNotificationListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
-        if (!hasStaffCargo(event.getPlayer())) return;
+        if (!hasStaffCargo(event.getPlayer()) || !preferences.broadcastsQuit(event.getPlayer())) return;
         String message = buildMessage(event.getPlayer(), false);
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             if (preferences.receivesQuit(viewer)) viewer.sendMessage(message);
@@ -46,7 +46,7 @@ public final class JoinQuitNotificationListener implements Listener {
             return;
         }
 
-        if (!hasStaffCargo(player)) return;
+        if (!hasStaffCargo(player) || !preferences.broadcastsJoin(player)) return;
         String message = buildMessage(player, true);
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             if (preferences.receivesJoin(viewer)) viewer.sendMessage(message);
