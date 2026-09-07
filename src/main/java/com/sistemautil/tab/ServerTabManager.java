@@ -52,7 +52,12 @@ public final class ServerTabManager {
         for (int index = 0; index < players.size(); index++) {
             Player player = players.get(index);
             applyPlayer(player);
-            player.setPlayerListOrder(index);
+
+            // Minecraft interpreta a ordem da lista de forma que os valores maiores
+            // aparecem acima dos valores menores. Como buildComparator() entrega o
+            // jogador de maior prioridade primeiro, invertimos o índice aqui.
+            player.setPlayerListOrder(players.size() - index);
+
             int ping = Math.max(0, player.getPing());
             String footer = formatTabText(plugin.getTabConfig().getString("footer",
                     "&8&m----------------------------------------\n&fJogadores online: &a%online%/%max%\n&fSeu ping: &a%ping%ms\n&fIP: &b%ip%"),
