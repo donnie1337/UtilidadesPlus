@@ -3,6 +3,7 @@ package com.sistemautil;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,21 +23,10 @@ public final class UtilidadesPreferences {
         config = YamlConfiguration.loadConfiguration(file);
     }
 
-    public boolean receivesJoin(Player player) {
-        return get(player, "entrada");
-    }
-
-    public boolean receivesQuit(Player player) {
-        return get(player, "saida");
-    }
-
-    public void setReceivesJoin(Player player, boolean value) {
-        set(player, "entrada", value);
-    }
-
-    public void setReceivesQuit(Player player, boolean value) {
-        set(player, "saida", value);
-    }
+    public boolean receivesJoin(Player player) { return get(player, "entrada"); }
+    public boolean receivesQuit(Player player) { return get(player, "saida"); }
+    public void setReceivesJoin(Player player, boolean value) { set(player, "entrada", value); }
+    public void setReceivesQuit(Player player, boolean value) { set(player, "saida", value); }
 
     public void save() {
         try {
@@ -49,7 +39,8 @@ public final class UtilidadesPreferences {
     private boolean get(Player player, String path) {
         if (player == null) return true;
         UUID uuid = player.getUniqueId();
-        return config.getBoolean("jogadores." + uuid + "." + path, config.getBoolean("receber." + path, true));
+        return config.getBoolean("jogadores." + uuid + "." + path,
+                config.getBoolean("receber." + path, true));
     }
 
     private void set(Player player, String path, boolean value) {
