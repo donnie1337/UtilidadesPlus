@@ -7,12 +7,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Team;
 
 import java.lang.reflect.Method;
-import java.util.Locale;
 
 /**
  * Controla a identidade visual do TAB e a tag acima da cabeça do jogador.
- * A tag e a cor do nome são obtidas do CargoPlus; /cor continua afetando
- * somente a cor da mensagem enviada no chat.
+ * A tag e a cor do nome vêm do CargoPlus. /cor afeta somente a mensagem do chat.
  */
 public final class ServerTabManager {
     private final JavaPlugin plugin;
@@ -36,21 +34,19 @@ public final class ServerTabManager {
     }
 
     public void updateAll() {
+        if (!plugin.getConfig().getBoolean("tab.ativado", true)) return;
+
         int online = Bukkit.getOnlinePlayers().size();
+        int max = Bukkit.getMaxPlayers();
         String address = plugin.getConfig().getString("tab.endereco-servidor", "play.seuservidor.com:25565");
 
+        String header = formatTabText(plugin.getConfig().getString("tab.header", "&6&lMEU SERVIDOR\n&7Seja bem-vindo!"), online, max, 0, address);
         for (Player player : Bukkit.getOnlinePlayers()) {
             applyPlayer(player);
-
             int ping = Math.max(0, player.getPing());
-            player.setPlayerListHeaderFooter(
-                    colorize(plugin.getConfig().getString("tab.header",
-                            "&8&m----------------------------------------\n&6&lMEU SERVIDOR\n&7Seja bem-vindo!\n")),
-                    colorize(plugin.getConfig().getString("tab.footer",
-                            "\n&8&m----------------------------------------\n&fJogadores online: &a%online% &8| &fPing: &a%ping%ms\n&fIP: &b%ip%\n"))
-                            .replace("%online%", String.valueOf(online))
-                            .replace("%ping%", String.valueOf(ping))
-                            .replace("%ip%", address == null ? "" : address));
+            String footer = formatTabText(plugin.getConfig().getString("tab.footer",
+                    "&8&m----------------------------------------\n&fJogadores online: &a%online%/%max%\n&fSeu ping: &a%ping%ms\n&fIP: &b%ip%"), online, max, ping, address);
+            player.setPlayerListHeaderFooter(header, footer);
         }
     }
 
@@ -63,16 +59,23 @@ public final class ServerTabManager {
         CargoData cargo = getCargoData(player);
         if (!cargo.available()) return;
 
-        String nameColor = colorize(cargo.nicknameColor());
         String prefix = colorize(cargo.prefix());
-        String listName = prefix + nameColor + player.getName();
-        player.setPlayerListName(listName);
+        String nameColor = colorize(cargo.nicknameColor());
+        player.setPlayerListName(prefix + nameColor + player.getName());
 
         Team team = player.getScoreboard().getEntryTeam(player.getName());
         if (team != null) {
             team.setPrefix(prefix);
             team.setSuffix("");
         }
+    }
+
+    private String formatTabText(String text, int online, int max, int ping, String address) {
+        return colorize(text == null ? "" : text)
+                .replace("%online%", String.valueOf(online))
+                .replace("%max%", String.valueOf(max))
+                .replace("%ping%", String.valueOf(ping))
+                .replace("%ip%", address == null ? "" : address);
     }
 
     private CargoData getCargoData(Player player) {
@@ -82,7 +85,6 @@ public final class ServerTabManager {
 
             Method permissionsMethod = cargo.getClass().getMethod("permissions");
             Object permissions = permissionsMethod.invoke(cargo);
-
             Method getPrefix = permissions.getClass().getMethod("getPrefix", java.util.UUID.class);
             Method getNicknameColor = permissions.getClass().getMethod("getNicknameColor", java.util.UUID.class);
 
@@ -92,7 +94,7 @@ public final class ServerTabManager {
             return new CargoData(
                     true,
                     prefix instanceof String ? (String) prefix : "",
-                    nicknameColor instanceof String ? (String) nicknameColor : "§f"
+                    nicknameColor instanceof String ? (String) nicknameColor : "&f"
             );
         } catch (ReflectiveOperationException | LinkageError ex) {
             return CargoData.empty();
@@ -100,13 +102,12 @@ public final class ServerTabManager {
     }
 
     private String colorize(String text) {
-        if (text == null) return "";
-        return ChatColor.translateAlternateColorCodes('&', text);
+        return ChatColor.translateAlternateColorCodes('&', text == null ? "" : text);
     }
 
     private record CargoData(boolean available, String prefix, String nicknameColor) {
         static CargoData empty() {
-            return new CargoData(false, "", "§f");
+            return new CargoData(false, "", "&f");
         }
     }
 }
