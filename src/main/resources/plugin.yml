@@ -23,3 +23,6 @@ permissions:
   sistemautil.configurar:
     description: Permite abrir o menu /configurar.
     default: false
+  sistemautil.cor:
+    description: Permite usar o sistema de cores das mensagens.
+    default: false
