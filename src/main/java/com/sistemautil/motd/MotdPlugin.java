@@ -2,7 +2,6 @@ package com.sistemautil.motd;
 
 import com.sistemautil.SistemaUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.CachedServerIcon;
 
 import javax.imageio.ImageIO;
@@ -10,7 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Locale;
 
-/** Compatibilidade estrutural do antigo SistemaMotd dentro do SistemaUtil. */
+/** Núcleo do antigo SistemaMotd incorporado ao SistemaUtil. */
 public final class MotdPlugin {
     private final SistemaUtil plugin;
     private CachedServerIcon iconeAtual;
@@ -21,14 +20,8 @@ public final class MotdPlugin {
         this.tpsMonitor = plugin.getTpsMonitor();
     }
 
-    public void enable() {
-        carregarIcone();
-    }
-
-    public void recarregar() {
-        plugin.reloadConfig();
-        carregarIcone();
-    }
+    public void enable() { carregarIcone(); }
+    public void recarregar() { carregarIcone(); }
 
     private void carregarIcone() {
         if (!plugin.getConfig().getBoolean("icone.ativado", true)) {
