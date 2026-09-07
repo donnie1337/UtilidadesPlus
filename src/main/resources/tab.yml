@@ -1,0 +1,58 @@
+# =========================================
+#                  TAB
+# =========================================
+# Configuração exclusiva do TAB do servidor.
+# A cor/nome do jogador continuam sendo definidos pelo cargo no CargoPlus.
+
+ativado: true
+
+header: |
+  &8&m----------------------------------------
+  &6&lMEU SERVIDOR
+  &7Seja bem-vindo!
+
+footer: |
+  &8&m----------------------------------------
+  &fJogadores online: &a%online%/%max%
+  &fSeu ping: &a%ping%ms
+  &fIP: &b%ip%
+  
+  &8&m----------------------------------------
+
+# Endereço mostrado no footer.
+endereco-servidor: "play.seuservidor.com:25565"
+
+# Tag/prefixo exibido antes do nickname no TAB.
+tag:
+  ativada: true
+  mostrar-no-tab: true
+  mostrar-na-cabeca: true
+
+# Ordenação da lista de jogadores.
+# A primeira regra tem maior prioridade.
+# primary-group = maior cargo para menor cargo.
+sorting:
+  enabled: true
+  case-sensitive: false
+  rules:
+    - type: primary-group
+      order: descending
+
+    # Exemplos de regras adicionais que podem ser habilitadas/configuradas:
+    # - type: permission
+    #   node: "tab.sort.vip"
+    #   order: descending
+    # - type: numeric-placeholder
+    #   placeholder: "%player_ping%"
+    #   order: ascending
+    # - type: placeholder
+    #   placeholder: "%player_name%"
+    #   order: ascending
+    #   case-sensitive: false
+    # - type: predefined-values
+    #   placeholder: "%player_world%"
+    #   values:
+    #     - lobby
+    #     - survival
+    #     - minigames
+    #   order: ascending
