@@ -6,7 +6,9 @@ import com.sistemautil.motd.MotdListener;
 import com.sistemautil.motd.MotdPlugin;
 import com.sistemautil.motd.TPSMonitor;
 import com.sistemautil.tab.ServerTabManager;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SistemaUtil extends JavaPlugin {
@@ -32,6 +34,10 @@ public final class SistemaUtil extends JavaPlugin {
         getServer().getPluginManager().registerEvents(utilidadesGui, this);
         getServer().getPluginManager().registerEvents(
                 new JoinQuitNotificationListener(this, utilidadesPreferences), this);
+        getServer().getPluginManager().registerEvents(new PlayerCollisionListener(), this);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.setCollidable(false);
+        }
         tpsMonitor.start(this);
 
         tabManager = new ServerTabManager(this);
