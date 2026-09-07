@@ -11,10 +11,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 
 /**
- * Centraliza os arquivos de configuração independentes do SistemaUtil.
+ * Centraliza os arquivos de configuração externos do SistemaUtil.
+ *
+ * Os arquivos ficam em plugins/SistemaUtil/ e são criados automaticamente
+ * na primeira inicialização do plugin. Alterações feitas pelo administrador
+ * são preservadas em reinicializações e recargas.
  */
 public final class ConfigManager {
     private final JavaPlugin plugin;
+    private final File dataFolder;
     private final File motdFile;
     private final File tabFile;
     private final File corFile;
@@ -25,12 +30,14 @@ public final class ConfigManager {
 
     public ConfigManager(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.motdFile = new File(plugin.getDataFolder(), "motd.yml");
-        this.tabFile = new File(plugin.getDataFolder(), "tab.yml");
-        this.corFile = new File(plugin.getDataFolder(), "cor.yml");
+        this.dataFolder = plugin.getDataFolder();
+        this.motdFile = new File(dataFolder, "motd.yml");
+        this.tabFile = new File(dataFolder, "tab.yml");
+        this.corFile = new File(dataFolder, "cor.yml");
     }
 
     public void loadAll() {
+        ensureDataFolder();
         motd = load("motd.yml", motdFile);
         tab = load("tab.yml", tabFile);
         cor = load("cor.yml", corFile);
@@ -52,9 +59,26 @@ public final class ConfigManager {
         return cor;
     }
 
+    private void ensureDataFolder() {
+        if (dataFolder.exists()) {
+            return;
+        }
+
+        if (!dataFolder.mkdirs() && !dataFolder.exists()) {
+            plugin.getLogger().warning(
+                    "Não foi possível criar a pasta de configurações: " + dataFolder.getAbsolutePath());
+        }
+    }
+
     private FileConfiguration load(String resource, File file) {
         if (!file.exists()) {
-            plugin.saveResource(resource, false);
+            try {
+                plugin.saveResource(resource, false);
+            } catch (IllegalArgumentException exception) {
+                plugin.getLogger().log(Level.SEVERE,
+                        "O recurso padrão " + resource + " não está presente no JAR do SistemaUtil.",
+                        exception);
+            }
         }
 
         FileConfiguration loaded = YamlConfiguration.loadConfiguration(file);
