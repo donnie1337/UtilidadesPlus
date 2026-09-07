@@ -6,7 +6,6 @@ author: donnie1337
 description: Utilidades do servidor, incluindo MOTD e preferências de entrada/saída.
 softdepend:
   - CargoPlus
-  - ChatPlus
 commands:
   motdplus:
     description: Recarrega a configuração do MOTD.
