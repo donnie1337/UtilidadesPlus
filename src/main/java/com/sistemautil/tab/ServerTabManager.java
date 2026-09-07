@@ -101,7 +101,7 @@ public final class ServerTabManager {
         String group = cargoString(player, "getGroup");
         if (group.isBlank()) return Integer.MIN_VALUE;
         try {
-            var cargo = Bukkit.getPluginManager().getPlugin("CargoPlus");
+            Plugin cargo = Bukkit.getPluginManager().getPlugin("CargoPlus");
             if (cargo == null || !cargo.isEnabled()) return Integer.MIN_VALUE;
             Method apiMethod = cargo.getClass().getMethod("api");
             Object api = apiMethod.invoke(cargo);
@@ -162,7 +162,7 @@ public final class ServerTabManager {
 
     private String cargoString(Player player, String methodName) {
         try {
-            var cargo = Bukkit.getPluginManager().getPlugin("CargoPlus");
+            Plugin cargo = Bukkit.getPluginManager().getPlugin("CargoPlus");
             if (cargo == null || !cargo.isEnabled()) return "";
             Method permissionsMethod = cargo.getClass().getMethod("permissions");
             Object permissions = permissionsMethod.invoke(cargo);
@@ -209,7 +209,7 @@ public final class ServerTabManager {
 
     private CargoData getCargoData(Player player) {
         try {
-            var cargo = Bukkit.getPluginManager().getPlugin("CargoPlus");
+            Plugin cargo = Bukkit.getPluginManager().getPlugin("CargoPlus");
             if (cargo == null || !cargo.isEnabled()) return CargoData.empty();
 
             Method permissionsMethod = cargo.getClass().getMethod("permissions");
