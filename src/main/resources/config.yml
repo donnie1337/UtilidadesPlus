@@ -1,0 +1,45 @@
+# =========================================
+#             SISTEMAUTIL
+# =========================================
+#
+# O MOTD foi migrado do SistemaMotd para este plugin.
+# Cores do chat são usadas somente no texto enviado pelo jogador.
+# A cor do nickname/cargo continua sendo responsabilidade do SistemaPerm.
+
+chat:
+  default-color: branco
+  colors:
+    branco: "&f"
+    cinza: "&7"
+    vermelho: "&c"
+    vermelho-escuro: "&4"
+    verde: "&a"
+    verde-escuro: "&2"
+    azul: "&9"
+    azul-claro: "&b"
+    amarelo: "&e"
+    dourado: "&6"
+    rosa: "&d"
+    roxo: "&5"
+    aqua: "&3"
+    preto: "&0"
+
+motd:
+  ativado: true
+  animado: true
+  intervalo-segundos: 4
+
+  # Use | para separar a linha 1 da linha 2.
+  linhas:
+    - "&6&lMeu Servidor &7- &fBem-vindo(a)!|&aOnline: %online%/%max% jogadores"
+    - "&b&lVersao %versao% &7- &fVenha se divertir!|&eHorario do servidor: %hora%"
+    - "&d&lDiscord: &fdiscord.gg/exemplo|&7TPS atual: %tps% &7- &fVagas: %vagas%"
+
+icone:
+  ativado: true
+  formato: "png"
+  arquivo: "icon.png"
+
+jogadores-ficticios:
+  ativado: false
+  max: 9999
