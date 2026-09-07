@@ -4,14 +4,15 @@ import com.sistemautil.SistemaUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Team;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scoreboard.Team;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Controla a identidade visual, ordenação e informações do TAB.
@@ -48,8 +49,10 @@ public final class ServerTabManager {
         List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
         players.sort(buildComparator());
 
-        for (Player player : players) {
+        for (int index = 0; index < players.size(); index++) {
+            Player player = players.get(index);
             applyPlayer(player);
+            player.setPlayerListOrder(index);
             int ping = Math.max(0, player.getPing());
             String footer = formatTabText(plugin.getTabConfig().getString("footer",
                     "&8&m----------------------------------------\n&fJogadores online: &a%online%/%max%\n&fSeu ping: &a%ping%ms\n&fIP: &b%ip%"),
@@ -66,15 +69,14 @@ public final class ServerTabManager {
     }
 
     private Comparator<Player> buildComparator() {
-        var rules = plugin.getTabConfig().getMapList("sorting.rules");
+        List<Map<?, ?>> rules = plugin.getTabConfig().getMapList("sorting.rules");
         boolean enabled = plugin.getTabConfig().getBoolean("sorting.enabled", true);
         boolean defaultCaseSensitive = plugin.getTabConfig().getBoolean("sorting.case-sensitive", false);
-        Comparator<Player> comparator = Comparator.comparing(Player::getName, stringComparator(defaultCaseSensitive));
-
-        if (!enabled || rules.isEmpty()) return comparator;
+        Comparator<Player> fallback = Comparator.comparing(Player::getName, stringComparator(defaultCaseSensitive));
+        if (!enabled || rules.isEmpty()) return fallback;
 
         Comparator<Player> chain = null;
-        for (var raw : rules) {
+        for (Map<?, ?> raw : rules) {
             String type = string(raw.get("type")).toLowerCase(Locale.ROOT);
             boolean caseSensitive = raw.containsKey("case-sensitive")
                     ? Boolean.parseBoolean(String.valueOf(raw.get("case-sensitive")))
@@ -92,19 +94,19 @@ public final class ServerTabManager {
             if ("descending".equals(order) || "desc".equals(order)) rule = rule.reversed();
             chain = chain == null ? rule : chain.thenComparing(rule);
         }
-        return chain == null ? comparator : chain.thenComparing(Player::getName, stringComparator(defaultCaseSensitive));
+        return chain == null ? fallback : chain.thenComparing(Player::getName, stringComparator(defaultCaseSensitive));
     }
 
     private int groupPriority(Player player) {
         String group = cargoString(player, "getGroup");
         if (group.isBlank()) return Integer.MIN_VALUE;
         try {
-            Object cargo = Bukkit.getPluginManager().getPlugin("CargoPlus");
+            var cargo = Bukkit.getPluginManager().getPlugin("CargoPlus");
             if (cargo == null || !cargo.isEnabled()) return Integer.MIN_VALUE;
-            Method permissionsMethod = cargo.getClass().getMethod("permissions");
-            Object permissions = permissionsMethod.invoke(cargo);
-            Method getGroups = permissions.getClass().getMethod("groups");
-            Object groups = getGroups.invoke(permissions);
+            Method apiMethod = cargo.getClass().getMethod("api");
+            Object api = apiMethod.invoke(cargo);
+            Method groupsMethod = api.getClass().getMethod("groups");
+            Object groups = groupsMethod.invoke(api);
             Method indexOf = groups.getClass().getMethod("indexOf", String.class);
             Object value = indexOf.invoke(groups, group);
             return value instanceof Integer i ? i : Integer.MIN_VALUE;
@@ -118,9 +120,12 @@ public final class ServerTabManager {
     }
 
     private double numericPlaceholder(Player player, String token) {
-        String value = placeholder(player, token);
-        try { return Double.parseDouble(value.replace(".", "").replace(",", ".")); }
-        catch (NumberFormatException ex) { return Double.POSITIVE_INFINITY; }
+        String value = placeholder(player, token).trim();
+        try {
+            return Double.parseDouble(value.replace(',', '.'));
+        } catch (NumberFormatException ex) {
+            return Double.POSITIVE_INFINITY;
+        }
     }
 
     private int predefinedValueIndex(Player player, String token, Object values, boolean caseSensitive) {
@@ -136,10 +141,9 @@ public final class ServerTabManager {
     private String placeholder(Player player, String token) {
         if (token == null) return "";
         String value = token;
-        int online = Bukkit.getOnlinePlayers().size();
         value = value.replace("%player_name%", player.getName())
                 .replace("%player_ping%", String.valueOf(Math.max(0, player.getPing())))
-                .replace("%online%", String.valueOf(online))
+                .replace("%online%", String.valueOf(Bukkit.getOnlinePlayers().size()))
                 .replace("%player_world%", player.getWorld().getName())
                 .replace("%player_group%", cargoString(player, "getGroup"));
 
