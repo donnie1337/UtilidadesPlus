@@ -16,7 +16,6 @@ commands:
   configurar:
     description: Abre o menu de configuração das utilidades pessoais.
     usage: /configurar
-    permission: sistemautil.configurar
 permissions:
   sistemautil.motd.admin:
     description: Permite recarregar a configuração do MOTD.
