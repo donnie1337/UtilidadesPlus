@@ -14,8 +14,14 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 
 public final class JoinQuitNotificationListener implements Listener {
+    private static final String AUTH_PLUGIN_NAME = "LoginPlus";
     private final SistemaUtil plugin;
     private final UtilidadesPreferences preferences;
+    private volatile Plugin authPlugin;
+    private volatile Method authCheckMethod;
+    private volatile Plugin cargoPlugin;
+    private volatile Method cargoPermissionsMethod;
+    private volatile Method cargoValueMethod;
 
     public JoinQuitNotificationListener(SistemaUtil plugin, UtilidadesPreferences preferences) {
         this.plugin = plugin;
@@ -31,8 +37,6 @@ public final class JoinQuitNotificationListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
-
-        // receber.saida=false desativa as mensagens de saída para todos.
         if (!preferences.globallyReceivesQuit()) return;
         if (!hasStaffCargo(event.getPlayer()) || !preferences.broadcastsQuit(event.getPlayer())) return;
 
@@ -44,13 +48,12 @@ public final class JoinQuitNotificationListener implements Listener {
 
     private void checkJoin(Player player, int attempt) {
         if (!player.isOnline() || attempt >= 60) return;
-
         if (!isAuthenticated(player)) {
             Bukkit.getScheduler().runTaskLater(plugin, () -> checkJoin(player, attempt + 1), 20L);
             return;
         }
-
         if (!hasStaffCargo(player) || !preferences.broadcastsJoin(player)) return;
+
         String message = buildMessage(player, true);
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             if (viewer.equals(player) || preferences.receivesJoin(viewer)) viewer.sendMessage(message);
@@ -58,11 +61,24 @@ public final class JoinQuitNotificationListener implements Listener {
     }
 
     private boolean isAuthenticated(Player player) {
-        Plugin auth = Bukkit.getPluginManager().getPlugin("AuthSystem");
-        if (auth == null || !auth.isEnabled()) return true;
+        if (player == null || !player.isOnline()) return false;
+        Plugin current = Bukkit.getPluginManager().getPlugin(AUTH_PLUGIN_NAME);
+        if (current == null || !current.isEnabled()) return true;
+
+        Method method = authCheckMethod;
+        if (authPlugin != current || method == null) {
+            synchronized (this) {
+                if (authPlugin != current || authCheckMethod == null) {
+                    authPlugin = current;
+                    try { authCheckMethod = current.getClass().getMethod("isAuthenticated", Player.class); }
+                    catch (ReflectiveOperationException | LinkageError ex) { authCheckMethod = null; }
+                    method = authCheckMethod;
+                }
+            }
+        }
+        if (method == null) return false;
         try {
-            Method method = auth.getClass().getMethod("isAuthenticated", Player.class);
-            Object result = method.invoke(auth, player);
+            Object result = method.invoke(current, player);
             return result instanceof Boolean value && value;
         } catch (ReflectiveOperationException | LinkageError ex) {
             return false;
@@ -91,12 +107,26 @@ public final class JoinQuitNotificationListener implements Listener {
         Plugin cargo = Bukkit.getPluginManager().getPlugin("CargoPlus");
         if (cargo == null || !cargo.isEnabled()) return "";
         try {
-            Method permissionsMethod = cargo.getClass().getMethod("permissions");
+            Method permissionsMethod = cargoPermissionsMethod;
+            Method valueMethod = cargoValueMethod;
+            if (cargoPlugin != cargo || permissionsMethod == null || valueMethod == null) {
+                synchronized (this) {
+                    if (cargoPlugin != cargo || cargoPermissionsMethod == null || cargoValueMethod == null) {
+                        cargoPlugin = cargo;
+                        cargoPermissionsMethod = cargo.getClass().getMethod("permissions");
+                        Object permissions = cargoPermissionsMethod.invoke(cargo);
+                        cargoValueMethod = permissions.getClass().getMethod(methodName, UUID.class);
+                    }
+                    permissionsMethod = cargoPermissionsMethod;
+                    valueMethod = cargoValueMethod;
+                }
+            }
             Object permissions = permissionsMethod.invoke(cargo);
-            Method method = permissions.getClass().getMethod(methodName, UUID.class);
-            Object result = method.invoke(permissions, player.getUniqueId());
+            Object result = valueMethod.invoke(permissions, player.getUniqueId());
             return result instanceof String value ? value : "";
         } catch (ReflectiveOperationException | LinkageError ex) {
+            cargoPermissionsMethod = null;
+            cargoValueMethod = null;
             return "";
         }
     }
