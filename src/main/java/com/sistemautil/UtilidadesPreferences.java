@@ -23,10 +23,28 @@ public final class UtilidadesPreferences {
         config = YamlConfiguration.loadConfiguration(file);
     }
 
-    public boolean receivesJoin(Player player) { return get(player, "entrada"); }
-    public boolean receivesQuit(Player player) { return get(player, "saida"); }
+    // Controle individual do que o jogador consegue visualizar.
+    public boolean receivesJoin(Player player) { return get(player, "entrada", true); }
+    public boolean receivesQuit(Player player) { return get(player, "saida", true); }
     public void setReceivesJoin(Player player, boolean value) { set(player, "entrada", value); }
     public void setReceivesQuit(Player player, boolean value) { set(player, "saida", value); }
+
+    // Controle individual de quem pode gerar mensagens de entrada/saida.
+    // Um jogador desligado nao aparece para os demais.
+    public boolean broadcastsJoin(Player player) { return get(player, "mostrar-entrada", true); }
+    public boolean broadcastsQuit(Player player) { return get(player, "mostrar-saida", true); }
+    public void setBroadcastsJoin(Player player, boolean value) { set(player, "mostrar-entrada", value); }
+    public void setBroadcastsQuit(Player player, boolean value) { set(player, "mostrar-saida", value); }
+
+    // O toggle da alavanca controla entrada + saida juntos.
+    public boolean broadcastsJoinQuit(Player player) {
+        return broadcastsJoin(player) && broadcastsQuit(player);
+    }
+
+    public void setBroadcastsJoinQuit(Player player, boolean value) {
+        set(player, "mostrar-entrada", value);
+        set(player, "mostrar-saida", value);
+    }
 
     public void save() {
         try {
@@ -36,11 +54,11 @@ public final class UtilidadesPreferences {
         }
     }
 
-    private boolean get(Player player, String path) {
-        if (player == null) return true;
+    private boolean get(Player player, String path, boolean defaultValue) {
+        if (player == null) return defaultValue;
         UUID uuid = player.getUniqueId();
         return config.getBoolean("jogadores." + uuid + "." + path,
-                config.getBoolean("receber." + path, true));
+                config.getBoolean("receber." + path, defaultValue));
     }
 
     private void set(Player player, String path, boolean value) {
