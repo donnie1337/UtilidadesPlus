@@ -21,7 +21,8 @@ public final class JoinQuitNotificationListener implements Listener {
     private volatile Method authCheckMethod;
     private volatile Plugin cargoPlugin;
     private volatile Method cargoPermissionsMethod;
-    private volatile Method cargoValueMethod;
+    private volatile Method cargoPrefixMethod;
+    private volatile Method cargoNicknameColorMethod;
 
     public JoinQuitNotificationListener(SistemaUtil plugin, UtilidadesPreferences preferences) {
         this.plugin = plugin;
@@ -86,7 +87,7 @@ public final class JoinQuitNotificationListener implements Listener {
     }
 
     private boolean hasStaffCargo(Player player) {
-        String prefix = cargoValue(player, "getPrefix");
+        String prefix = cargoValue(player, "prefix");
         return prefix != null && !ChatColor.stripColor(colorize(prefix)).isBlank();
     }
 
@@ -95,38 +96,38 @@ public final class JoinQuitNotificationListener implements Listener {
                 "mensagens." + (join ? "entrada" : "saida"),
                 join ? "&8[&a+&8] %prefix%%nome-color%%nome% &7entrou no servidor!"
                         : "&8[&c-&8] %prefix%%nome-color%%nome% &7saiu do servidor!");
-        String prefix = colorize(cargoValue(player, "getPrefix"));
-        String nameColor = colorize(cargoValue(player, "getNicknameColor"));
+        String prefix = colorize(cargoValue(player, "prefix"));
+        String nameColor = colorize(cargoValue(player, "nickname-color"));
         return colorize(template)
                 .replace("%prefix%", prefix)
                 .replace("%nome-color%", nameColor)
                 .replace("%nome%", player.getName());
     }
 
-    private String cargoValue(Player player, String methodName) {
+    private String cargoValue(Player player, String type) {
         Plugin cargo = Bukkit.getPluginManager().getPlugin("CargoPlus");
         if (cargo == null || !cargo.isEnabled()) return "";
         try {
             Method permissionsMethod = cargoPermissionsMethod;
-            Method valueMethod = cargoValueMethod;
-            if (cargoPlugin != cargo || permissionsMethod == null || valueMethod == null) {
+            if (cargoPlugin != cargo || permissionsMethod == null || cargoPrefixMethod == null || cargoNicknameColorMethod == null) {
                 synchronized (this) {
-                    if (cargoPlugin != cargo || cargoPermissionsMethod == null || cargoValueMethod == null) {
+                    if (cargoPlugin != cargo || cargoPermissionsMethod == null || cargoPrefixMethod == null || cargoNicknameColorMethod == null) {
                         cargoPlugin = cargo;
                         cargoPermissionsMethod = cargo.getClass().getMethod("permissions");
                         Object permissions = cargoPermissionsMethod.invoke(cargo);
-                        cargoValueMethod = permissions.getClass().getMethod(methodName, UUID.class);
+                        cargoPrefixMethod = permissions.getClass().getMethod("getPrefix", UUID.class);
+                        cargoNicknameColorMethod = permissions.getClass().getMethod("getNicknameColor", UUID.class);
                     }
                     permissionsMethod = cargoPermissionsMethod;
-                    valueMethod = cargoValueMethod;
                 }
             }
             Object permissions = permissionsMethod.invoke(cargo);
+            Method valueMethod = "prefix".equals(type) ? cargoPrefixMethod : cargoNicknameColorMethod;
             Object result = valueMethod.invoke(permissions, player.getUniqueId());
             return result instanceof String value ? value : "";
         } catch (ReflectiveOperationException | LinkageError ex) {
-            cargoPermissionsMethod = null;
-            cargoValueMethod = null;
+            cargoPrefixMethod = null;
+            cargoNicknameColorMethod = null;
             return "";
         }
     }
