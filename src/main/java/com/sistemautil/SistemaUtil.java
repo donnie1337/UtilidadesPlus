@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 public final class SistemaUtil extends JavaPlugin {
     private final TPSMonitor tpsMonitor = new TPSMonitor();
@@ -18,6 +19,7 @@ public final class SistemaUtil extends JavaPlugin {
     private ServerTabManager tabManager;
     private UtilidadesPreferences utilidadesPreferences;
     private UtilidadesGui utilidadesGui;
+    private BukkitTask collisionTask;
 
     @Override
     public void onEnable() {
@@ -34,10 +36,19 @@ public final class SistemaUtil extends JavaPlugin {
         getServer().getPluginManager().registerEvents(utilidadesGui, this);
         getServer().getPluginManager().registerEvents(
                 new JoinQuitNotificationListener(this, utilidadesPreferences), this);
-        getServer().getPluginManager().registerEvents(new PlayerCollisionListener(), this);
+
+        PlayerCollisionListener collisionListener = new PlayerCollisionListener();
+        getServer().getPluginManager().registerEvents(collisionListener, this);
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.setCollidable(false);
+            collisionListener.disableCollision(player);
         }
+
+        collisionTask = Bukkit.getScheduler().runTaskTimer(this, () -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                collisionListener.disableCollision(player);
+            }
+        }, 1L, 20L);
+
         tpsMonitor.start(this);
 
         tabManager = new ServerTabManager(this);
@@ -60,6 +71,7 @@ public final class SistemaUtil extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (collisionTask != null) collisionTask.cancel();
         if (tabManager != null) tabManager.stop();
         if (utilidadesPreferences != null) utilidadesPreferences.save();
         tpsMonitor.stop();
