@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.sistemautil</groupId>
-    <artifactId>SistemaUtil</artifactId>
+    <artifactId>UtilidadesPlus</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>SistemaUtil</name>
+    <name>UtilidadesPlus</name>
     <description>Utilidades do servidor: MOTD e seleção de cor do chat.</description>
 
     <properties>
