@@ -34,7 +34,7 @@ public final class UtilidadesGui implements Listener {
 
         Inventory inventory = Bukkit.createInventory(null, size(), title());
         inventory.setItem(slot("entrada", 11), toggleItem(Material.LEVER, "Mensagem de entrada", preferences.receivesJoin(player)));
-        inventory.setItem(slot("saida", 15), toggleItem(Material.SLIME_PISTON, "Mensagem de saída", preferences.receivesQuit(player)));
+        inventory.setItem(slot("saida", 15), toggleItem(Material.PISTON, "Mensagem de saída", preferences.receivesQuit(player)));
         if (player.hasPermission("cargoplus.cor")) {
             inventory.setItem(slot("cor", 13), colorItem(player));
         }
