@@ -49,7 +49,7 @@ public final class JoinQuitNotificationListener implements Listener {
         if (!hasStaffCargo(player) || !preferences.broadcastsJoin(player)) return;
         String message = buildMessage(player, true);
         for (Player viewer : Bukkit.getOnlinePlayers()) {
-            if (preferences.receivesJoin(viewer)) viewer.sendMessage(message);
+            if (viewer.equals(player) || preferences.receivesJoin(viewer)) viewer.sendMessage(message);
         }
     }
 
