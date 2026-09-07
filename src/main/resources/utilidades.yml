@@ -1,0 +1,25 @@
+# =========================================
+#             UTILIDADES /CONFIGURAR
+# =========================================
+# Preferências pessoais dos jogadores.
+# Entrada/saída são notificações recebidas pelo próprio jogador.
+
+receber:
+  entrada: true
+  saida: true
+
+gui:
+  ativado: true
+  titulo: "&8Utilidades do jogador"
+  tamanho: 27
+  slots:
+    entrada: 11
+    saida: 15
+    cor: 13
+
+mensagens:
+  entrada: "&8[&a+&8] %prefix%%nome-color%%nome% &7entrou no servidor!"
+  saida: "&8[&c-&8] %prefix%%nome-color%%nome% &7saiu do servidor!"
+
+# Preferências individuais ficam abaixo de jogadores.
+jogadores: {}
