@@ -13,11 +13,9 @@ import java.util.Locale;
 public final class MotdPlugin {
     private final SistemaUtil plugin;
     private CachedServerIcon iconeAtual;
-    private final TPSMonitor tpsMonitor;
 
     public MotdPlugin(SistemaUtil plugin) {
         this.plugin = plugin;
-        this.tpsMonitor = plugin.getTpsMonitor();
     }
 
     public void enable() { carregarIcone(); }
@@ -61,5 +59,4 @@ public final class MotdPlugin {
     }
 
     public CachedServerIcon getIconeAtual() { return iconeAtual; }
-    public TPSMonitor getTpsMonitor() { return tpsMonitor; }
 }
