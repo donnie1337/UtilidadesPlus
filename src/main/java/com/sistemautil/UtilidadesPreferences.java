@@ -23,9 +23,18 @@ public final class UtilidadesPreferences {
         config = YamlConfiguration.loadConfiguration(file);
     }
 
+    // Controle global do que os jogadores conseguem visualizar.
+    public boolean globallyReceivesJoin() {
+        return config.getBoolean("receber.entrada", true);
+    }
+
+    public boolean globallyReceivesQuit() {
+        return config.getBoolean("receber.saida", true);
+    }
+
     // Controle individual do que o jogador consegue visualizar.
-    public boolean receivesJoin(Player player) { return get(player, "entrada", true); }
-    public boolean receivesQuit(Player player) { return get(player, "saida", true); }
+    public boolean receivesJoin(Player player) { return get(player, "entrada", globallyReceivesJoin()); }
+    public boolean receivesQuit(Player player) { return get(player, "saida", globallyReceivesQuit()); }
     public void setReceivesJoin(Player player, boolean value) { set(player, "entrada", value); }
     public void setReceivesQuit(Player player, boolean value) { set(player, "saida", value); }
 
@@ -57,8 +66,7 @@ public final class UtilidadesPreferences {
     private boolean get(Player player, String path, boolean defaultValue) {
         if (player == null) return defaultValue;
         UUID uuid = player.getUniqueId();
-        return config.getBoolean("jogadores." + uuid + "." + path,
-                config.getBoolean("receber." + path, defaultValue));
+        return config.getBoolean("jogadores." + uuid + "." + path, defaultValue);
     }
 
     private void set(Player player, String path, boolean value) {
