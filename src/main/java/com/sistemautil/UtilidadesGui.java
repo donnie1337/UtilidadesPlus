@@ -14,10 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
 
 public final class UtilidadesGui implements Listener {
     private static final String PERMISSION = "sistemautil.configurar";
@@ -35,11 +32,12 @@ public final class UtilidadesGui implements Listener {
             return;
         }
 
-        String title = title();
-        Inventory inventory = Bukkit.createInventory(null, size(), title);
+        Inventory inventory = Bukkit.createInventory(null, size(), title());
         inventory.setItem(slot("entrada", 11), toggleItem(Material.LEVER, "Mensagem de entrada", preferences.receivesJoin(player)));
         inventory.setItem(slot("saida", 15), toggleItem(Material.SLIME_PISTON, "Mensagem de saída", preferences.receivesQuit(player)));
-        inventory.setItem(slot("cor", 13), colorItem(player));
+        if (player.hasPermission("cargoplus.cor")) {
+            inventory.setItem(slot("cor", 13), colorItem(player));
+        }
         player.openInventory(inventory);
     }
 
@@ -65,7 +63,7 @@ public final class UtilidadesGui implements Listener {
             open(player);
             return;
         }
-        if (rawSlot == slot("cor", 13)) {
+        if (rawSlot == slot("cor", 13) && player.hasPermission("cargoplus.cor")) {
             player.closeInventory();
             player.performCommand("cor");
         }
@@ -89,14 +87,14 @@ public final class UtilidadesGui implements Listener {
     }
 
     private ItemStack colorItem(Player player) {
-        String code = currentChatColor(player);
-        ChatColor color = parseColor(code);
-        Material dye = dyeFor(color);
-        ItemStack item = new ItemStack(dye);
+        ChatColor color = parseColor(currentChatColor(player));
+        ItemStack item = new ItemStack(dyeFor(color));
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(color + "Cor da mensagem");
-            meta.setLore(List.of("§7Cor atual: " + color + currentChatColorName(player), "§eClique para abrir o /cor."));
+            meta.setLore(List.of(
+                    "§7Cor atual: " + color + currentChatColorName(player),
+                    "§eClique para abrir as lãs de cores."));
             item.setItemMeta(meta);
         }
         return item;
@@ -140,8 +138,9 @@ public final class UtilidadesGui implements Listener {
         return switch (color) {
             case WHITE -> Material.WHITE_DYE;
             case GRAY, DARK_GRAY -> Material.GRAY_DYE;
-            case RED -> Material.RED_DYE;
-            case GREEN, DARK_GREEN -> Material.GREEN_DYE;
+            case DARK_RED, RED -> Material.RED_DYE;
+            case GREEN -> Material.LIME_DYE;
+            case DARK_GREEN -> Material.GREEN_DYE;
             case BLUE, DARK_BLUE -> Material.BLUE_DYE;
             case AQUA, DARK_AQUA -> Material.CYAN_DYE;
             case YELLOW -> Material.YELLOW_DYE;
