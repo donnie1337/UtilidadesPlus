@@ -1,9 +1,11 @@
 package com.sistemautil;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scoreboard.Scoreboard;
@@ -19,9 +21,15 @@ public final class PlayerCollisionListener implements Listener {
             player.setCollidable(false);
         }
 
-        Scoreboard scoreboard = player.getScoreboard();
-        Team team = scoreboard.getEntryTeam(player.getName());
+        // Para colisao entre jogadores, o Paper usa a Team do scoreboard do proprio jogador.
+        // Usamos o scoreboard principal para garantir que todos os jogadores compartilhem a
+        // mesma referencia de Teams e que outro scoreboard temporario nao quebre a regra.
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        if (player.getScoreboard() != scoreboard) {
+            player.setScoreboard(scoreboard);
+        }
 
+        Team team = scoreboard.getEntryTeam(player.getName());
         if (team == null) {
             String teamName = TEAM_PREFIX + player.getUniqueId().toString().replace("-", "").substring(0, 13);
             team = scoreboard.getTeam(teamName);
@@ -43,6 +51,11 @@ public final class PlayerCollisionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent event) {
+        disableCollision(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
         disableCollision(event.getPlayer());
     }
 }
