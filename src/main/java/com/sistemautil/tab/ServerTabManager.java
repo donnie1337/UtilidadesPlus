@@ -44,7 +44,7 @@ public final class ServerTabManager {
         int online = Bukkit.getOnlinePlayers().size();
         int max = Bukkit.getMaxPlayers();
         String address = plugin.getTabConfig().getString("endereco-servidor", "play.seuservidor.com:25565");
-        String header = formatTabText(plugin.getTabConfig().getString("header", "&6&lMEU SERVIDOR\n&7Seja bem-vindo!"), online, max, 0, address);
+        String header = formatTabText(plugin.getTabConfig().getString("header", "&6&lMEU SERVIDOR\n&7Seja bem-vindo!"), online, max, 0, address, null);
 
         List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
         players.sort(buildComparator());
@@ -53,10 +53,11 @@ public final class ServerTabManager {
             Player player = players.get(index);
             applyPlayer(player);
             player.setPlayerListOrder(players.size() - index);
+
             int ping = Math.max(0, player.getPing());
             String footer = formatTabText(plugin.getTabConfig().getString("footer",
                     "&8&m----------------------------------------\n&fJogadores online: &a%online%/%max%\n&fSeu ping: &a%ping%ms\n&fIP: &b%ip%"),
-                    online, max, ping, address);
+                    online, max, ping, address, player);
             player.setPlayerListHeaderFooter(header, footer);
         }
     }
@@ -137,10 +138,18 @@ public final class ServerTabManager {
     private void applyPlayer(Player player) {
         CargoData data = cargo.getData(player);
         if (!data.available()) return;
+
         boolean tagEnabled = plugin.getTabConfig().getBoolean("tag.ativada", true);
-        String prefix = tagEnabled && plugin.getTabConfig().getBoolean("tag.mostrar-no-tab", true) ? colorize(data.prefix()) : "";
+        boolean showTag = tagEnabled && plugin.getTabConfig().getBoolean("tag.mostrar-no-tab", true);
+        String prefix = showTag ? colorize(data.prefix()) : "";
         String nameColor = colorize(data.nicknameColor());
-        player.setPlayerListName(prefix + nameColor + player.getName());
+
+        String format = plugin.getTabConfig().getString("jogadores.formato", "%prefix%%name_color%%player_name%");
+        String listName = format.replace("%prefix%", prefix)
+                .replace("%name_color%", nameColor)
+                .replace("%player_name%", player.getName())
+                .replace("%player_group%", cargo.getGroup(player));
+        player.setPlayerListName(colorize(listName));
 
         if (tagEnabled && plugin.getTabConfig().getBoolean("tag.mostrar-na-cabeca", true)) {
             Team team = player.getScoreboard().getEntryTeam(player.getName());
@@ -151,9 +160,19 @@ public final class ServerTabManager {
         }
     }
 
-    private String formatTabText(String text, int online, int max, int ping, String address) {
-        return colorize(text == null ? "" : text).replace("%online%", String.valueOf(online)).replace("%max%", String.valueOf(max))
-                .replace("%ping%", String.valueOf(ping)).replace("%ip%", address == null ? "" : address);
+    private String formatTabText(String text, int online, int max, int ping, String address, Player player) {
+        String result = colorize(text == null ? "" : text)
+                .replace("%online%", String.valueOf(online))
+                .replace("%max%", String.valueOf(max))
+                .replace("%ping%", String.valueOf(ping))
+                .replace("%ip%", address == null ? "" : address);
+        if (player != null) {
+            result = result.replace("%player_name%", player.getName())
+                    .replace("%player_group%", cargo.getGroup(player))
+                    .replace("%player_world%", player.getWorld().getName());
+            result = placeholders.resolve(player, result);
+        }
+        return result;
     }
 
     private String colorize(String text) { return ChatColor.translateAlternateColorCodes('&', text == null ? "" : text); }
