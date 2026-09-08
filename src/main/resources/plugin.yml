@@ -26,6 +26,9 @@ permissions:
   utilidadesplus.cor:
     description: Permite usar o sistema de cores das mensagens.
     default: false
+  utilidadesplus.plugins:
+    description: Permite visualizar a lista de plugins do servidor.
+    default: false
   utilidadesplus.admin:
     description: Permite visualizar o Tab Complete dos comandos internos /spigot e /bukkit.
     default: false
