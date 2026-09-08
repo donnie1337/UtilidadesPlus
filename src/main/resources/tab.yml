@@ -1,17 +1,14 @@
 # =========================================
 #                  TAB
 # =========================================
-# Identidade visual do TAB.
-# As informacoes de cargo, prefixo e cor do nickname continuam vindo do CargoPlus.
-#
-# A tipografia abaixo usa caracteres Unicode em estilo small caps.
-# Nao exige resource pack e funciona diretamente no TAB.
+# A identidade visual é aplicada automaticamente pelo SistemaUtil.
+# Não é necessário repetir small caps em cada linha.
 
 ativado: true
 
-# Texto exibido no topo do TAB.
+# Suporta {icon:nome}, <#RRGGBB> e <gradient:#RRGGBB:#RRGGBB>texto</gradient>.
 header: |
-  &f&lᴠᴏᴄᴇ ᴇsᴛᴀ ᴄᴏɴᴇᴄᴛᴀᴅᴏ ᴀᴏ sᴜʀᴠɪᴠᴀʟ
+  <gradient:#7C3AED:#22D3EE>MEU SERVIDOR</gradient> {icon:estrela}
   &7ᴛᴇᴍᴘᴏʀᴀᴅᴀ: &f1
 
 
@@ -29,32 +26,22 @@ header: |
 
 
 
-# Texto exibido no rodape do TAB.
 footer: |
-  &fᴊᴏɢᴀᴅᴏʀᴇs: &a%online%  &8•  &fᴘɪɴɢ: &a%ping%ms
+  {icon:online} &fJogadores: &a%online%  &8•  &fPing: &a%ping%ms
 
-  &fᴊᴜɴᴛᴇ-sᴇ ᴀ ɴᴏssᴀ ᴄᴏᴍᴜɴɪᴅᴀᴅᴇ
-  &bᴅɪsᴄᴏʀᴅ.ɢɢ/ᴀᴀᴀᴀᴀᴀᴀᴀᴀ
+  <gradient:#22D3EE:#7C3AED>JUNTE-SE A NOSSA COMUNIDADE</gradient>
+  &bdiscord.gg/aaaaaaaaa
 
-# Endereco mostrado no footer quando o placeholder %ip% for usado.
 endereco-servidor: "play.seuservidor.com:25565"
 
-# Formato do nome de cada jogador no TAB.
-# Placeholders:
-# %prefix%      = prefixo vindo do CargoPlus
-# %name_color%  = cor do nickname vinda do CargoPlus
-# %player_name% = nome do jogador
-# %player_group%= cargo atual
 jogadores:
   formato: "%prefix%%name_color%%player_name%"
 
-# Tag/prefixo exibido antes do nickname no TAB.
 tag:
   ativada: true
   mostrar-no-tab: true
   mostrar-na-cabeca: true
 
-# Ordenacao da lista de jogadores.
 sorting:
   enabled: true
   case-sensitive: false
