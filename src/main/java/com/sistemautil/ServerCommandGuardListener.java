@@ -15,7 +15,7 @@ import java.util.Locale;
  * A permissão para /plugins vem exclusivamente do cargo configurado no CargoPlus.
  */
 public final class ServerCommandGuardListener implements Listener {
-    private static final String PLUGINS_PERMISSION = "sistemautil.plugins";
+    private static final String PLUGINS_PERMISSION = "utilidadesplus.plugins";
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent event) {
