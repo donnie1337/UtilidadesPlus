@@ -29,6 +29,12 @@ public final class ServerCommandGuardListener implements Listener {
 
         String label = command.split("\\s+", 2)[0].toLowerCase(Locale.ROOT);
 
+        if (isHelpDiscoveryCommand(label) && !hasCargoPermission(player, ADMIN_PERMISSION)) {
+            event.setCancelled(true);
+            player.sendMessage("§cO comando de ajuda está desativado para jogadores.");
+            return;
+        }
+
         if (isPluginsCommand(label)) {
             if (!hasCargoPermission(player, PLUGINS_PERMISSION)) {
                 event.setCancelled(true);
@@ -56,6 +62,14 @@ public final class ServerCommandGuardListener implements Listener {
         } catch (ReflectiveOperationException | LinkageError ex) {
             return false;
         }
+    }
+
+    private boolean isHelpDiscoveryCommand(String label) {
+        return label.equals("?")
+                || label.equals("help")
+                || label.equals("bukkit:help")
+                || label.equals("spigot:help")
+                || label.equals("minecraft:help");
     }
 
     private boolean isPluginsCommand(String label) {
