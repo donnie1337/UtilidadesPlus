@@ -65,7 +65,7 @@ public final class SistemaUtil extends JavaPlugin {
             getCommand("configurar").setTabCompleter(configurarCommand);
         }
 
-        getLogger().info("SistemaUtil ativado com sucesso.");
+        getLogger().info("UtilidadesPlus ativado com sucesso.");
     }
 
     @Override
