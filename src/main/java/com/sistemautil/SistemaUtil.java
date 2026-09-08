@@ -8,7 +8,6 @@ import com.sistemautil.motd.TPSMonitor;
 import com.sistemautil.tab.ServerTabManager;
 import com.sistemautil.visual.VisualText;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -81,10 +80,9 @@ public final class SistemaUtil extends JavaPlugin {
     public MotdPlugin getMotd() { return motd; }
     public ServerTabManager getTabManager() { return tabManager; }
     public VisualText getVisualText() { return visualText; }
-    public FileConfiguration getMotdConfig() { return configManager.motd(); }
-    public FileConfiguration getTabConfig() { return configManager.tab(); }
-    public FileConfiguration getCorConfig() { return configManager.cor(); }
-    public FileConfiguration getUtilidadesConfig() { return configManager.utilidades(); }
+    public org.bukkit.configuration.file.FileConfiguration getMotdConfig() { return configManager.motd(); }
+    public org.bukkit.configuration.file.FileConfiguration getTabConfig() { return configManager.tab(); }
+    public org.bukkit.configuration.file.FileConfiguration getUtilidadesConfig() { return configManager.utilidades(); }
 
     public void reloadConfigs() {
         configManager.reloadAll();
