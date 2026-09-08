@@ -1,14 +1,14 @@
 # =========================================
 #                  TAB
 # =========================================
-# A identidade visual é aplicada automaticamente pelo SistemaUtil.
+# A identidade visual é aplicada automaticamente pelo UtilidadesPlus.
 # Não é necessário repetir small caps em cada linha.
 
 ativado: true
 
 # Suporta {icon:nome}, <#RRGGBB> e <gradient:#RRGGBB:#RRGGBB>texto</gradient>.
 header: |
-  <gradient:#7C3AED:#22D3EE>MEU SERVIDOR</gradient> {icon:estrela}
+  <gradient:#7C3AED:#22D3EE>SEU SERVIDOR</gradient> {icon:estrela}
   &7ᴛᴇᴍᴘᴏʀᴀᴅᴀ: &f1
 
 
@@ -29,10 +29,10 @@ header: |
 footer: |
   {icon:online} &fJogadores: &a%online%  &8•  &fPing: &a%ping%ms
 
-  <gradient:#22D3EE:#7C3AED>JUNTE-SE A NOSSA COMUNIDADE</gradient>
-  &bdiscord.gg/aaaaaaaaa
+  <gradient:#22D3EE:#7C3AED>JUNTE-SE À NOSSA COMUNIDADE</gradient>
+  &bEntre e divirta-se!
 
-endereco-servidor: "play.seuservidor.com:25565"
+endereco-servidor: ""
 
 jogadores:
   formato: "%prefix%%name_color%%player_name%"
