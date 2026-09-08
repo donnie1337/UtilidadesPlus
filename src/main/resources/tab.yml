@@ -1,26 +1,42 @@
 # =========================================
 #                  TAB
 # =========================================
-# Configuração exclusiva do TAB do servidor.
-# A cor/nome do jogador continuam sendo definidos pelo cargo no CargoPlus.
+# Toda a identidade visual do TAB pode ser alterada aqui.
+# As informacoes de cargo, prefixo e cor do nickname continuam vindo do CargoPlus.
+# Cores: use &0-&9, &a-&f e estilos como &l, &n, &o, &m.
 
 ativado: true
 
+# Texto exibido no topo do TAB.
+# Placeholders disponiveis:
+# %online% %max% %player_name% %player_group% %player_world%
 header: |
-  &8&m----------------------------------------
-  &6&lMEU SERVIDOR
-  &7Seja bem-vindo!
+  &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  &6&l✦ MEU SERVIDOR ✦
+  &7Bem-vindo, &f%player_name%&7!
+  &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+# Texto exibido no rodape do TAB.
+# Placeholders disponiveis:
+# %online% %max% %ping% %ip% %player_name% %player_group% %player_world%
 footer: |
-  &8&m----------------------------------------
-  &fJogadores online: &a%online%/%max%
-  &fSeu ping: &a%ping%ms
-  &fIP: &b%ip%
-  
-  &8&m----------------------------------------
+  &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  &fOnline: &a%online%&7/&a%max%  &8•  &fPing: &a%ping%ms
+  &fServidor: &b%ip%
+  &7Cargo: %player_group%
+  &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Endereço mostrado no footer.
+# Endereco mostrado no footer.
 endereco-servidor: "play.seuservidor.com:25565"
+
+# Formato do nome de cada jogador no TAB.
+# Placeholders:
+# %prefix%      = prefixo vindo do CargoPlus
+# %name_color%  = cor do nickname vinda do CargoPlus
+# %player_name% = nome do jogador
+# %player_group%= cargo atual
+jogadores:
+  formato: "%prefix%%name_color%%player_name%"
 
 # Tag/prefixo exibido antes do nickname no TAB.
 tag:
@@ -28,7 +44,7 @@ tag:
   mostrar-no-tab: true
   mostrar-na-cabeca: true
 
-# Ordenação da lista de jogadores.
+# Ordenacao da lista de jogadores.
 # A primeira regra tem maior prioridade.
 # primary-group = maior cargo para menor cargo.
 sorting:
@@ -40,7 +56,7 @@ sorting:
 
     # Exemplos de regras adicionais que podem ser habilitadas/configuradas:
     # - type: permission
-    #   node: "tab.sort.vip"
+    #   node: "utilidadesplus.admin"
     #   order: descending
     # - type: numeric-placeholder
     #   placeholder: "%player_ping%"
