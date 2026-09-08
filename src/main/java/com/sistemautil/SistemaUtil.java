@@ -6,6 +6,7 @@ import com.sistemautil.motd.MotdListener;
 import com.sistemautil.motd.MotdPlugin;
 import com.sistemautil.motd.TPSMonitor;
 import com.sistemautil.tab.ServerTabManager;
+import com.sistemautil.visual.VisualText;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -19,11 +20,13 @@ public final class SistemaUtil extends JavaPlugin {
     private ServerTabManager tabManager;
     private UtilidadesPreferences utilidadesPreferences;
     private UtilidadesGui utilidadesGui;
+    private VisualText visualText;
     private BukkitTask collisionTask;
 
     @Override
     public void onEnable() {
         configManager.loadAll();
+        visualText = new VisualText(configManager.utilidades());
         utilidadesPreferences = new UtilidadesPreferences(this);
         utilidadesPreferences.load();
         utilidadesGui = new UtilidadesGui(this, utilidadesPreferences);
@@ -42,8 +45,6 @@ public final class SistemaUtil extends JavaPlugin {
         getServer().getPluginManager().registerEvents(collisionListener, this);
         for (Player player : Bukkit.getOnlinePlayers()) collisionListener.disableCollision(player);
 
-        // O evento de movimento cobre jogadores ativos; esta verificacao de reserva
-        // reduz a varredura para uma vez a cada 5 segundos caso outro plugin reative a colisao.
         collisionTask = Bukkit.getScheduler().runTaskTimer(this, () -> {
             for (Player player : Bukkit.getOnlinePlayers()) collisionListener.disableCollision(player);
         }, 100L, 100L);
@@ -79,6 +80,7 @@ public final class SistemaUtil extends JavaPlugin {
     public TPSMonitor getTpsMonitor() { return tpsMonitor; }
     public MotdPlugin getMotd() { return motd; }
     public ServerTabManager getTabManager() { return tabManager; }
+    public VisualText getVisualText() { return visualText; }
     public FileConfiguration getMotdConfig() { return configManager.motd(); }
     public FileConfiguration getTabConfig() { return configManager.tab(); }
     public FileConfiguration getCorConfig() { return configManager.cor(); }
@@ -86,6 +88,7 @@ public final class SistemaUtil extends JavaPlugin {
 
     public void reloadConfigs() {
         configManager.reloadAll();
+        if (visualText != null) visualText.reload();
         if (utilidadesPreferences != null) utilidadesPreferences.load();
         if (motd != null) motd.recarregar();
         if (tabManager != null) tabManager.start();
