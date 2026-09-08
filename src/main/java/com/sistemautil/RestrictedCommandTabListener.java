@@ -19,7 +19,7 @@ public final class RestrictedCommandTabListener implements Listener {
 
         event.getCommands().removeIf(command -> {
             String root = normalizeRoot(command);
-            return root.equals("spigot") || root.equals("bukkit");
+            return root.equals("spigot") || root.equals("bukkit") || root.equals("plugins") || root.equals("pl");
         });
     }
 
@@ -32,7 +32,7 @@ public final class RestrictedCommandTabListener implements Listener {
         if (buffer == null || buffer.isEmpty()) return;
 
         String root = normalizeRoot(buffer);
-        if (root.equals("spigot") || root.equals("bukkit")) {
+        if (root.equals("spigot") || root.equals("bukkit") || root.equals("plugins") || root.equals("pl")) {
             event.setCompletions(java.util.Collections.emptyList());
         }
     }
