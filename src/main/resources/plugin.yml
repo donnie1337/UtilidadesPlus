@@ -23,9 +23,6 @@ permissions:
   utilidadesplus.configurar:
     description: Permite abrir o menu de configuração das utilidades pessoais.
     default: false
-  utilidadesplus.cor:
-    description: Permite usar o sistema de cores das mensagens.
-    default: false
   utilidadesplus.plugins:
     description: Permite visualizar a lista de plugins do servidor.
     default: false
