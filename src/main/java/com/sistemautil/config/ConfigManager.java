@@ -15,12 +15,10 @@ public final class ConfigManager {
     private final File dataFolder;
     private final File motdFile;
     private final File tabFile;
-    private final File corFile;
     private final File utilidadesFile;
 
     private FileConfiguration motd;
     private FileConfiguration tab;
-    private FileConfiguration cor;
     private FileConfiguration utilidades;
 
     public ConfigManager(JavaPlugin plugin) {
@@ -28,7 +26,6 @@ public final class ConfigManager {
         this.dataFolder = plugin.getDataFolder();
         this.motdFile = new File(dataFolder, "motd.yml");
         this.tabFile = new File(dataFolder, "tab.yml");
-        this.corFile = new File(dataFolder, "cor.yml");
         this.utilidadesFile = new File(dataFolder, "utilidades.yml");
     }
 
@@ -36,14 +33,12 @@ public final class ConfigManager {
         ensureDataFolder();
         motd = load("motd.yml", motdFile);
         tab = load("tab.yml", tabFile);
-        cor = load("cor.yml", corFile);
         utilidades = load("utilidades.yml", utilidadesFile);
     }
 
     public void reloadAll() { loadAll(); }
     public FileConfiguration motd() { return motd; }
     public FileConfiguration tab() { return tab; }
-    public FileConfiguration cor() { return cor; }
     public FileConfiguration utilidades() { return utilidades; }
 
     private void ensureDataFolder() {
@@ -59,7 +54,7 @@ public final class ConfigManager {
                 plugin.saveResource(resource, false);
             } catch (IllegalArgumentException exception) {
                 plugin.getLogger().log(Level.SEVERE,
-                        "O recurso padrão " + resource + " não está presente no JAR do SistemaUtil.", exception);
+                        "O recurso padrão " + resource + " não está presente no JAR do UtilidadesPlus.", exception);
             }
         }
 
