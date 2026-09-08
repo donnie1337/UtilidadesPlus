@@ -49,24 +49,28 @@ public final class RestrictedCommandTabListener implements Listener {
         String buffer = event.getBuffer();
         if (buffer == null || buffer.isEmpty()) return;
 
-        String root = normalizeRoot(buffer);
-        if (!MEMBER_COMMANDS.contains(root)) {
+        String command = normalizeCommand(buffer);
+        if (command == null || !isAllowedForMember(command)) {
             event.setCompletions(Collections.emptyList());
         }
     }
 
     private static boolean isAllowedForMember(String command) {
-        String root = normalizeRoot(command);
-        return MEMBER_COMMANDS.contains(root);
+        String normalized = normalizeCommand(command);
+        return normalized != null && MEMBER_COMMANDS.contains(normalized);
     }
 
-    private static String normalizeRoot(String value) {
+    /**
+     * Normaliza somente o nome raiz do comando.
+     * Comandos com namespace (plugin:comando) sao tratados como namespaces diferentes
+     * e permanecem ocultos para o membro, evitando vazamento de comandos via plugin:*.
+     */
+    private static String normalizeCommand(String value) {
         String command = value.trim();
         if (command.startsWith("/")) command = command.substring(1);
         int space = command.indexOf(' ');
         if (space >= 0) command = command.substring(0, space);
-        int colon = command.indexOf(':');
-        if (colon >= 0) command = command.substring(colon + 1);
+        if (command.isEmpty() || command.indexOf(':') >= 0) return null;
         return command.toLowerCase(Locale.ROOT);
     }
 }
