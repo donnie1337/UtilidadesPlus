@@ -2,7 +2,6 @@ package com.sistemautil.tab;
 
 import com.sistemautil.SistemaUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Team;
@@ -161,7 +160,7 @@ public final class ServerTabManager {
     }
 
     private String formatTabText(String text, int online, int max, int ping, String address, Player player) {
-        String result = colorize(text == null ? "" : text)
+        String result = (text == null ? "" : text)
                 .replace("%online%", String.valueOf(online))
                 .replace("%max%", String.valueOf(max))
                 .replace("%ping%", String.valueOf(ping))
@@ -172,10 +171,10 @@ public final class ServerTabManager {
                     .replace("%player_world%", player.getWorld().getName());
             result = placeholders.resolve(player, result);
         }
-        return result;
+        return colorize(result);
     }
 
-    private String colorize(String text) { return ChatColor.translateAlternateColorCodes('&', text == null ? "" : text); }
+    private String colorize(String text) { return plugin.getVisualText().format(text == null ? "" : text); }
 
     private static final class CargoBridge {
         private Plugin plugin;
