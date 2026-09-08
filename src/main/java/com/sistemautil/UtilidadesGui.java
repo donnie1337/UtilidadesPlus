@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 public final class UtilidadesGui implements Listener {
-    private static final String PERMISSION = "sistemautil.configurar";
+    private static final String PERMISSION = "utilidadesplus.configurar";
     private final SistemaUtil plugin;
     private final UtilidadesPreferences preferences;
 
