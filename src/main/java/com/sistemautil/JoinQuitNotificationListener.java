@@ -11,10 +11,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public final class JoinQuitNotificationListener implements Listener {
     private static final String AUTH_PLUGIN_NAME = "LoginPlus";
+    private static final String DEFAULT_JOIN_MESSAGE = "entrou no servidor!";
+    private static final String DEFAULT_QUIT_MESSAGE = "saiu do servidor!";
     private final SistemaUtil plugin;
     private final UtilidadesPreferences preferences;
     private volatile Plugin authPlugin;
@@ -38,6 +42,7 @@ public final class JoinQuitNotificationListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
+        if (!plugin.getUtilidadesConfig().getBoolean("saida.ativado", false)) return;
         if (!preferences.globallyReceivesQuit()) return;
         if (!hasStaffCargo(event.getPlayer()) || !preferences.broadcastsQuit(event.getPlayer())) return;
 
@@ -53,6 +58,7 @@ public final class JoinQuitNotificationListener implements Listener {
             Bukkit.getScheduler().runTaskLater(plugin, () -> checkJoin(player, attempt + 1), 20L);
             return;
         }
+        if (!plugin.getUtilidadesConfig().getBoolean("entrada.ativado", true)) return;
         if (!hasStaffCargo(player) || !preferences.broadcastsJoin(player)) return;
 
         String message = buildMessage(player, true);
@@ -92,16 +98,58 @@ public final class JoinQuitNotificationListener implements Listener {
     }
 
     private String buildMessage(Player player, boolean join) {
-        String template = plugin.getUtilidadesConfig().getString(
-                "mensagens." + (join ? "entrada" : "saida"),
-                join ? "&8[&a+&8] %prefix%%nome-color%%nome% &7entrou no servidor!"
-                        : "&8[&c-&8] %prefix%%nome-color%%nome% &7saiu do servidor!");
+        String path = join ? "entrada.mensagens" : "saida.mensagem";
+        if (join) {
+            List<String> messages = plugin.getUtilidadesConfig().getStringList(path).stream()
+                    .filter(message -> message != null && !message.isBlank())
+                    .toList();
+            String action = messages.isEmpty()
+                    ? DEFAULT_JOIN_MESSAGE
+                    : messages.get(ThreadLocalRandom.current().nextInt(messages.size()));
+            return formatMessage(player, action.replace("{player}", player.getName()));
+        }
+
+        String action = plugin.getUtilidadesConfig().getString(path, DEFAULT_QUIT_MESSAGE);
+        return formatMessage(player, action);
+    }
+
+    private String formatMessage(Player player, String action) {
+        String color = colorize(cargoValue(player, "nickname-color"));
+        if (color.isBlank()) color = ChatColor.WHITE.toString();
+
         String prefix = colorize(cargoValue(player, "prefix"));
-        String nameColor = colorize(cargoValue(player, "nickname-color"));
-        return colorize(template)
-                .replace("%prefix%", prefix)
-                .replace("%nome-color%", nameColor)
-                .replace("%nome%", player.getName());
+        String cleanPrefix = ChatColor.stripColor(prefix);
+        if (cleanPrefix == null || cleanPrefix.isBlank()) {
+            cleanPrefix = "[" + cargoGroup(player) + "]";
+        }
+
+        return color + cleanPrefix + " " + player.getName() + " " + action;
+    }
+
+    private String cargoGroup(Player player) {
+        Plugin cargo = Bukkit.getPluginManager().getPlugin("CargoPlus");
+        if (cargo == null || !cargo.isEnabled()) return "default";
+        try {
+            Method permissionsMethod = cargoPermissionsMethod;
+            if (cargoPlugin != cargo || permissionsMethod == null || cargoPrefixMethod == null || cargoNicknameColorMethod == null) {
+                synchronized (this) {
+                    if (cargoPlugin != cargo || cargoPermissionsMethod == null || cargoPrefixMethod == null || cargoNicknameColorMethod == null) {
+                        cargoPlugin = cargo;
+                        cargoPermissionsMethod = cargo.getClass().getMethod("permissions");
+                        Object permissions = cargoPermissionsMethod.invoke(cargo);
+                        cargoPrefixMethod = permissions.getClass().getMethod("getPrefix", UUID.class);
+                        cargoNicknameColorMethod = permissions.getClass().getMethod("getNicknameColor", UUID.class);
+                    }
+                    permissionsMethod = cargoPermissionsMethod;
+                }
+            }
+            Object permissions = permissionsMethod.invoke(cargo);
+            Method groupMethod = permissions.getClass().getMethod("getGroup", UUID.class);
+            Object result = groupMethod.invoke(permissions, player.getUniqueId());
+            return result instanceof String value && !value.isBlank() ? value : "default";
+        } catch (ReflectiveOperationException | LinkageError ex) {
+            return "default";
+        }
     }
 
     private String cargoValue(Player player, String type) {
