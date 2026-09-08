@@ -19,7 +19,7 @@ commands:
 permissions:
   utilidadesplus.motd.admin:
     description: Permite recarregar a configuração do MOTD.
-    default: op
+    default: false
   utilidadesplus.configurar:
     description: Permite abrir o menu de configuração das utilidades pessoais.
     default: false
