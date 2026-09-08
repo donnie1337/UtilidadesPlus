@@ -12,9 +12,10 @@ import java.util.Locale;
 
 /**
  * Restringe comandos de descoberta/admin do Bukkit/Spigot para jogadores.
- * A permissão para /plugins vem exclusivamente do cargo configurado no CargoPlus.
+ * Somente o cargo dono, via CargoPlus, pode executar esses comandos.
  */
 public final class ServerCommandGuardListener implements Listener {
+    private static final String ADMIN_PERMISSION = "cargoplus.admin";
     private static final String PLUGINS_PERMISSION = "utilidadesplus.plugins";
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -29,20 +30,20 @@ public final class ServerCommandGuardListener implements Listener {
         String label = command.split("\\s+", 2)[0].toLowerCase(Locale.ROOT);
 
         if (isPluginsCommand(label)) {
-            if (!hasCargoPluginPermission(player)) {
+            if (!hasCargoPermission(player, PLUGINS_PERMISSION)) {
                 event.setCancelled(true);
                 player.sendMessage("§cVocê não tem permissão para ver os plugins do servidor.");
             }
             return;
         }
 
-        if (isBukkitOrSpigotCommand(label)) {
+        if (isBukkitOrSpigotCommand(label) && !hasCargoPermission(player, ADMIN_PERMISSION)) {
             event.setCancelled(true);
             player.sendMessage("§cEsse comando está desativado para jogadores.");
         }
     }
 
-    private boolean hasCargoPluginPermission(Player player) {
+    private boolean hasCargoPermission(Player player, String permission) {
         if (!Bukkit.getPluginManager().isPluginEnabled("CargoPlus")) return false;
         try {
             var cargoPlus = Bukkit.getPluginManager().getPlugin("CargoPlus");
@@ -50,7 +51,7 @@ public final class ServerCommandGuardListener implements Listener {
             Method permissionsMethod = cargoPlus.getClass().getMethod("permissions");
             Object permissions = permissionsMethod.invoke(cargoPlus);
             Method check = permissions.getClass().getMethod("hasCargoPermission", java.util.UUID.class, String.class);
-            Object result = check.invoke(permissions, player.getUniqueId(), PLUGINS_PERMISSION);
+            Object result = check.invoke(permissions, player.getUniqueId(), permission);
             return result instanceof Boolean && (Boolean) result;
         } catch (ReflectiveOperationException | LinkageError ex) {
             return false;
