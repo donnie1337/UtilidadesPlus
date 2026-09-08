@@ -19,7 +19,7 @@ public final class MotdCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("sistemautil.motd.admin")) {
+        if (!sender.hasPermission("utilidadesplus.motd.admin")) {
             sender.sendMessage(ChatColor.RED + "Você não tem permissão para usar este comando.");
             return true;
         }
@@ -38,7 +38,7 @@ public final class MotdCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (!sender.hasPermission("sistemautil.motd.admin")) return Collections.emptyList();
+        if (!sender.hasPermission("utilidadesplus.motd.admin")) return Collections.emptyList();
         if (args.length == 1 && "reload".startsWith(args[0].toLowerCase())) return List.of("reload");
         return Collections.emptyList();
     }
