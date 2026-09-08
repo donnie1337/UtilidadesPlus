@@ -1,7 +1,8 @@
 # =========================================
 #                 MOTD
 # =========================================
-# Configuração exclusiva da lista do servidor (MOTD).
+# A formatação visual é processada pelo SistemaUtil.
+# Suporta {icon:nome}, <#RRGGBB> e <gradient:#RRGGBB:#RRGGBB>texto</gradient>.
 
 ativado: true
 animado: true
@@ -9,9 +10,9 @@ intervalo-segundos: 4
 
 # Use | para separar a linha 1 da linha 2.
 linhas:
-  - "&6&lMeu Servidor &7- &fBem-vindo(a)!|&aOnline: %online%/%max% jogadores"
-  - "&b&lVersao %versao% &7- &fVenha se divertir!|&eHorario do servidor: %hora%"
-  - "&d&lDiscord: &fdiscord.gg/exemplo|&7TPS atual: %tps% &7- &fVagas: %vagas%"
+  - "<gradient:#7C3AED:#22D3EE>MEU SERVIDOR</gradient> &8• &fBem-vindo(a)!|{icon:online} &aOnline: %online%/%max% jogadores"
+  - "<gradient:#00C6FF:#0072FF>VERSAO %versao%</gradient> &8• &fVenha se divertir!|{icon:estrela} &eHorario do servidor: %hora%"
+  - "{icon:espada} <gradient:#FF4D6D:#C850C0>DISCORD</gradient> &8• &fdiscord.gg/exemplo|{icon:raio} &7TPS atual: %tps% &8• &fVagas: %vagas%"
 
 # Ícone 64x64 dentro da pasta do plugin.
 icone:
