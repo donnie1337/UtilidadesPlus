@@ -10,7 +10,7 @@ import org.bukkit.event.server.TabCompleteEvent;
 import java.util.Locale;
 
 public final class RestrictedCommandTabListener implements Listener {
-    private static final String ADMIN_PERMISSION = "utilidadesplus.admin";
+    private static final String ADMIN_PERMISSION = "cargoplus.admin";
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerCommandSend(PlayerCommandSendEvent event) {
@@ -18,7 +18,7 @@ public final class RestrictedCommandTabListener implements Listener {
         if (player.hasPermission(ADMIN_PERMISSION)) return;
 
         event.getCommands().removeIf(command -> {
-            String root = command.toLowerCase(Locale.ROOT);
+            String root = normalizeRoot(command);
             return root.equals("spigot") || root.equals("bukkit");
         });
     }
@@ -31,13 +31,19 @@ public final class RestrictedCommandTabListener implements Listener {
         String buffer = event.getBuffer();
         if (buffer == null || buffer.isEmpty()) return;
 
-        String command = buffer.startsWith("/") ? buffer.substring(1) : buffer;
-        int space = command.indexOf(' ');
-        String root = (space >= 0 ? command.substring(0, space) : command)
-                .toLowerCase(Locale.ROOT);
-
+        String root = normalizeRoot(buffer);
         if (root.equals("spigot") || root.equals("bukkit")) {
             event.setCompletions(java.util.Collections.emptyList());
         }
+    }
+
+    private static String normalizeRoot(String value) {
+        String command = value.trim();
+        if (command.startsWith("/")) command = command.substring(1);
+        int space = command.indexOf(' ');
+        if (space >= 0) command = command.substring(0, space);
+        int colon = command.indexOf(':');
+        if (colon >= 0) command = command.substring(0, colon);
+        return command.toLowerCase(Locale.ROOT);
     }
 }
