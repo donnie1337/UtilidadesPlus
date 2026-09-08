@@ -62,7 +62,6 @@ public final class JoinQuitNotificationListener implements Listener {
             Bukkit.getScheduler().runTaskLater(plugin, () -> checkJoin(player, attempt + 1), 20L);
             return;
         }
-        if (!plugin.getUtilidadesConfig().getBoolean("entrada.ativado", true)) return;
         if (!preferences.broadcastsJoin(player)) return;
 
         String group = cargoGroup(player);
@@ -103,7 +102,7 @@ public final class JoinQuitNotificationListener implements Listener {
     }
 
     private String cargoGroup(Player player) {
-        Object permissions = cargoPermissions(player);
+        Object permissions = cargoPermissions();
         if (permissions == null || cargoGroupMethod == null) return "";
         try {
             Object result = cargoGroupMethod.invoke(permissions, player.getUniqueId());
@@ -148,7 +147,7 @@ public final class JoinQuitNotificationListener implements Listener {
         }
     }
 
-    private Object cargoPermissions(Player player) {
+    private Object cargoPermissions() {
         Plugin cargo = cargoPlugin();
         if (cargo == null || cargoPermissionsMethod == null) return null;
         try {
