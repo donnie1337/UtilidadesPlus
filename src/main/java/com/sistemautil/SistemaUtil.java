@@ -39,15 +39,13 @@ public final class SistemaUtil extends JavaPlugin {
 
         PlayerCollisionListener collisionListener = new PlayerCollisionListener();
         getServer().getPluginManager().registerEvents(collisionListener, this);
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            collisionListener.disableCollision(player);
-        }
+        for (Player player : Bukkit.getOnlinePlayers()) collisionListener.disableCollision(player);
 
+        // O evento de movimento cobre jogadores ativos; esta verificacao de reserva
+        // reduz a varredura para uma vez a cada 5 segundos caso outro plugin reative a colisao.
         collisionTask = Bukkit.getScheduler().runTaskTimer(this, () -> {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                collisionListener.disableCollision(player);
-            }
-        }, 1L, 20L);
+            for (Player player : Bukkit.getOnlinePlayers()) collisionListener.disableCollision(player);
+        }, 100L, 100L);
 
         tpsMonitor.start(this);
 
