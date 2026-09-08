@@ -1,7 +1,6 @@
 package com.sistemautil.motd;
 
 import com.sistemautil.SistemaUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerListPingEvent;
@@ -44,9 +43,9 @@ public final class MotdListener implements Listener {
 
         String textoFinal = PlaceholderUtil.aplicar(linhaEscolhida, plugin, event);
         String[] partes = textoFinal.split("\\|", 2);
-        String linha1 = ChatColor.translateAlternateColorCodes('&', partes[0].trim());
+        String linha1 = plugin.getVisualText().format(partes[0].trim());
         String linha2 = partes.length > 1
-                ? ChatColor.translateAlternateColorCodes('&', partes[1].trim())
+                ? plugin.getVisualText().format(partes[1].trim())
                 : "";
 
         event.setMotd(linha2.isEmpty() ? linha1 : linha1 + "\n" + linha2);
