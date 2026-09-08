@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class ConfigurarCommand implements CommandExecutor, TabCompleter {
-    private static final String PERMISSION = "sistemautil.configurar";
+    private static final String PERMISSION = "utilidadesplus.configurar";
     private final UtilidadesGui gui;
 
     public ConfigurarCommand(UtilidadesGui gui) {
