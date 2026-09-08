@@ -12,12 +12,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Centraliza a identidade visual do servidor.
- *
- * Suporta small caps, cores RGB, gradientes e ícones configuráveis sem depender
- * de outro plugin. O resultado é uma string legada compatível com APIs Bukkit.
- */
+/** Centraliza small caps, RGB/gradientes e ícones do servidor. */
 public final class VisualText {
     private static final Pattern GRADIENT = Pattern.compile("<gradient:([^>]+)>(.*?)</gradient>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern HEX_TAG = Pattern.compile("<#([0-9a-fA-F]{6})>");
@@ -32,36 +27,28 @@ public final class VisualText {
     private boolean gradientEnabled;
     private boolean iconsEnabled;
 
-    public VisualText(FileConfiguration config) {
-        this.config = config;
-        reload();
-    }
+    public VisualText(FileConfiguration config) { this.config = config; reload(); }
 
     public void reload() {
         enabled = config.getBoolean("identidade-visual.ativado", true);
         smallCapsEnabled = config.getBoolean("identidade-visual.small-caps.ativado", true);
         gradientEnabled = config.getBoolean("identidade-visual.gradient.ativado", true);
         iconsEnabled = config.getBoolean("identidade-visual.icones.ativado", true);
-
         String upper = config.getString("identidade-visual.small-caps.mapa-maiusculas");
         String lower = config.getString("identidade-visual.small-caps.mapa-minusculas");
         if (upper != null && upper.length() >= 26) smallCapsUpper = upper.substring(0, 26);
         if (lower != null && lower.length() >= 26) smallCapsLower = lower.substring(0, 26);
-
         icons.clear();
         ConfigurationSection section = config.getConfigurationSection("identidade-visual.icones.lista");
-        if (section != null) {
-            for (String key : section.getKeys(false)) {
-                String value = section.getString(key);
-                if (value != null) icons.put(key.toLowerCase(Locale.ROOT), value);
-            }
+        if (section != null) for (String key : section.getKeys(false)) {
+            String value = section.getString(key);
+            if (value != null) icons.put(key.toLowerCase(Locale.ROOT), value);
         }
     }
 
     public String format(String text) {
         if (text == null) return "";
         if (!enabled) return ChatColor.translateAlternateColorCodes('&', text);
-
         String result = replaceIcons(text);
         result = replaceGradients(result);
         result = replaceHexTags(result);
@@ -81,8 +68,20 @@ public final class VisualText {
                 if (c == '>') tag = false;
                 continue;
             }
+            if (c == '§' && i + 1 < text.length()) {
+                char code = text.charAt(++i);
+                out.append('§').append(code);
+                if (code == 'x') {
+                    for (int j = 0; j < 6; j++) {
+                        if (i + 2 >= text.length() || text.charAt(i + 1) != '§') break;
+                        out.append('§').append(text.charAt(i + 2));
+                        i += 2;
+                    }
+                }
+                continue;
+            }
             if (c == '&' && i + 1 < text.length()) {
-                out.append(c).append(text.charAt(++i));
+                out.append('&').append(text.charAt(++i));
                 continue;
             }
             if (c >= 'A' && c <= 'Z') out.append(smallCapsUpper.charAt(c - 'A'));
@@ -97,16 +96,12 @@ public final class VisualText {
         return icons.getOrDefault(name.toLowerCase(Locale.ROOT), "");
     }
 
-    public Map<String, String> icons() {
-        return Map.copyOf(icons);
-    }
+    public Map<String, String> icons() { return Map.copyOf(icons); }
 
     private String replaceIcons(String text) {
         Matcher matcher = ICON.matcher(text);
         StringBuffer result = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(result, Matcher.quoteReplacement(icon(matcher.group(1))));
-        }
+        while (matcher.find()) matcher.appendReplacement(result, Matcher.quoteReplacement(icon(matcher.group(1))));
         matcher.appendTail(result);
         return result.toString();
     }
@@ -114,9 +109,7 @@ public final class VisualText {
     private String replaceHexTags(String text) {
         Matcher matcher = HEX_TAG.matcher(text);
         StringBuffer result = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(result, Matcher.quoteReplacement(hexCode(matcher.group(1))));
-        }
+        while (matcher.find()) matcher.appendReplacement(result, Matcher.quoteReplacement(hexCode(matcher.group(1))));
         matcher.appendTail(result);
         return result.toString();
     }
@@ -129,9 +122,7 @@ public final class VisualText {
             if (!matcher.find()) break;
             StringBuffer buffer = new StringBuffer();
             do {
-                List<String> colors = parseColors(matcher.group(1));
-                String content = matcher.group(2);
-                matcher.appendReplacement(buffer, Matcher.quoteReplacement(applyGradient(content, colors)));
+                matcher.appendReplacement(buffer, Matcher.quoteReplacement(applyGradient(matcher.group(2), parseColors(matcher.group(1)))));
             } while (matcher.find());
             matcher.appendTail(buffer);
             result = buffer.toString();
@@ -155,28 +146,18 @@ public final class VisualText {
 
     private String applyGradient(String text, List<String> colors) {
         if (text.isEmpty()) return text;
-        List<Integer> positions = new ArrayList<>();
-        for (int i = 0; i < text.length(); i++) {
-            char c = text.charAt(i);
-            if (c != '&' && c != '\n' && c != '\r') positions.add(i);
-        }
-        if (positions.isEmpty()) return text;
-
+        int visible = 0;
+        for (int i = 0; i < text.length(); i++) if (text.charAt(i) != '&' && text.charAt(i) != '\n' && text.charAt(i) != '\r') visible++;
+        if (visible == 0) return text;
         StringBuilder out = new StringBuilder(text.length() * 8);
-        int visibleIndex = 0;
+        int index = 0;
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
-            if (c == '&' && i + 1 < text.length()) {
-                out.append(c).append(text.charAt(++i));
-                continue;
-            }
-            if (c == '\n' || c == '\r') {
-                out.append(c);
-                continue;
-            }
-            double progress = positions.size() == 1 ? 0D : (double) visibleIndex / (positions.size() - 1);
+            if (c == '&' && i + 1 < text.length()) { out.append('&').append(text.charAt(++i)); continue; }
+            if (c == '\n' || c == '\r') { out.append(c); continue; }
+            double progress = visible == 1 ? 0D : (double) index / (visible - 1);
             out.append(hexCode(interpolate(colors, progress))).append(c);
-            visibleIndex++;
+            index++;
         }
         return out.toString();
     }
@@ -186,8 +167,7 @@ public final class VisualText {
         double scaled = progress * (colors.size() - 1);
         int index = Math.min(colors.size() - 2, (int) Math.floor(scaled));
         double local = scaled - index;
-        int a = Integer.parseInt(colors.get(index), 16);
-        int b = Integer.parseInt(colors.get(index + 1), 16);
+        int a = Integer.parseInt(colors.get(index), 16), b = Integer.parseInt(colors.get(index + 1), 16);
         int ar = (a >> 16) & 0xFF, ag = (a >> 8) & 0xFF, ab = a & 0xFF;
         int br = (b >> 16) & 0xFF, bg = (b >> 8) & 0xFF, bb = b & 0xFF;
         int r = (int) Math.round(ar + (br - ar) * local);
