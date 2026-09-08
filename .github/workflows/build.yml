@@ -1,4 +1,4 @@
-name: Build SistemaUtil
+name: Build UtilidadesPlus
 
 on:
   push:
@@ -37,6 +37,6 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: SistemaUtil
+          name: UtilidadesPlus
           path: target/*.jar
           if-no-files-found: error
