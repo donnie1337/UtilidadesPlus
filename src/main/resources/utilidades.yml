@@ -7,8 +7,8 @@
 # =========================================
 #           IDENTIDADE VISUAL
 # =========================================
-# Esta seção é compartilhada por MOTD, TAB e pelas futuras integrações
-# de chat/scoreboard/GUI. Não é necessário instalar plugin de fontes.
+# Esta seção é compartilhada por MOTD, TAB e pelas integrações de chat,
+# scoreboard e GUI. Não é necessário instalar plugin de fontes.
 #
 # Small Caps usa Unicode e, portanto, não exige resource pack.
 # Gradientes usam RGB real (§x), compatível com clientes 1.16+.
@@ -38,6 +38,7 @@ identidade-visual:
       raio: "⚡"
       fogo: "🔥"
       moeda: "✦"
+      cifrao: "$"
       online: "●"
       offline: "●"
       seta: "➜"
