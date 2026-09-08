@@ -1,32 +1,42 @@
 # =========================================
 #                  TAB
 # =========================================
-# Toda a identidade visual do TAB pode ser alterada aqui.
+# Identidade visual do TAB.
 # As informacoes de cargo, prefixo e cor do nickname continuam vindo do CargoPlus.
-# Cores: use &0-&9, &a-&f e estilos como &l, &n, &o, &m.
+#
+# A tipografia abaixo usa caracteres Unicode em estilo small caps.
+# Nao exige resource pack e funciona diretamente no TAB.
 
 ativado: true
 
 # Texto exibido no topo do TAB.
-# Placeholders disponiveis:
-# %online% %max% %player_name% %player_group% %player_world%
 header: |
-  &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  &6&l✦ MEU SERVIDOR ✦
-  &7Bem-vindo, &f%player_name%&7!
-  &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  &f&lᴠᴏᴄᴇ ᴇsᴛᴀ ᴄᴏɴᴇᴄᴛᴀᴅᴏ ᴀᴏ sᴜʀᴠɪᴠᴀʟ
+  &7ᴛᴇᴍᴘᴏʀᴀᴅᴀ: &f1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Texto exibido no rodape do TAB.
-# Placeholders disponiveis:
-# %online% %max% %ping% %ip% %player_name% %player_group% %player_world%
 footer: |
-  &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  &fOnline: &a%online%&7/&a%max%  &8•  &fPing: &a%ping%ms
-  &fServidor: &b%ip%
-  &7Cargo: %player_group%
-  &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  &fᴊᴏɢᴀᴅᴏʀᴇs: &a%online%  &8•  &fᴘɪɴɢ: &a%ping%ms
 
-# Endereco mostrado no footer.
+  &fᴊᴜɴᴛᴇ-sᴇ ᴀ ɴᴏssᴀ ᴄᴏᴍᴜɴɪᴅᴀᴅᴇ
+  &bᴅɪsᴄᴏʀᴅ.ɢɢ/ᴀᴀᴀᴀᴀᴀᴀᴀᴀ
+
+# Endereco mostrado no footer quando o placeholder %ip% for usado.
 endereco-servidor: "play.seuservidor.com:25565"
 
 # Formato do nome de cada jogador no TAB.
@@ -45,30 +55,9 @@ tag:
   mostrar-na-cabeca: true
 
 # Ordenacao da lista de jogadores.
-# A primeira regra tem maior prioridade.
-# primary-group = maior cargo para menor cargo.
 sorting:
   enabled: true
   case-sensitive: false
   rules:
     - type: primary-group
       order: descending
-
-    # Exemplos de regras adicionais que podem ser habilitadas/configuradas:
-    # - type: permission
-    #   node: "utilidadesplus.admin"
-    #   order: descending
-    # - type: numeric-placeholder
-    #   placeholder: "%player_ping%"
-    #   order: ascending
-    # - type: placeholder
-    #   placeholder: "%player_name%"
-    #   order: ascending
-    #   case-sensitive: false
-    # - type: predefined-values
-    #   placeholder: "%player_world%"
-    #   values:
-    #     - lobby
-    #     - survival
-    #     - minigames
-    #   order: ascending
