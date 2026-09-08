@@ -147,13 +147,21 @@ public final class VisualText {
     private String applyGradient(String text, List<String> colors) {
         if (text.isEmpty()) return text;
         int visible = 0;
-        for (int i = 0; i < text.length(); i++) if (text.charAt(i) != '&' && text.charAt(i) != '\n' && text.charAt(i) != '\r') visible++;
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (c == '&' && i + 1 < text.length()) { i++; continue; }
+            if (c != '\n' && c != '\r') visible++;
+        }
         if (visible == 0) return text;
+
         StringBuilder out = new StringBuilder(text.length() * 8);
         int index = 0;
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
-            if (c == '&' && i + 1 < text.length()) { out.append('&').append(text.charAt(++i)); continue; }
+            if (c == '&' && i + 1 < text.length()) {
+                out.append('&').append(text.charAt(++i));
+                continue;
+            }
             if (c == '\n' || c == '\r') { out.append(c); continue; }
             double progress = visible == 1 ? 0D : (double) index / (visible - 1);
             out.append(hexCode(interpolate(colors, progress))).append(c);
