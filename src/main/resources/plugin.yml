@@ -12,17 +12,17 @@ commands:
     usage: /motdplus reload
     aliases:
       - motd
-    permission: sistemautil.motd.admin
+    permission: utilidadesplus.motd.admin
   configurar:
     description: Abre o menu de configuração das utilidades pessoais.
     usage: /configurar
 permissions:
-  sistemautil.motd.admin:
+  utilidadesplus.motd.admin:
     description: Permite recarregar a configuração do MOTD.
     default: op
-  sistemautil.configurar:
+  utilidadesplus.configurar:
     description: Permite abrir o menu /configurar.
     default: false
-  sistemautil.cor:
+  utilidadesplus.cor:
     description: Permite usar o sistema de cores das mensagens.
     default: false
