@@ -35,17 +35,22 @@ public final class ServerTabManager {
         for (int index = 0; index < players.size(); index++) {
             Player player = players.get(index);
             applyPlayer(player);
-            // O cliente do Minecraft posiciona a maior ordem primeiro.
-            // A lista foi ordenada do cargo mais alto para o mais baixo,
-            // então atribuimos a maior ordem ao primeiro elemento.
-            player.setPlayerListOrder(players.size() - index);
+            // A menor ordem aparece primeiro no TAB.
+            // A lista já está ordenada do cargo mais alto para o mais baixo.
+            player.setPlayerListOrder(index + 1);
             int ping = Math.max(0, player.getPing());
             String footer = formatTabText(plugin.getTabConfig().getString("footer", "&8&m----------------------------------------\n&fJogadores online: &a%online%/%max%\n&fSeu ping: &a%ping%ms\n&fIP: &b%ip%"), online, max, ping, address, player);
             player.setPlayerListHeaderFooter(header, footer);
         }
     }
 
-    public void updatePlayer(Player player) { if (player == null || !player.isOnline()) return; cargo.refresh(); placeholders.refresh(); applyPlayer(player); player.updateCommands(); }
+    public void updatePlayer(Player player) {
+        if (player == null || !player.isOnline()) return;
+        // Alteração de cargo precisa recalcular a lista inteira para que a nova
+        // prioridade seja aplicada imediatamente, sem deixar o jogador no topo.
+        updateAll();
+        player.updateCommands();
+    }
 
     private Comparator<Player> buildComparator() {
         List<Map<?, ?>> rules = plugin.getTabConfig().getMapList("sorting.rules");
