@@ -87,6 +87,7 @@ public final class RestrictedCommandTabListener implements Listener {
         if (root == null || root.indexOf(':') >= 0) return false;
         if (PUBLIC_COMMANDS.contains(root)) return true;
         if (CARGO_COMMANDS.contains(root)) return false;
+        if (root.equals("?") || root.equals("about")) return player.hasPermission(ADMIN_PERMISSION);
 
         Command registered = findCommand(root);
         if (registered == null) {
