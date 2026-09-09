@@ -53,9 +53,9 @@ public final class ServerTabManager {
         boolean defaultCaseSensitive = plugin.getTabConfig().getBoolean("sorting.case-sensitive", false);
         Comparator<Player> nameComparator = Comparator.comparing(Player::getName, stringComparator(defaultCaseSensitive));
 
-        // A hierarquia de cargos do CargoPlus e obrigatória e sempre vem antes
-        // de qualquer outra regra configurável. Isso impede que nome/permissao
-        // ou a ordem de entrada alterem a posição entre cargos diferentes.
+        // O cargo atual do CargoPlus e a primeira e obrigatoria chave da ordenacao.
+        // Nenhuma regra de nome, permissao ou placeholder pode colocar um cargo
+        // inferior acima de um cargo superior.
         Comparator<Player> chain = Comparator.comparingInt(this::groupPriority);
         boolean enabled = plugin.getTabConfig().getBoolean("sorting.enabled", true);
         if (enabled) {
@@ -116,39 +116,36 @@ public final class ServerTabManager {
     private static final class CargoBridge {
         private Plugin plugin; private Object api; private Object groups;
         private Method apiMethod, getGroupMethod, getPrefixMethod, getNicknameColorMethod, groupsMethod, indexOfMethod;
+
+        /**
+         * Reobtém a API do CargoPlus a cada ciclo. Isso e intencional: um reload
+         * do CargoPlus pode recriar a instancia de CargoPlusAPI sem recriar a
+         * instancia do plugin. Manter a API antiga faria o TAB consultar um
+         * estado desatualizado ate o proximo login/reconexao.
+         */
         void refresh() {
             Plugin current = Bukkit.getPluginManager().getPlugin("CargoPlus");
             if (current == null || !current.isEnabled()) { clear(); return; }
-            if (current == plugin && api != null) return;
             try {
                 plugin = current;
                 apiMethod = current.getClass().getMethod("api");
-                api = apiMethod.invoke(current);
+                Object currentApi = apiMethod.invoke(current);
+                if (currentApi == null) { clear(); return; }
+                api = currentApi;
                 getGroupMethod = api.getClass().getMethod("getGroup", java.util.UUID.class);
                 getPrefixMethod = api.getClass().getMethod("getPrefix", java.util.UUID.class);
                 getNicknameColorMethod = api.getClass().getMethod("getNicknameColor", java.util.UUID.class);
                 groupsMethod = api.getClass().getMethod("groups");
                 groups = groupsMethod.invoke(api);
-                indexOfMethod = groups.getClass().getMethod("indexOf", String.class);
+                indexOfMethod = groups == null ? null : groups.getClass().getMethod("indexOf", String.class);
             } catch (ReflectiveOperationException | LinkageError ex) { clear(); }
         }
+
         private void clear() { plugin = null; api = null; groups = null; apiMethod = null; getGroupMethod = null; getPrefixMethod = null; getNicknameColorMethod = null; groupsMethod = null; indexOfMethod = null; }
         String getGroup(Player player) { return invokeString(getGroupMethod, player.getUniqueId()); }
+
         int getPriority(Player player) {
             String group = normalizeGroup(getGroup(player));
-            int fixed = fixedPriority(group);
-            if (fixed != Integer.MAX_VALUE) return fixed;
-            // Compatibilidade com nomes adicionais cadastrados no CargoPlus.
-            // Cargos desconhecidos ficam abaixo dos cargos conhecidos.
-            if (groups != null && indexOfMethod != null) {
-                try {
-                    Object value = indexOfMethod.invoke(groups, group);
-                    if (value instanceof Number number) return 100 + number.intValue();
-                } catch (ReflectiveOperationException | LinkageError ignored) { }
-            }
-            return 1000;
-        }
-        private int fixedPriority(String group) {
             return switch (group) {
                 case "dev", "developer", "desenvolvedor" -> 0;
                 case "gerente", "manager" -> 1;
@@ -156,14 +153,30 @@ public final class ServerTabManager {
                 case "moderador", "moderator", "mod" -> 3;
                 case "ajudante", "helper" -> 4;
                 case "membro", "member", "default" -> 5;
-                default -> Integer.MAX_VALUE;
+                default -> priorityFromCargoHierarchy(group);
             };
         }
+
+        private int priorityFromCargoHierarchy(String group) {
+            if (groups == null || indexOfMethod == null || group.isBlank()) return Integer.MAX_VALUE;
+            try {
+                Object value = indexOfMethod.invoke(groups, group);
+                if (value instanceof Number number) {
+                    // CargoPlus guarda a hierarquia do menor para o maior:
+                    // membro -> ajudante -> moderador -> administrador -> gerente -> dev.
+                    // Invertemos o indice para que o maior cargo tenha a menor
+                    // prioridade numerica no comparator do TAB.
+                    return 100 - number.intValue();
+                }
+            } catch (ReflectiveOperationException | LinkageError ignored) { }
+            return Integer.MAX_VALUE;
+        }
+
         private String normalizeGroup(String group) {
             if (group == null) return "";
-            String normalized = group.replace('\u00A7', '&').replaceAll("(?i)&[0-9A-FK-ORX]", "").trim().toLowerCase(Locale.ROOT);
-            return normalized;
+            return group.replace('\u00A7', '&').replaceAll("(?i)&[0-9A-FK-ORX]", "").trim().toLowerCase(Locale.ROOT);
         }
+
         CargoData getData(Player player) { String prefix = invokeString(getPrefixMethod, player.getUniqueId()), color = invokeString(getNicknameColorMethod, player.getUniqueId()); return api == null ? CargoData.empty() : new CargoData(true, prefix, color.isBlank() ? "&f" : color); }
         private String invokeString(Method method, Object arg) { if (method == null || api == null) return ""; try { Object value = method.invoke(api, arg); return value == null ? "" : String.valueOf(value); } catch (ReflectiveOperationException | LinkageError ex) { return ""; } }
     }
