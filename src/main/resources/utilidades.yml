@@ -7,26 +7,16 @@
 # =========================================
 #           IDENTIDADE VISUAL
 # =========================================
-# Esta seção é compartilhada por MOTD, TAB e pelas integrações de chat,
-# scoreboard e GUI. Não é necessário instalar plugin de fontes.
-#
-# Small Caps usa Unicode e, portanto, não exige resource pack.
-# Gradientes usam RGB real (§x), compatível com clientes 1.16+.
-# Ícones podem começar como Unicode e futuramente ser trocados por glyphs
-# de resource pack sem alterar as configurações dos outros sistemas.
 identidade-visual:
   ativado: true
-
   small-caps:
     ativado: true
     mapa-maiusculas: "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ"
     mapa-minusculas: "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ"
-
   gradient:
     ativado: true
     inicio: "#7C3AED"
     fim: "#22D3EE"
-
   icones:
     ativado: true
     lista:
@@ -60,75 +50,23 @@ gui:
     saida: 15
     cor: 13
 
-# %cargo% = cargo | %player% = jogador | restante = mensagem
+# Mensagens de entrada.
+# O CargoPlus define o cargo do jogador. O UtilidadesPlus apenas lê o cargo.
+# Uma frase é escolhida aleatoriamente para qualquer cargo.
+# Placeholders: %player% = nome do jogador | %cargo% = cargo vindo do CargoPlus.
 mensagens-entrada:
-  membro:
-    ativado: false
-    mensagens:
-      - "%cargo% %player% olha quem apareceu!"
-      - "%cargo% %player% acabou de chegar!"
-      - "%cargo% %player% está entre nós!"
-      - "%cargo% %player% chegou chegando!"
-      - "%cargo% %player% deu as caras por aqui!"
-  ajudante:
-    ativado: true
-    mensagens:
-      - "%cargo% %player% olha quem apareceu!"
-      - "%cargo% %player% acabou de chegar!"
-      - "%cargo% %player% está entre nós!"
-      - "%cargo% %player% chegou chegando!"
-      - "%cargo% %player% deu as caras por aqui!"
-  moderador:
-    ativado: true
-    mensagens:
-      - "%cargo% %player% olha quem apareceu!"
-      - "%cargo% %player% acabou de chegar!"
-      - "%cargo% %player% está entre nós!"
-      - "%cargo% %player% chegou chegando!"
-      - "%cargo% %player% deu as caras por aqui!"
-  administrador:
-    ativado: true
-    mensagens:
-      - "%cargo% %player% olha quem apareceu!"
-      - "%cargo% %player% acabou de chegar!"
-      - "%cargo% %player% está entre nós!"
-      - "%cargo% %player% chegou chegando!"
-      - "%cargo% %player% deu as caras por aqui!"
-  gerente:
-    ativado: true
-    mensagens:
-      - "%cargo% %player% olha quem apareceu!"
-      - "%cargo% %player% acabou de chegar!"
-      - "%cargo% %player% está entre nós!"
-      - "%cargo% %player% chegou chegando!"
-      - "%cargo% %player% deu as caras por aqui!"
-  dev:
-    ativado: true
-    mensagens:
-      - "%cargo% %player% olha quem apareceu!"
-      - "%cargo% %player% acabou de chegar!"
-      - "%cargo% %player% está entre nós!"
-      - "%cargo% %player% chegou chegando!"
-      - "%cargo% %player% deu as caras por aqui!"
+  ativado: true
+  mensagens:
+    - "%cargo% %player% olha quem apareceu!"
+    - "%cargo% %player% acabou de chegar!"
+    - "%cargo% %player% está entre nós!"
+    - "%cargo% %player% chegou chegando!"
+    - "%cargo% %player% deu as caras por aqui!"
 
+# Mensagem de saída para qualquer cargo.
+# O CargoPlus define o cargo do jogador. O UtilidadesPlus apenas lê o cargo.
 mensagens-saida:
-  membro:
-    ativado: false
-    mensagem: "%cargo% %player% saiu do servidor!"
-  ajudante:
-    ativado: false
-    mensagem: "%cargo% %player% saiu do servidor!"
-  moderador:
-    ativado: false
-    mensagem: "%cargo% %player% saiu do servidor!"
-  administrador:
-    ativado: false
-    mensagem: "%cargo% %player% saiu do servidor!"
-  gerente:
-    ativado: false
-    mensagem: "%cargo% %player% saiu do servidor!"
-  dev:
-    ativado: false
-    mensagem: "%cargo% %player% saiu do servidor!"
+  ativado: false
+  mensagem: "%cargo% %player% saiu do servidor!"
 
 jogadores: {}
