@@ -47,4 +47,4 @@ sorting:
   case-sensitive: false
   rules:
     - type: primary-group
-      order: descending
+      order: ascending
