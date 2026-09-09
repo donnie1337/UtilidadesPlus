@@ -9,11 +9,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.bukkit.event.server.TabCompleteEvent;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Restringe a visibilidade do TAB aos comandos que o jogador realmente pode usar.
@@ -21,6 +23,8 @@ import java.util.Set;
  */
 public final class RestrictedCommandTabListener implements Listener {
     private static final String ADMIN_PERMISSION = "cargoplus.admin";
+    private static final String COR_PERMISSION = "chatplus.cor";
+    private static final String CONFIGURAR_PERMISSION = "utilidadesplus.configurar";
 
     /** Comandos publicos sem permission declarada que devem continuar visiveis. */
     private static final Set<String> PUBLIC_COMMANDS = Set.of(
@@ -89,6 +93,12 @@ public final class RestrictedCommandTabListener implements Listener {
         if (CARGO_COMMANDS.contains(root)) return false;
         if (root.equals("?") || root.equals("about")) return player.hasPermission(ADMIN_PERMISSION);
 
+        // /cor e /configurar usam permissões administradas pelo CargoPlus.
+        // O check de permissão do Bukkit sozinho não representa essa camada,
+        // então consultamos a API registrada pelo CargoPlus.
+        if (root.equals("cor")) return hasCargoPermission(player, COR_PERMISSION);
+        if (root.equals("configurar")) return hasCargoPermission(player, CONFIGURAR_PERMISSION);
+
         Command registered = findCommand(root);
         if (registered == null) {
             // Falha de descoberta do CommandMap: para o TAB, adota fail-closed.
@@ -100,6 +110,22 @@ public final class RestrictedCommandTabListener implements Listener {
         // plugins deste projeto sao considerados nativos/internos e ficam
         // restritos ao cargo DEV.
         return false;
+    }
+
+    private boolean hasCargoPermission(Player player, String permission) {
+        try {
+            Class<?> apiClass = Class.forName("com.cargoplus.api.CargoPlusAPI");
+            RegisteredServiceProvider<?> registration =
+                    Bukkit.getServicesManager().getRegistration(apiClass);
+            if (registration == null || registration.getProvider() == null) return false;
+
+            Object provider = registration.getProvider();
+            Method method = apiClass.getMethod("hasCargoPermission", UUID.class, String.class);
+            Object result = method.invoke(provider, player.getUniqueId(), permission);
+            return result instanceof Boolean && (Boolean) result;
+        } catch (ReflectiveOperationException | LinkageError ignored) {
+            return false;
+        }
     }
 
     private static String normalizeRoot(String value) {
