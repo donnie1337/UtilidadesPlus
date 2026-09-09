@@ -16,6 +16,7 @@ commands:
   configurar:
     description: Abre o menu de configuração das utilidades pessoais.
     usage: /configurar
+    permission: utilidadesplus.configurar
 permissions:
   utilidadesplus.motd.admin:
     description: Permite recarregar a configuração do MOTD.
