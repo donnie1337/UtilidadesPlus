@@ -17,7 +17,7 @@ import java.util.Set;
 
 /**
  * Restringe a visibilidade do TAB aos comandos que o jogador realmente pode usar.
- * Namespaces internos (plugin:comando) ficam ocultos para jogadores comuns.
+ * Comandos nativos do Bukkit/Paper ficam visiveis somente para o cargo DEV.
  */
 public final class RestrictedCommandTabListener implements Listener {
     private static final String ADMIN_PERMISSION = "cargoplus.admin";
@@ -96,7 +96,10 @@ public final class RestrictedCommandTabListener implements Listener {
             return false;
         }
 
-        return registered.testPermissionSilent(player);
+        // Comandos encontrados no CommandMap e que nao foram declarados pelos
+        // plugins deste projeto sao considerados nativos/internos e ficam
+        // restritos ao cargo DEV.
+        return false;
     }
 
     private static String normalizeRoot(String value) {
