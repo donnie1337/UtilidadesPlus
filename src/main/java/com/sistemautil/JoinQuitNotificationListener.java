@@ -164,13 +164,11 @@ public final class JoinQuitNotificationListener implements Listener {
     }
 
     private String formatMessage(String message, Player player, String group) {
-        String formatted = colorize(message)
+        String cargo = cargoPrefix(player);
+        if (cargo.isBlank()) cargo = cargoDisplayName(group);
+        return colorize(message
                 .replace("%player%", player.getName())
-                .replace("%cargo%", cargoPrefix(player));
-        if (formatted.equals(message.replace("%player%", player.getName()).replace("%cargo%", ""))) {
-            formatted = formatted.replace("%cargo%", cargoDisplayName(group));
-        }
-        return formatted;
+                .replace("%cargo%", cargo));
     }
 
     private String colorize(String value) {
