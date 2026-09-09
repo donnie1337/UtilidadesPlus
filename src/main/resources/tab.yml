@@ -48,3 +48,6 @@ sorting:
   rules:
     - type: primary-group
       order: ascending
+    - type: placeholder
+      placeholder: "%player_name%"
+      order: ascending
