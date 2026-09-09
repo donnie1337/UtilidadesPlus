@@ -21,7 +21,7 @@ public final class ServerTabManager {
     private int taskId = -1;
 
     public ServerTabManager(SistemaUtil plugin) { this.plugin = plugin; }
-    public void start() { stop(); updateAll(); taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::updateAll, 20L, 20L); }
+    public void start() { stop(); updateAll(); taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::updateAll, 100L, 100L); }
     public void stop() { if (taskId != -1) { Bukkit.getScheduler().cancelTask(taskId); taskId = -1; } }
 
     public void updateAll() {
@@ -52,10 +52,6 @@ public final class ServerTabManager {
         List<Map<?, ?>> rules = plugin.getTabConfig().getMapList("sorting.rules");
         boolean defaultCaseSensitive = plugin.getTabConfig().getBoolean("sorting.case-sensitive", false);
         Comparator<Player> nameComparator = Comparator.comparing(Player::getName, stringComparator(defaultCaseSensitive));
-
-        // O cargo atual do CargoPlus e a primeira e obrigatoria chave da ordenacao.
-        // Nenhuma regra de nome, permissao ou placeholder pode colocar um cargo
-        // inferior acima de um cargo superior.
         Comparator<Player> chain = Comparator.comparingInt(this::groupPriority);
         boolean enabled = plugin.getTabConfig().getBoolean("sorting.enabled", true);
         if (enabled) {
@@ -79,10 +75,7 @@ public final class ServerTabManager {
         return chain.thenComparing(nameComparator);
     }
 
-    private int groupPriority(Player player) {
-        return cargo.getPriority(player);
-    }
-
+    private int groupPriority(Player player) { return cargo.getPriority(player); }
     private boolean hasPermissionNode(Player player, String node) { return !node.isBlank() && player.hasPermission(node); }
     private double numericPlaceholder(Player player, String token) { try { return Double.parseDouble(placeholder(player, token).trim().replace(',', '.')); } catch (NumberFormatException ex) { return Double.POSITIVE_INFINITY; } }
     private int predefinedValueIndex(Player player, String token, Object values, boolean caseSensitive) {
@@ -116,13 +109,6 @@ public final class ServerTabManager {
     private static final class CargoBridge {
         private Plugin plugin; private Object api; private Object groups;
         private Method apiMethod, getGroupMethod, getPrefixMethod, getNicknameColorMethod, groupsMethod, indexOfMethod;
-
-        /**
-         * Reobtém a API do CargoPlus a cada ciclo. Isso e intencional: um reload
-         * do CargoPlus pode recriar a instancia de CargoPlusAPI sem recriar a
-         * instancia do plugin. Manter a API antiga faria o TAB consultar um
-         * estado desatualizado ate o proximo login/reconexao.
-         */
         void refresh() {
             Plugin current = Bukkit.getPluginManager().getPlugin("CargoPlus");
             if (current == null || !current.isEnabled()) { clear(); return; }
@@ -140,10 +126,8 @@ public final class ServerTabManager {
                 indexOfMethod = groups == null ? null : groups.getClass().getMethod("indexOf", String.class);
             } catch (ReflectiveOperationException | LinkageError ex) { clear(); }
         }
-
         private void clear() { plugin = null; api = null; groups = null; apiMethod = null; getGroupMethod = null; getPrefixMethod = null; getNicknameColorMethod = null; groupsMethod = null; indexOfMethod = null; }
         String getGroup(Player player) { return invokeString(getGroupMethod, player.getUniqueId()); }
-
         int getPriority(Player player) {
             String group = normalizeGroup(getGroup(player));
             return switch (group) {
@@ -156,27 +140,18 @@ public final class ServerTabManager {
                 default -> priorityFromCargoHierarchy(group);
             };
         }
-
         private int priorityFromCargoHierarchy(String group) {
             if (groups == null || indexOfMethod == null || group.isBlank()) return Integer.MAX_VALUE;
             try {
                 Object value = indexOfMethod.invoke(groups, group);
-                if (value instanceof Number number) {
-                    // CargoPlus guarda a hierarquia do menor para o maior:
-                    // membro -> ajudante -> moderador -> administrador -> gerente -> dev.
-                    // Invertemos o indice para que o maior cargo tenha a menor
-                    // prioridade numerica no comparator do TAB.
-                    return 100 - number.intValue();
-                }
+                if (value instanceof Number number) return 100 - number.intValue();
             } catch (ReflectiveOperationException | LinkageError ignored) { }
             return Integer.MAX_VALUE;
         }
-
         private String normalizeGroup(String group) {
             if (group == null) return "";
             return group.replace('\u00A7', '&').replaceAll("(?i)&[0-9A-FK-ORX]", "").trim().toLowerCase(Locale.ROOT);
         }
-
         CargoData getData(Player player) { String prefix = invokeString(getPrefixMethod, player.getUniqueId()), color = invokeString(getNicknameColorMethod, player.getUniqueId()); return api == null ? CargoData.empty() : new CargoData(true, prefix, color.isBlank() ? "&f" : color); }
         private String invokeString(Method method, Object arg) { if (method == null || api == null) return ""; try { Object value = method.invoke(api, arg); return value == null ? "" : String.valueOf(value); } catch (ReflectiveOperationException | LinkageError ex) { return ""; } }
     }
