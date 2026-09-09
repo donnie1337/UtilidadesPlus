@@ -47,7 +47,7 @@ sorting:
   case-sensitive: false
   rules:
     - type: primary-group
-      order: descending
+      order: ascending
     - type: placeholder
       placeholder: "%player_name%"
       order: ascending
