@@ -35,8 +35,10 @@ public final class ServerTabManager {
         for (int index = 0; index < players.size(); index++) {
             Player player = players.get(index);
             applyPlayer(player);
-            // Neste servidor, menor prioridade numérica aparece primeiro no TAB.
-            player.setPlayerListOrder(index + 1);
+            // O cliente do Minecraft posiciona a maior ordem primeiro.
+            // A lista foi ordenada do cargo mais alto para o mais baixo,
+            // então atribuimos a maior ordem ao primeiro elemento.
+            player.setPlayerListOrder(players.size() - index);
             int ping = Math.max(0, player.getPing());
             String footer = formatTabText(plugin.getTabConfig().getString("footer", "&8&m----------------------------------------\n&fJogadores online: &a%online%/%max%\n&fSeu ping: &a%ping%ms\n&fIP: &b%ip%"), online, max, ping, address, player);
             player.setPlayerListHeaderFooter(header, footer);
