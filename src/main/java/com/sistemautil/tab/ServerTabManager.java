@@ -52,8 +52,7 @@ public final class ServerTabManager {
             Player player = players.get(index);
             applyPlayer(player);
             // No cliente, um valor maior de list order aparece mais acima.
-            // A lista já está ordenada por cargo (maior -> menor) e depois pelo nick (A -> Z),
-            // então o primeiro jogador recebe a maior prioridade.
+            // A lista já está ordenada por cargo (maior -> menor) e depois pelo nick (A -> Z).
             player.setPlayerListOrder(players.size() - index);
 
             int ping = Math.max(0, player.getPing());
@@ -101,9 +100,18 @@ public final class ServerTabManager {
     }
 
     private int groupPriority(Player player) {
-        String group = cargo.getGroup(player);
-        if (group.isBlank()) return Integer.MIN_VALUE;
-        return cargo.getGroupPriority(group);
+        String group = cargo.getGroup(player).trim().toLowerCase(Locale.ROOT);
+        // A ordem do TAB é fixa e independente da ordem interna do CargoPlus.
+        // Quanto menor o número, mais acima o cargo fica no comparator.
+        return switch (group) {
+            case "dev", "developer", "desenvolvedor" -> 0;
+            case "gerente", "manager" -> 1;
+            case "admin", "administrador", "administrator" -> 2;
+            case "moderador", "moderator", "mod" -> 3;
+            case "ajudante", "helper" -> 4;
+            case "membro", "member", "default" -> 5;
+            default -> 6;
+        };
     }
 
     private boolean hasPermissionNode(Player player, String node) { return !node.isBlank() && player.hasPermission(node); }
