@@ -12,6 +12,8 @@ import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
 import java.util.UUID;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public final class JoinQuitNotificationListener implements Listener {
     private static final String AUTH_PLUGIN_NAME = "LoginPlus";
@@ -22,10 +24,6 @@ public final class JoinQuitNotificationListener implements Listener {
     private volatile Plugin cargoPlugin;
     private volatile Method cargoPermissionsMethod;
     private volatile Method cargoGroupMethod;
-    private volatile Method cargoJoinEnabledMethod;
-    private volatile Method cargoQuitEnabledMethod;
-    private volatile Method cargoJoinMessageMethod;
-    private volatile Method cargoQuitMessageMethod;
     private volatile Method cargoDisplayNameMethod;
     private volatile Method cargoColorMethod;
 
@@ -46,9 +44,9 @@ public final class JoinQuitNotificationListener implements Listener {
         if (!preferences.globallyReceivesQuit() || !preferences.broadcastsQuit(event.getPlayer())) return;
 
         String group = cargoGroup(event.getPlayer());
-        if (group.isBlank() || !cargoBoolean(group, false)) return;
+        if (group.isBlank() || !isQuitEnabled(group)) return;
 
-        String message = cargoMessage(group, false);
+        String message = quitMessage(group);
         if (message.isBlank()) return;
         message = formatMessage(message, event.getPlayer(), group);
 
@@ -66,9 +64,9 @@ public final class JoinQuitNotificationListener implements Listener {
         if (!preferences.broadcastsJoin(player)) return;
 
         String group = cargoGroup(player);
-        if (group.isBlank() || !cargoBoolean(group, true)) return;
+        if (group.isBlank() || !isJoinEnabled(group)) return;
 
-        String message = cargoMessage(group, true);
+        String message = joinMessage(group);
         if (message.isBlank()) return;
         message = cargoColor(group) + formatMessage(message, player, group);
 
@@ -113,28 +111,22 @@ public final class JoinQuitNotificationListener implements Listener {
         }
     }
 
-    private boolean cargoBoolean(String group, boolean join) {
-        Plugin cargo = cargoPlugin();
-        Method method = join ? cargoJoinEnabledMethod : cargoQuitEnabledMethod;
-        if (cargo == null || method == null) return false;
-        try {
-            Object result = method.invoke(cargo, group);
-            return result instanceof Boolean value && value;
-        } catch (ReflectiveOperationException | LinkageError ex) {
-            return false;
-        }
+    private boolean isJoinEnabled(String group) {
+        return plugin.getUtilidadesConfig().getBoolean("mensagens-entrada." + group + ".ativado", false);
     }
 
-    private String cargoMessage(String group, boolean join) {
-        Plugin cargo = cargoPlugin();
-        Method method = join ? cargoJoinMessageMethod : cargoQuitMessageMethod;
-        if (cargo == null || method == null) return "";
-        try {
-            Object result = method.invoke(cargo, group);
-            return result instanceof String value ? value : "";
-        } catch (ReflectiveOperationException | LinkageError ex) {
-            return "";
-        }
+    private boolean isQuitEnabled(String group) {
+        return plugin.getUtilidadesConfig().getBoolean("mensagens-saida." + group + ".ativado", false);
+    }
+
+    private String joinMessage(String group) {
+        List<String> configured = plugin.getUtilidadesConfig().getStringList("mensagens-entrada." + group + ".mensagens");
+        if (configured.isEmpty()) return "";
+        return configured.get(ThreadLocalRandom.current().nextInt(configured.size()));
+    }
+
+    private String quitMessage(String group) {
+        return plugin.getUtilidadesConfig().getString("mensagens-saida." + group + ".mensagem", "");
     }
 
     private String cargoDisplayName(String group) {
@@ -174,32 +166,20 @@ public final class JoinQuitNotificationListener implements Listener {
         if (current == null || !current.isEnabled()) return null;
 
         if (cargoPlugin != current || cargoPermissionsMethod == null || cargoGroupMethod == null
-                || cargoJoinEnabledMethod == null || cargoQuitEnabledMethod == null
-                || cargoJoinMessageMethod == null || cargoQuitMessageMethod == null
                 || cargoDisplayNameMethod == null || cargoColorMethod == null) {
             synchronized (this) {
                 if (cargoPlugin != current || cargoPermissionsMethod == null || cargoGroupMethod == null
-                        || cargoJoinEnabledMethod == null || cargoQuitEnabledMethod == null
-                        || cargoJoinMessageMethod == null || cargoQuitMessageMethod == null
-                        || cargoDisplayNameMethod == null || cargoColorMethod == null) {
+                || cargoDisplayNameMethod == null || cargoColorMethod == null) {
                     try {
                         cargoPlugin = current;
                         cargoPermissionsMethod = current.getClass().getMethod("permissions");
                         Object permissions = cargoPermissionsMethod.invoke(current);
                         cargoGroupMethod = permissions.getClass().getMethod("getGroup", UUID.class);
-                        cargoJoinEnabledMethod = current.getClass().getMethod("isJoinMessageEnabled", String.class);
-                        cargoQuitEnabledMethod = current.getClass().getMethod("isQuitMessageEnabled", String.class);
-                        cargoJoinMessageMethod = current.getClass().getMethod("getJoinMessage", String.class);
-                        cargoQuitMessageMethod = current.getClass().getMethod("getQuitMessage", String.class);
                         cargoDisplayNameMethod = current.getClass().getMethod("getCargoDisplayName", String.class);
                         cargoColorMethod = current.getClass().getMethod("getCargoColor", String.class);
                     } catch (ReflectiveOperationException | LinkageError ex) {
                         cargoPermissionsMethod = null;
                         cargoGroupMethod = null;
-                        cargoJoinEnabledMethod = null;
-                        cargoQuitEnabledMethod = null;
-                        cargoJoinMessageMethod = null;
-                        cargoQuitMessageMethod = null;
                         cargoDisplayNameMethod = null;
                         cargoColorMethod = null;
                         return null;
