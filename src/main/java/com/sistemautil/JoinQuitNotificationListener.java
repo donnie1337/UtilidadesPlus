@@ -26,6 +26,7 @@ public final class JoinQuitNotificationListener implements Listener {
     private volatile Method cargoGroupMethod;
     private volatile Method cargoDisplayNameMethod;
     private volatile Method cargoColorMethod;
+    private volatile Method cargoReceivesMessageMethod;
 
     public JoinQuitNotificationListener(SistemaUtil plugin, UtilidadesPreferences preferences) {
         this.plugin = plugin;
@@ -45,7 +46,7 @@ public final class JoinQuitNotificationListener implements Listener {
         if (!plugin.getUtilidadesConfig().getBoolean("mensagens-saida.ativado", false)) return;
 
         String group = cargoGroup(event.getPlayer());
-        if (group.isBlank()) return;
+        if (group.isBlank() || !cargoReceivesMessage(group)) return;
 
         String message = plugin.getUtilidadesConfig().getString("mensagens-saida.mensagem", "");
         if (message.isBlank()) return;
@@ -66,7 +67,7 @@ public final class JoinQuitNotificationListener implements Listener {
         if (!plugin.getUtilidadesConfig().getBoolean("mensagens-entrada.ativado", true)) return;
 
         String group = cargoGroup(player);
-        if (group.isBlank()) return;
+        if (group.isBlank() || !cargoReceivesMessage(group)) return;
 
         String message = joinMessage();
         if (message.isBlank()) return;
@@ -113,6 +114,17 @@ public final class JoinQuitNotificationListener implements Listener {
         }
     }
 
+    private boolean cargoReceivesMessage(String group) {
+        Plugin cargo = cargoPlugin();
+        if (cargo == null || cargoReceivesMessageMethod == null) return false;
+        try {
+            Object result = cargoReceivesMessageMethod.invoke(cargo, group);
+            return result instanceof Boolean value && value;
+        } catch (ReflectiveOperationException | LinkageError ex) {
+            return false;
+        }
+    }
+
     private String joinMessage() {
         List<String> configured = plugin.getUtilidadesConfig().getStringList("mensagens-entrada.mensagens");
         if (configured.isEmpty()) return "";
@@ -156,10 +168,10 @@ public final class JoinQuitNotificationListener implements Listener {
         if (current == null || !current.isEnabled()) return null;
 
         if (cargoPlugin != current || cargoPermissionsMethod == null || cargoGroupMethod == null
-                || cargoDisplayNameMethod == null || cargoColorMethod == null) {
+                || cargoDisplayNameMethod == null || cargoColorMethod == null || cargoReceivesMessageMethod == null) {
             synchronized (this) {
                 if (cargoPlugin != current || cargoPermissionsMethod == null || cargoGroupMethod == null
-                || cargoDisplayNameMethod == null || cargoColorMethod == null) {
+                        || cargoDisplayNameMethod == null || cargoColorMethod == null || cargoReceivesMessageMethod == null) {
                     try {
                         cargoPlugin = current;
                         cargoPermissionsMethod = current.getClass().getMethod("permissions");
@@ -167,11 +179,13 @@ public final class JoinQuitNotificationListener implements Listener {
                         cargoGroupMethod = permissions.getClass().getMethod("getGroup", UUID.class);
                         cargoDisplayNameMethod = current.getClass().getMethod("getCargoDisplayName", String.class);
                         cargoColorMethod = current.getClass().getMethod("getCargoColor", String.class);
+                        cargoReceivesMessageMethod = current.getClass().getMethod("receivesJoinQuitMessage", String.class);
                     } catch (ReflectiveOperationException | LinkageError ex) {
                         cargoPermissionsMethod = null;
                         cargoGroupMethod = null;
                         cargoDisplayNameMethod = null;
                         cargoColorMethod = null;
+                        cargoReceivesMessageMethod = null;
                         return null;
                     }
                 }
