@@ -120,7 +120,7 @@ public final class ServerTabManager {
         private void clear() { plugin = null; api = null; groups = null; apiMethod = null; getGroupMethod = null; getPrefixMethod = null; getNicknameColorMethod = null; groupsMethod = null; indexOfMethod = null; }
         String getGroup(Player player) { return invokeString(getGroupMethod, player.getUniqueId()); }
         CargoData getData(Player player) { String prefix = invokeString(getPrefixMethod, player.getUniqueId()), color = invokeString(getNicknameColorMethod, player.getUniqueId()); return api == null ? CargoData.empty() : new CargoData(true, prefix, color.isBlank() ? "&f" : color); }
-        private String invokeString(Method method, Object arg) { if (method == null || api == null) return ""; try { Object value = method.invoke(api, arg); return value instanceof String s ? s : ""; } catch (ReflectiveOperationException | LinkageError ex) { return ""; } }
+        private String invokeString(Method method, Object arg) { if (method == null || api == null) return ""; try { Object value = method.invoke(api, arg); return value == null ? "" : String.valueOf(value); } catch (ReflectiveOperationException | LinkageError ex) { return ""; } }
     }
     private static final class PlaceholderBridge {
         private Plugin plugin; private Method method;
