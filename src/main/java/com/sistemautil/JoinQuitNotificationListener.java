@@ -42,11 +42,12 @@ public final class JoinQuitNotificationListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
         if (!preferences.globallyReceivesQuit() || !preferences.broadcastsQuit(event.getPlayer())) return;
+        if (!plugin.getUtilidadesConfig().getBoolean("mensagens-saida.ativado", false)) return;
 
         String group = cargoGroup(event.getPlayer());
-        if (group.isBlank() || !isQuitEnabled(group)) return;
+        if (group.isBlank()) return;
 
-        String message = quitMessage(group);
+        String message = plugin.getUtilidadesConfig().getString("mensagens-saida.mensagem", "");
         if (message.isBlank()) return;
         message = formatMessage(message, event.getPlayer(), group);
 
@@ -62,11 +63,12 @@ public final class JoinQuitNotificationListener implements Listener {
             return;
         }
         if (!preferences.broadcastsJoin(player)) return;
+        if (!plugin.getUtilidadesConfig().getBoolean("mensagens-entrada.ativado", true)) return;
 
         String group = cargoGroup(player);
-        if (group.isBlank() || !isJoinEnabled(group)) return;
+        if (group.isBlank()) return;
 
-        String message = joinMessage(group);
+        String message = joinMessage();
         if (message.isBlank()) return;
         message = cargoColor(group) + formatMessage(message, player, group);
 
@@ -111,22 +113,10 @@ public final class JoinQuitNotificationListener implements Listener {
         }
     }
 
-    private boolean isJoinEnabled(String group) {
-        return plugin.getUtilidadesConfig().getBoolean("mensagens-entrada." + group + ".ativado", false);
-    }
-
-    private boolean isQuitEnabled(String group) {
-        return plugin.getUtilidadesConfig().getBoolean("mensagens-saida." + group + ".ativado", false);
-    }
-
-    private String joinMessage(String group) {
-        List<String> configured = plugin.getUtilidadesConfig().getStringList("mensagens-entrada." + group + ".mensagens");
+    private String joinMessage() {
+        List<String> configured = plugin.getUtilidadesConfig().getStringList("mensagens-entrada.mensagens");
         if (configured.isEmpty()) return "";
         return configured.get(ThreadLocalRandom.current().nextInt(configured.size()));
-    }
-
-    private String quitMessage(String group) {
-        return plugin.getUtilidadesConfig().getString("mensagens-saida." + group + ".mensagem", "");
     }
 
     private String cargoDisplayName(String group) {
