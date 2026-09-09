@@ -51,10 +51,10 @@ public final class ServerTabManager {
         for (int index = 0; index < players.size(); index++) {
             Player player = players.get(index);
             applyPlayer(player);
-            // A ordem do Paper precisa ser positiva. A lista já está ordenada
-            // por cargo (maior -> menor) e depois pelo nick (A -> Z).
-            // Assim, DEV recebe 1, o próximo cargo recebe 2 e assim por diante.
-            player.setPlayerListOrder(index + 1);
+            // No cliente, um valor maior de list order aparece mais acima.
+            // A lista já está ordenada por cargo (maior -> menor) e depois pelo nick (A -> Z),
+            // então o primeiro jogador recebe a maior prioridade.
+            player.setPlayerListOrder(players.size() - index);
 
             int ping = Math.max(0, player.getPing());
             String footer = formatTabText(plugin.getTabConfig().getString("footer",
