@@ -105,7 +105,7 @@ mensagens-entrada:
       - "[%cargo%] %player% está entre nós!"
       - "[%cargo%] %player% chegou chegando!"
       - "[%cargo%] %player% deu as caras por aqui!"
-  dono:
+  dev:
     ativado: true
     mensagens:
       - "[%cargo%] %player% olha quem apareceu!"
@@ -132,8 +132,8 @@ mensagens-saida:
   gerente:
     ativado: false
     mensagem: "&8[&c-&8] &6[Gerente] &f%player% &7saiu do servidor!"
-  dono:
+  dev:
     ativado: false
-    mensagem: "&8[&c-&8] &4[Dono] &f%player% &7saiu do servidor!"
+    mensagem: "&8[&c-&8] &4[DEV] &f%player% &7saiu do servidor!"
 
 jogadores: {}
