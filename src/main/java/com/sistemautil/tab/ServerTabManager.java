@@ -35,8 +35,6 @@ public final class ServerTabManager {
         for (int index = 0; index < players.size(); index++) {
             Player player = players.get(index);
             applyPlayer(player);
-            // A menor ordem aparece primeiro no TAB.
-            // A lista já está ordenada do cargo mais alto para o mais baixo.
             player.setPlayerListOrder(index + 1);
             int ping = Math.max(0, player.getPing());
             String footer = formatTabText(plugin.getTabConfig().getString("footer", "&8&m----------------------------------------\n&fJogadores online: &a%online%/%max%\n&fSeu ping: &a%ping%ms\n&fIP: &b%ip%"), online, max, ping, address, player);
@@ -46,49 +44,43 @@ public final class ServerTabManager {
 
     public void updatePlayer(Player player) {
         if (player == null || !player.isOnline()) return;
-        // Alteração de cargo precisa recalcular a lista inteira para que a nova
-        // prioridade seja aplicada imediatamente, sem deixar o jogador no topo.
         updateAll();
         player.updateCommands();
     }
 
     private Comparator<Player> buildComparator() {
         List<Map<?, ?>> rules = plugin.getTabConfig().getMapList("sorting.rules");
-        boolean enabled = plugin.getTabConfig().getBoolean("sorting.enabled", true);
         boolean defaultCaseSensitive = plugin.getTabConfig().getBoolean("sorting.case-sensitive", false);
-        Comparator<Player> fallback = Comparator.comparing(Player::getName, stringComparator(defaultCaseSensitive));
-        if (!enabled || rules.isEmpty()) return fallback;
-        Comparator<Player> chain = null;
-        for (Map<?, ?> raw : rules) {
-            String type = string(raw.get("type")).toLowerCase(Locale.ROOT);
-            boolean caseSensitive = raw.containsKey("case-sensitive") ? Boolean.parseBoolean(String.valueOf(raw.get("case-sensitive"))) : defaultCaseSensitive;
-            String order = string(raw.get("order")).toLowerCase(Locale.ROOT);
-            Comparator<Player> rule = switch (type) {
-                case "primary-group" -> Comparator.comparingInt(this::groupPriority);
-                case "permission" -> Comparator.comparingInt(player -> hasPermissionNode(player, string(raw.get("node"))) ? 1 : 0);
-                case "numeric-placeholder" -> Comparator.comparingDouble(player -> numericPlaceholder(player, string(raw.get("placeholder"))));
-                case "placeholder" -> Comparator.comparing(player -> placeholder(player, string(raw.get("placeholder"))), stringComparator(caseSensitive));
-                case "predefined-values" -> Comparator.comparingInt(player -> predefinedValueIndex(player, string(raw.get("placeholder")), raw.get("values"), caseSensitive));
-                default -> null;
-            };
-            if (rule == null) continue;
-            if ("descending".equals(order) || "desc".equals(order)) rule = rule.reversed();
-            chain = chain == null ? rule : chain.thenComparing(rule);
+        Comparator<Player> nameComparator = Comparator.comparing(Player::getName, stringComparator(defaultCaseSensitive));
+
+        // A hierarquia de cargos do CargoPlus e obrigatória e sempre vem antes
+        // de qualquer outra regra configurável. Isso impede que nome/permissao
+        // ou a ordem de entrada alterem a posição entre cargos diferentes.
+        Comparator<Player> chain = Comparator.comparingInt(this::groupPriority);
+        boolean enabled = plugin.getTabConfig().getBoolean("sorting.enabled", true);
+        if (enabled) {
+            for (Map<?, ?> raw : rules) {
+                String type = string(raw.get("type")).toLowerCase(Locale.ROOT);
+                if ("primary-group".equals(type)) continue;
+                boolean caseSensitive = raw.containsKey("case-sensitive") ? Boolean.parseBoolean(String.valueOf(raw.get("case-sensitive"))) : defaultCaseSensitive;
+                String order = string(raw.get("order")).toLowerCase(Locale.ROOT);
+                Comparator<Player> rule = switch (type) {
+                    case "permission" -> Comparator.comparingInt(player -> hasPermissionNode(player, string(raw.get("node"))) ? 1 : 0);
+                    case "numeric-placeholder" -> Comparator.comparingDouble(player -> numericPlaceholder(player, string(raw.get("placeholder"))));
+                    case "placeholder" -> Comparator.comparing(player -> placeholder(player, string(raw.get("placeholder"))), stringComparator(caseSensitive));
+                    case "predefined-values" -> Comparator.comparingInt(player -> predefinedValueIndex(player, string(raw.get("placeholder")), raw.get("values"), caseSensitive));
+                    default -> null;
+                };
+                if (rule == null) continue;
+                if ("descending".equals(order) || "desc".equals(order)) rule = rule.reversed();
+                chain = chain.thenComparing(rule);
+            }
         }
-        return chain == null ? fallback : chain.thenComparing(Player::getName, stringComparator(defaultCaseSensitive));
+        return chain.thenComparing(nameComparator);
     }
 
     private int groupPriority(Player player) {
-        String group = cargo.getGroup(player).trim().toLowerCase(Locale.ROOT);
-        return switch (group) {
-            case "dev", "developer", "desenvolvedor" -> 0;
-            case "gerente", "manager" -> 1;
-            case "admin", "administrador", "administrator" -> 2;
-            case "moderador", "moderator", "mod" -> 3;
-            case "ajudante", "helper" -> 4;
-            case "membro", "member", "default" -> 5;
-            default -> 6;
-        };
+        return cargo.getPriority(player);
     }
 
     private boolean hasPermissionNode(Player player, String node) { return !node.isBlank() && player.hasPermission(node); }
@@ -122,10 +114,56 @@ public final class ServerTabManager {
     private String colorize(String text) { return plugin.getVisualText().format(text == null ? "" : text); }
 
     private static final class CargoBridge {
-        private Plugin plugin; private Object api; private Object groups; private Method apiMethod, getGroupMethod, getPrefixMethod, getNicknameColorMethod, groupsMethod, indexOfMethod;
-        void refresh() { Plugin current = Bukkit.getPluginManager().getPlugin("CargoPlus"); if (current == null || !current.isEnabled()) { clear(); return; } if (current == plugin && api != null) return; try { plugin = current; apiMethod = current.getClass().getMethod("api"); api = apiMethod.invoke(current); getGroupMethod = api.getClass().getMethod("getGroup", java.util.UUID.class); getPrefixMethod = api.getClass().getMethod("getPrefix", java.util.UUID.class); getNicknameColorMethod = api.getClass().getMethod("getNicknameColor", java.util.UUID.class); groupsMethod = api.getClass().getMethod("groups"); groups = groupsMethod.invoke(api); indexOfMethod = groups.getClass().getMethod("indexOf", String.class); } catch (ReflectiveOperationException | LinkageError ex) { clear(); } }
+        private Plugin plugin; private Object api; private Object groups;
+        private Method apiMethod, getGroupMethod, getPrefixMethod, getNicknameColorMethod, groupsMethod, indexOfMethod;
+        void refresh() {
+            Plugin current = Bukkit.getPluginManager().getPlugin("CargoPlus");
+            if (current == null || !current.isEnabled()) { clear(); return; }
+            if (current == plugin && api != null) return;
+            try {
+                plugin = current;
+                apiMethod = current.getClass().getMethod("api");
+                api = apiMethod.invoke(current);
+                getGroupMethod = api.getClass().getMethod("getGroup", java.util.UUID.class);
+                getPrefixMethod = api.getClass().getMethod("getPrefix", java.util.UUID.class);
+                getNicknameColorMethod = api.getClass().getMethod("getNicknameColor", java.util.UUID.class);
+                groupsMethod = api.getClass().getMethod("groups");
+                groups = groupsMethod.invoke(api);
+                indexOfMethod = groups.getClass().getMethod("indexOf", String.class);
+            } catch (ReflectiveOperationException | LinkageError ex) { clear(); }
+        }
         private void clear() { plugin = null; api = null; groups = null; apiMethod = null; getGroupMethod = null; getPrefixMethod = null; getNicknameColorMethod = null; groupsMethod = null; indexOfMethod = null; }
         String getGroup(Player player) { return invokeString(getGroupMethod, player.getUniqueId()); }
+        int getPriority(Player player) {
+            String group = normalizeGroup(getGroup(player));
+            int fixed = fixedPriority(group);
+            if (fixed != Integer.MAX_VALUE) return fixed;
+            // Compatibilidade com nomes adicionais cadastrados no CargoPlus.
+            // Cargos desconhecidos ficam abaixo dos cargos conhecidos.
+            if (groups != null && indexOfMethod != null) {
+                try {
+                    Object value = indexOfMethod.invoke(groups, group);
+                    if (value instanceof Number number) return 100 + number.intValue();
+                } catch (ReflectiveOperationException | LinkageError ignored) { }
+            }
+            return 1000;
+        }
+        private int fixedPriority(String group) {
+            return switch (group) {
+                case "dev", "developer", "desenvolvedor" -> 0;
+                case "gerente", "manager" -> 1;
+                case "admin", "administrador", "administrator" -> 2;
+                case "moderador", "moderator", "mod" -> 3;
+                case "ajudante", "helper" -> 4;
+                case "membro", "member", "default" -> 5;
+                default -> Integer.MAX_VALUE;
+            };
+        }
+        private String normalizeGroup(String group) {
+            if (group == null) return "";
+            String normalized = group.replace('\u00A7', '&').replaceAll("(?i)&[0-9A-FK-ORX]", "").trim().toLowerCase(Locale.ROOT);
+            return normalized;
+        }
         CargoData getData(Player player) { String prefix = invokeString(getPrefixMethod, player.getUniqueId()), color = invokeString(getNicknameColorMethod, player.getUniqueId()); return api == null ? CargoData.empty() : new CargoData(true, prefix, color.isBlank() ? "&f" : color); }
         private String invokeString(Method method, Object arg) { if (method == null || api == null) return ""; try { Object value = method.invoke(api, arg); return value == null ? "" : String.valueOf(value); } catch (ReflectiveOperationException | LinkageError ex) { return ""; } }
     }
