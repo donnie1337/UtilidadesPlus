@@ -1,6 +1,5 @@
 package com.sistemautil;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,15 +20,15 @@ public final class ConfigurarCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ChatColor.RED + "Este comando só pode ser usado por jogadores.");
+            sender.sendMessage("§c✖ §fEste comando só pode ser usado por jogadores.");
             return true;
         }
         if (!player.hasPermission(PERMISSION)) {
-            player.sendMessage(ChatColor.RED + "Você não tem permissão para usar este comando.");
+            player.sendMessage("§c✖ §fVocê não tem permissão para executar este comando.");
             return true;
         }
         if (args.length != 0) {
-            player.sendMessage(ChatColor.YELLOW + "Uso: /" + label);
+            player.sendMessage("§e➜ §fUso: /" + label);
             return true;
         }
         gui.open(player);
