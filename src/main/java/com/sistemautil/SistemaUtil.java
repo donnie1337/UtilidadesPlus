@@ -36,6 +36,7 @@ public final class SistemaUtil extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MotdListener(this), this);
         getServer().getPluginManager().registerEvents(new ServerCommandGuardListener(), this);
         getServer().getPluginManager().registerEvents(new RestrictedCommandTabListener(), this);
+        getServer().getPluginManager().registerEvents(new CargoTabRefreshListener(this), this);
         getServer().getPluginManager().registerEvents(utilidadesGui, this);
         getServer().getPluginManager().registerEvents(
                 new JoinQuitNotificationListener(this, utilidadesPreferences), this);
