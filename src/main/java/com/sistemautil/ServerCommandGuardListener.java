@@ -67,6 +67,7 @@ public final class ServerCommandGuardListener implements Listener {
     private boolean isHelpDiscoveryCommand(String label) {
         return label.equals("?")
                 || label.equals("help")
+                || label.equals("about")
                 || label.equals("bukkit:help")
                 || label.equals("spigot:help")
                 || label.equals("minecraft:help");
