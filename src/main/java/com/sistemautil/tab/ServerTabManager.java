@@ -174,23 +174,27 @@ public final class ServerTabManager {
 
         boolean tagEnabled = plugin.getTabConfig().getBoolean("tag.ativada", true);
         boolean showTag = tagEnabled && plugin.getTabConfig().getBoolean("tag.mostrar-no-tab", true);
-        String prefix = showTag ? colorize(data.prefix()) : "";
         String nameColor = colorize(data.nicknameColor());
-        String group = state == null ? cargo.getGroup(player) : state.group();
-        String format = plugin.getTabConfig().getString("jogadores.formato", "%prefix%%name_color%%player_name%");
 
-        player.setPlayerListName(colorize(format
-                .replace("%prefix%", prefix)
-                .replace("%name_color%", nameColor)
-                .replace("%player_name%", player.getName())
-                .replace("%player_group%", group)));
-
+        // O prefixo do cargo é controlado exclusivamente pela Team do CargoPlus.
+        // Não o colocamos em setPlayerListName(), pois isso sobrescreve a renderização
+        // da Team no TAB e pode causar a tag aparecer/desaparecer durante a animação.
+        // A Team também é responsável pelo prefixo acima da cabeça.
         if (tagEnabled && plugin.getTabConfig().getBoolean("tag.mostrar-na-cabeca", true)) {
             Team team = player.getScoreboard().getEntryTeam(player.getName());
             if (team != null) {
+                String prefix = showTag ? colorize(data.prefix()) : "";
                 team.setPrefix(prefix);
             }
         }
+
+        // O TAB recebe somente o nome/cor do jogador. O prefixo do cargo, quando
+        // habilitado, vem da Team do CargoPlus e permanece sincronizado com a animação.
+        String tabName = nameColor + player.getName();
+        if (!showTag) {
+            tabName = nameColor + player.getName();
+        }
+        player.setPlayerListName(tabName);
     }
 
     private String formatTabText(String text, int online, int max, int ping, String address, Player player) {
