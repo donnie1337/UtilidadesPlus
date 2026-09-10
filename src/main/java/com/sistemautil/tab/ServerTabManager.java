@@ -26,7 +26,7 @@ public final class ServerTabManager {
     public void start() {
         stop();
         updateAll();
-        taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::updateAll, 20L, 20L);
+        taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::updateAll, 2L, 2L);
     }
 
     public void stop() {
@@ -52,8 +52,6 @@ public final class ServerTabManager {
 
         List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
 
-        // Capture o cargo e a prioridade uma única vez por ciclo.
-        // Assim, a ordenação e o número enviado ao Bukkit usam exatamente o mesmo snapshot.
         Map<UUID, TabState> states = new HashMap<>();
         for (Player player : players) {
             String group = cargo.getGroup(player);
@@ -63,14 +61,10 @@ public final class ServerTabManager {
 
         players.sort(buildComparator(states));
 
-        // O nome exibido no TAB mantém o %prefix% do CargoPlus.
-        // A Team continua sendo controlada exclusivamente pelo CargoPlus para o nametag.
         for (Player player : players) {
             applyPlayer(player, states.get(player.getUniqueId()));
         }
 
-        // Depois aplica a ordem em uma segunda passada. Isso evita que a atualização
-        // visual interfira no momento em que a ordem da lista é enviada ao Bukkit.
         for (int index = 0; index < players.size(); index++) {
             Player player = players.get(index);
             player.setPlayerListOrder(index);
@@ -103,7 +97,6 @@ public final class ServerTabManager {
         if (enabled) {
             for (Map<?, ?> raw : rules) {
                 String type = string(raw.get("type")).toLowerCase(Locale.ROOT);
-                // A hierarquia de cargos é obrigatória e sempre vem primeiro.
                 if ("primary-group".equals(type)) continue;
 
                 boolean caseSensitive = raw.containsKey("case-sensitive")
@@ -173,11 +166,12 @@ public final class ServerTabManager {
         if (!data.available()) return;
 
         String nameColor = colorize(data.nicknameColor());
-        String prefix = data.prefix() == null ? "" : colorize(data.prefix());
+        // Usa exatamente o mesmo relógio de animação do CargoPlus usado no nametag.
+        // Assim o DEV do TAB não possui um ciclo próprio nem fica alguns segundos atrás.
+        String prefix = cargo.getAnimatedPrefix(player);
+        if (prefix == null || prefix.isBlank()) prefix = data.prefix() == null ? "" : data.prefix();
 
-        // Mantém o prefixo do cargo no TAB através do nome exibido do jogador.
-        // Não toca na Team, evitando sobrescrever a animação/nametag do CargoPlus.
-        player.setPlayerListName(prefix + nameColor + player.getName());
+        player.setPlayerListName(colorize(prefix) + nameColor + player.getName());
     }
 
     private String formatTabText(String text, int online, int max, int ping, String address, Player player) {
@@ -207,7 +201,7 @@ public final class ServerTabManager {
         private Plugin plugin;
         private Object api;
         private Object groups;
-        private Method apiMethod, getGroupMethod, getPrefixMethod, getNicknameColorMethod, groupsMethod, indexOfMethod;
+        private Method apiMethod, getGroupMethod, getPrefixMethod, getAnimatedPrefixMethod, getNicknameColorMethod, groupsMethod, indexOfMethod;
 
         void refresh() {
             Plugin current = Bukkit.getPluginManager().getPlugin("CargoPlus");
@@ -228,6 +222,7 @@ public final class ServerTabManager {
                 api = currentApi;
                 getGroupMethod = api.getClass().getMethod("getGroup", UUID.class);
                 getPrefixMethod = api.getClass().getMethod("getPrefix", UUID.class);
+                getAnimatedPrefixMethod = api.getClass().getMethod("getAnimatedPrefix", UUID.class);
                 getNicknameColorMethod = api.getClass().getMethod("getNicknameColor", UUID.class);
                 groupsMethod = api.getClass().getMethod("groups");
                 groups = groupsMethod.invoke(api);
@@ -244,6 +239,7 @@ public final class ServerTabManager {
             apiMethod = null;
             getGroupMethod = null;
             getPrefixMethod = null;
+            getAnimatedPrefixMethod = null;
             getNicknameColorMethod = null;
             groupsMethod = null;
             indexOfMethod = null;
@@ -251,6 +247,10 @@ public final class ServerTabManager {
 
         String getGroup(Player player) {
             return invokeString(getGroupMethod, player.getUniqueId());
+        }
+
+        String getAnimatedPrefix(Player player) {
+            return invokeString(getAnimatedPrefixMethod, player.getUniqueId());
         }
 
         int getPriority(Player player) {
