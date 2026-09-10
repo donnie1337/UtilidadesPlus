@@ -57,16 +57,16 @@ gui:
 mensagens-entrada:
   ativado: true
   mensagens:
-    - "%cargo% %player% olha quem apareceu!"
-    - "%cargo% %player% acabou de chegar!"
-    - "%cargo% %player% está entre nós!"
-    - "%cargo% %player% chegou chegando!"
-    - "%cargo% %player% deu as caras por aqui!"
+    - "%cargo%%player% olha quem apareceu!"
+    - "%cargo%%player% acabou de chegar!"
+    - "%cargo%%player% está entre nós!"
+    - "%cargo%%player% chegou chegando!"
+    - "%cargo%%player% deu as caras por aqui!"
 
 # Mensagem de saída para qualquer cargo.
 # O CargoPlus define o cargo do jogador. O UtilidadesPlus apenas lê o cargo.
 mensagens-saida:
   ativado: false
-  mensagem: "%cargo% %player% saiu do servidor!"
+  mensagem: "%cargo%%player% saiu do servidor!"
 
 jogadores: {}
