@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class UtilidadesGui implements Listener {
@@ -33,9 +34,25 @@ public final class UtilidadesGui implements Listener {
         }
 
         Inventory inventory = Bukkit.createInventory(null, size(), title());
-        inventory.setItem(slot("entrada", 11), toggleItem(Material.LEVER, "Mensagens de entrada/saída", preferences.broadcastsJoinQuit(player)));
-        inventory.setItem(slot("saida", 15), toggleItem(Material.PISTON, "Visualização de entrada/saída", preferences.receivesJoin(player) && preferences.receivesQuit(player)));
+
+        inventory.setItem(slot("entrada", 11), toggleItem(
+                Material.OAK_DOOR,
+                "§eMensagens de entrada/saída",
+                preferences.broadcastsJoinQuit(player),
+                "§7Controla se sua entrada e saída", 
+                "§7podem ser exibidas para os jogadores."
+        ));
+
         inventory.setItem(slot("cor", 13), colorItem(player));
+
+        inventory.setItem(slot("saida", 15), toggleItem(
+                Material.ENDER_EYE,
+                "§bVisualização de entrada/saída",
+                preferences.receivesJoin(player) && preferences.receivesQuit(player),
+                "§7Controla se você recebe as", 
+                "§7mensagens de entrada e saída."
+        ));
+
         player.openInventory(inventory);
     }
 
@@ -50,18 +67,24 @@ public final class UtilidadesGui implements Listener {
         if (rawSlot == slot("entrada", 11)) {
             boolean value = !preferences.broadcastsJoinQuit(player);
             preferences.setBroadcastsJoinQuit(player, value);
-            player.sendMessage(value ? "§aSuas mensagens de entrada/saída agora são visíveis para todos." : "§cSuas mensagens de entrada/saída foram ocultadas dos outros jogadores.");
+            player.sendMessage(value
+                    ? "§aSuas mensagens de entrada/saída agora são visíveis para todos."
+                    : "§cSuas mensagens de entrada/saída foram ocultadas dos outros jogadores.");
             open(player);
             return;
         }
+
         if (rawSlot == slot("saida", 15)) {
             boolean value = !(preferences.receivesJoin(player) && preferences.receivesQuit(player));
             preferences.setReceivesJoin(player, value);
             preferences.setReceivesQuit(player, value);
-            player.sendMessage(value ? "§aVisualização de entradas/saídas ativada." : "§cVisualização de entradas/saídas desativada.");
+            player.sendMessage(value
+                    ? "§aVisualização de entradas/saídas ativada."
+                    : "§cVisualização de entradas/saídas desativada.");
             open(player);
             return;
         }
+
         if (rawSlot == slot("cor", 13)) {
             player.closeInventory();
             player.performCommand("cor");
@@ -73,14 +96,21 @@ public final class UtilidadesGui implements Listener {
         if (title().equals(event.getView().getTitle())) event.setCancelled(true);
     }
 
-    private ItemStack toggleItem(Material material, String name, boolean enabled) {
+    private ItemStack toggleItem(Material material, String name, boolean enabled, String... description) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return item;
-        meta.setDisplayName("§e" + name);
-        meta.setLore(List.of(
-                "§7Clique para " + (enabled ? "desativar" : "ativar") + ".",
-                enabled ? "§a● ATIVADO" : "§c● DESATIVADO"));
+
+        meta.setDisplayName(name);
+
+        List<String> lore = new ArrayList<>();
+        lore.add("");
+        for (String line : description) lore.add(line);
+        lore.add("");
+        lore.add(enabled ? "§a● ATIVADO" : "§c● DESATIVADO");
+        lore.add("§8Clique para " + (enabled ? "desativar" : "ativar") + ".");
+
+        meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
     }
@@ -89,11 +119,19 @@ public final class UtilidadesGui implements Listener {
         ChatColor color = parseColor(currentChatColor(player));
         ItemStack item = new ItemStack(dyeFor(color));
         ItemMeta meta = item.getItemMeta();
+
         if (meta != null) {
             meta.setDisplayName(color + "Cor da mensagem");
             meta.setLore(List.of(
-                    "§7Cor atual: " + color + currentChatColorName(player),
-                    "§eClique para abrir as lãs de cores."));
+                    "",
+                    "§7Sua cor atual:",
+                    "§f▸ " + color + currentChatColorName(player),
+                    "",
+                    "§7Escolha uma nova cor para", 
+                    "§7as suas mensagens no chat.",
+                    "",
+                    "§eClique para abrir as cores."
+            ));
             item.setItemMeta(meta);
         }
         return item;
