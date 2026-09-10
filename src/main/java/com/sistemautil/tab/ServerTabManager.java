@@ -4,7 +4,6 @@ import com.sistemautil.SistemaUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scoreboard.Team;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -64,7 +63,7 @@ public final class ServerTabManager {
 
         players.sort(buildComparator(states));
 
-        // Primeiro atualiza a identidade visual de todos.
+        // Atualiza somente a identidade do jogador. O prefixo da Team pertence ao CargoPlus.
         for (Player player : players) {
             applyPlayer(player, states.get(player.getUniqueId()));
         }
@@ -172,29 +171,11 @@ public final class ServerTabManager {
         CargoData data = cargo.getData(player);
         if (!data.available()) return;
 
-        boolean tagEnabled = plugin.getTabConfig().getBoolean("tag.ativada", true);
-        boolean showTag = tagEnabled && plugin.getTabConfig().getBoolean("tag.mostrar-no-tab", true);
+        // CargoPlus é o único responsável pelo prefixo da Team. O UtilidadesPlus
+        // não deve mais chamar Team#setPrefix(), pois isso sobrescreve a animação
+        // e pode fazer a tag aparecer/desaparecer no TAB.
         String nameColor = colorize(data.nicknameColor());
-
-        // O prefixo do cargo é controlado exclusivamente pela Team do CargoPlus.
-        // Não o colocamos em setPlayerListName(), pois isso sobrescreve a renderização
-        // da Team no TAB e pode causar a tag aparecer/desaparecer durante a animação.
-        // A Team também é responsável pelo prefixo acima da cabeça.
-        if (tagEnabled && plugin.getTabConfig().getBoolean("tag.mostrar-na-cabeca", true)) {
-            Team team = player.getScoreboard().getEntryTeam(player.getName());
-            if (team != null) {
-                String prefix = showTag ? colorize(data.prefix()) : "";
-                team.setPrefix(prefix);
-            }
-        }
-
-        // O TAB recebe somente o nome/cor do jogador. O prefixo do cargo, quando
-        // habilitado, vem da Team do CargoPlus e permanece sincronizado com a animação.
-        String tabName = nameColor + player.getName();
-        if (!showTag) {
-            tabName = nameColor + player.getName();
-        }
-        player.setPlayerListName(tabName);
+        player.setPlayerListName(nameColor + player.getName());
     }
 
     private String formatTabText(String text, int online, int max, int ping, String address, Player player) {
