@@ -63,7 +63,8 @@ public final class ServerTabManager {
 
         players.sort(buildComparator(states));
 
-        // Atualiza somente a identidade do jogador. O prefixo da Team pertence ao CargoPlus.
+        // O nome exibido no TAB mantém o %prefix% do CargoPlus.
+        // A Team continua sendo controlada exclusivamente pelo CargoPlus para o nametag.
         for (Player player : players) {
             applyPlayer(player, states.get(player.getUniqueId()));
         }
@@ -171,11 +172,12 @@ public final class ServerTabManager {
         CargoData data = cargo.getData(player);
         if (!data.available()) return;
 
-        // CargoPlus é o único responsável pelo prefixo da Team. O UtilidadesPlus
-        // não deve mais chamar Team#setPrefix(), pois isso sobrescreve a animação
-        // e pode fazer a tag aparecer/desaparecer no TAB.
         String nameColor = colorize(data.nicknameColor());
-        player.setPlayerListName(nameColor + player.getName());
+        String prefix = data.prefix() == null ? "" : colorize(data.prefix());
+
+        // Mantém o prefixo do cargo no TAB através do nome exibido do jogador.
+        // Não toca na Team, evitando sobrescrever a animação/nametag do CargoPlus.
+        player.setPlayerListName(prefix + nameColor + player.getName());
     }
 
     private String formatTabText(String text, int online, int max, int ping, String address, Player player) {
