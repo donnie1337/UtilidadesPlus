@@ -28,7 +28,7 @@ public final class ServerCommandGuardListener implements Listener {
         this.commandMapMethod = resolveCommandMapMethod();
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String raw = event.getMessage();
@@ -57,10 +57,8 @@ public final class ServerCommandGuardListener implements Listener {
         Command registered = findCommand(label);
         if (registered == null) return;
 
-        // O Bukkit/Paper já conhece a permissão declarada no plugin.yml.
-        // Interceptamos antes da execução para que a mensagem padrão de
-        // falta de permissão nunca seja exposta ao jogador.
-        if (!registered.testPermissionSilent(player)) {
+        String permission = registered.getPermission();
+        if (permission != null && !permission.isBlank() && !player.hasPermission(permission)) {
             deny(event, player);
         }
     }
@@ -76,8 +74,10 @@ public final class ServerCommandGuardListener implements Listener {
             var cargoPlus = Bukkit.getPluginManager().getPlugin("CargoPlus");
             if (cargoPlus == null) return false;
             Method permissionsMethod = cargoPlus.getClass().getMethod("permissions");
+            permissionsMethod.setAccessible(true);
             Object permissions = permissionsMethod.invoke(cargoPlus);
             Method check = permissions.getClass().getMethod("hasCargoPermission", java.util.UUID.class, String.class);
+            check.setAccessible(true);
             Object result = check.invoke(permissions, player.getUniqueId(), permission);
             return result instanceof Boolean && (Boolean) result;
         } catch (ReflectiveOperationException | LinkageError ex) {
@@ -108,7 +108,9 @@ public final class ServerCommandGuardListener implements Listener {
 
     private Method resolveCommandMapMethod() {
         try {
-            return Bukkit.getServer().getClass().getMethod("getCommandMap");
+            Method method = Bukkit.getServer().getClass().getMethod("getCommandMap");
+            method.setAccessible(true);
+            return method;
         } catch (ReflectiveOperationException | LinkageError ex) {
             return null;
         }
