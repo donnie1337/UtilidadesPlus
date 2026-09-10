@@ -189,7 +189,6 @@ public final class ServerTabManager {
             Team team = player.getScoreboard().getEntryTeam(player.getName());
             if (team != null) {
                 team.setPrefix(prefix);
-                team.setSuffix("");
             }
         }
     }
@@ -290,8 +289,6 @@ public final class ServerTabManager {
             try {
                 Object value = indexOfMethod.invoke(groups, group);
                 if (value instanceof Number number) {
-                    // CargoPlus mantém a hierarquia do menor para o maior cargo.
-                    // Invertendo o índice, o maior cargo recebe a menor prioridade TAB.
                     return 100 - number.intValue();
                 }
             } catch (ReflectiveOperationException | LinkageError ignored) {
