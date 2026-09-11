@@ -36,10 +36,17 @@ public final class UtilidadesPreferences {
         synchronized (this) { return config.getBoolean("receber.saida", true); }
     }
 
+    public boolean globallyReceivesTpa() {
+        synchronized (this) { return config.getBoolean("receber.tpa", true); }
+    }
+
     public boolean receivesJoin(Player player) { return get(player, "entrada", globallyReceivesJoin()); }
     public boolean receivesQuit(Player player) { return get(player, "saida", globallyReceivesQuit()); }
+    public boolean receivesTpa(Player player) { return get(player, "tpa", globallyReceivesTpa()); }
+
     public void setReceivesJoin(Player player, boolean value) { set(player, "entrada", value); }
     public void setReceivesQuit(Player player, boolean value) { set(player, "saida", value); }
+    public void setReceivesTpa(Player player, boolean value) { set(player, "tpa", value); }
 
     public boolean broadcastsJoin(Player player) { return get(player, "mostrar-entrada", true); }
     public boolean broadcastsQuit(Player player) { return get(player, "mostrar-saida", true); }
