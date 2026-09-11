@@ -19,9 +19,9 @@ import java.util.List;
 
 public final class UtilidadesGui implements Listener {
     private static final String PERMISSION = "utilidadesplus.configurar";
-    private static final String CHAT_PREFIX = "&e&lᴄʜᴀᴛ &8• &r";
     private static final String MAIN_TITLE = "§8Configurações";
-    private static final String PREFERENCES_TITLE = "§8Preferências do jogador";
+    private static final String TELEPORT_TITLE = "§8Teletransporte e comunicação";
+    private static final String PREFERENCES_TITLE = "§8Mensagens de entrada";
     private final SistemaUtil plugin;
     private final UtilidadesPreferences preferences;
 
@@ -37,21 +37,21 @@ public final class UtilidadesGui implements Listener {
         }
 
         Inventory inventory = Bukkit.createInventory(null, size(), MAIN_TITLE);
-
-        inventory.setItem(slot("tpa", 11), toggleItem(
-                Material.ENDER_PEARL,
-                "§bReceber TPA",
-                preferences.receivesTpa(player),
-                "§7Permite que outros jogadores", 
-                "§7enviem solicitações de TPA para você."
+        inventory.setItem(slot("teletransporte", 11), item(
+                Material.OAK_BOAT,
+                "§b&lTeletransporte",
+                "",
+                "§7Controle solicitações de TPA",
+                "§7e mensagens privadas.",
+                "",
+                "§eClique para abrir."
         ));
-
-        inventory.setItem(slot("preferencias", 15), item(
+        inventory.setItem(slot("mensagens", 15), item(
                 Material.COMPASS,
-                "§ePreferências",
-                "§7Configure suas mensagens,", 
-                "§7visualização de entrada/saída", 
-                "§7e a cor do chat.",
+                "§e&lMensagens de entrada",
+                "",
+                "§7Configure suas mensagens,",
+                "§7notificações e cor do chat.",
                 "",
                 "§eClique para abrir."
         ));
@@ -59,40 +59,51 @@ public final class UtilidadesGui implements Listener {
         player.openInventory(inventory);
     }
 
+    private void openTeleport(Player player) {
+        Inventory inventory = Bukkit.createInventory(null, size(), TELEPORT_TITLE);
+        inventory.setItem(slot("receber-tpa", 11), toggleItem(
+                Material.OAK_BOAT,
+                "§b&lReceber TPA",
+                preferences.receivesTpa(player),
+                "§7Permite que outros jogadores",
+                "§7enviem solicitações de TPA para você."
+        ));
+        inventory.setItem(slot("receber-tell", 15), toggleItem(
+                Material.PAPER,
+                "§e&lReceber /tell",
+                preferences.receivesTell(player),
+                "§7Permite que outros jogadores",
+                "§7enviem mensagens privadas para você."
+        ));
+        inventory.setItem(22, item(Material.ARROW, "§fVoltar", "§7Voltar para configurações."));
+        player.openInventory(inventory);
+    }
+
     private void openPreferences(Player player) {
         Inventory inventory = Bukkit.createInventory(null, size(), PREFERENCES_TITLE);
-
         inventory.setItem(slot("entrada", 11), toggleItem(
                 Material.OAK_DOOR,
-                "§eMensagens de entrada/saída",
+                "§e&lMensagens de entrada/saída",
                 preferences.broadcastsJoinQuit(player),
-                "§7Controla se sua entrada e saída", 
+                "§7Controla se sua entrada e saída",
                 "§7podem ser exibidas para os jogadores."
         ));
-
         inventory.setItem(slot("cor", 13), colorItem(player));
-
-        inventory.setItem(slot("saida", 15), toggleItem(
+        inventory.setItem(slot("notificacoes", 15), toggleItem(
                 Material.ENDER_EYE,
-                "§bVisualização de entrada/saída",
+                "§b&lNotificações de entrada/saída",
                 preferences.receivesJoin(player) && preferences.receivesQuit(player),
-                "§7Controla se você recebe as", 
+                "§7Controla se você recebe as",
                 "§7mensagens de entrada e saída."
         ));
-
-        inventory.setItem(22, item(
-                Material.ARROW,
-                "§fVoltar",
-                "§7Voltar para o menu principal."
-        ));
-
+        inventory.setItem(22, item(Material.ARROW, "§fVoltar", "§7Voltar para configurações."));
         player.openInventory(inventory);
     }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         String title = event.getView().getTitle();
-        if (!MAIN_TITLE.equals(title) && !PREFERENCES_TITLE.equals(title)) return;
+        if (!MAIN_TITLE.equals(title) && !TELEPORT_TITLE.equals(title) && !PREFERENCES_TITLE.equals(title)) return;
         event.setCancelled(true);
         if (!(event.getWhoClicked() instanceof Player player)) return;
         if (event.getClickedInventory() != event.getView().getTopInventory()) return;
@@ -100,19 +111,34 @@ public final class UtilidadesGui implements Listener {
         int rawSlot = event.getRawSlot();
 
         if (MAIN_TITLE.equals(title)) {
-            if (rawSlot == slot("tpa", 11)) {
+            if (rawSlot == slot("teletransporte", 11)) {
+                openTeleport(player);
+            } else if (rawSlot == slot("mensagens", 15)) {
+                openPreferences(player);
+            }
+            return;
+        }
+
+        if (TELEPORT_TITLE.equals(title)) {
+            if (rawSlot == slot("receber-tpa", 11)) {
                 boolean value = !preferences.receivesTpa(player);
                 preferences.setReceivesTpa(player, value);
                 player.sendMessage(value
                         ? "§b&lᴛᴘᴀ §8• §aVocê agora pode receber solicitações de TPA."
                         : "§b&lᴛᴘᴀ §8• §cVocê não receberá mais solicitações de TPA.");
-                open(player);
+                openTeleport(player);
                 return;
             }
-
-            if (rawSlot == slot("preferencias", 15)) {
-                openPreferences(player);
+            if (rawSlot == slot("receber-tell", 15)) {
+                boolean value = !preferences.receivesTell(player);
+                preferences.setReceivesTell(player, value);
+                player.sendMessage(value
+                        ? "§e&lᴄʜᴀᴛ §8• §aVocê agora pode receber mensagens privadas."
+                        : "§e&lᴄʜᴀᴛ §8• §cVocê não receberá mais mensagens privadas.");
+                openTeleport(player);
+                return;
             }
+            if (rawSlot == 22) open(player);
             return;
         }
 
@@ -125,49 +151,41 @@ public final class UtilidadesGui implements Listener {
             openPreferences(player);
             return;
         }
-
-        if (rawSlot == slot("saida", 15)) {
+        if (rawSlot == slot("notificacoes", 15)) {
             boolean value = !(preferences.receivesJoin(player) && preferences.receivesQuit(player));
             preferences.setReceivesJoin(player, value);
             preferences.setReceivesQuit(player, value);
             player.sendMessage(value
-                    ? "§aVisualização de entradas/saídas ativada."
-                    : "§cVisualização de entradas/saídas desativada.");
+                    ? "§aNotificações de entrada/saída ativadas."
+                    : "§cNotificações de entrada/saída desativadas.");
             openPreferences(player);
             return;
         }
-
         if (rawSlot == slot("cor", 13)) {
             player.closeInventory();
             player.performCommand("cor");
             return;
         }
-
-        if (rawSlot == 22) {
-            open(player);
-        }
+        if (rawSlot == 22) open(player);
     }
 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
         String title = event.getView().getTitle();
-        if (MAIN_TITLE.equals(title) || PREFERENCES_TITLE.equals(title)) event.setCancelled(true);
+        if (MAIN_TITLE.equals(title) || TELEPORT_TITLE.equals(title) || PREFERENCES_TITLE.equals(title)) event.setCancelled(true);
     }
 
     private ItemStack toggleItem(Material material, String name, boolean enabled, String... description) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return item;
-
-        meta.setDisplayName(name);
-
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
         List<String> lore = new ArrayList<>();
         lore.add("");
-        for (String line : description) lore.add(line);
+        for (String line : description) lore.add(ChatColor.translateAlternateColorCodes('&', line));
         lore.add("");
         lore.add(enabled ? "§a● ATIVADO" : "§c● DESATIVADO");
         lore.add("§8Clique para " + (enabled ? "desativar" : "ativar") + ".");
-
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
@@ -177,8 +195,10 @@ public final class UtilidadesGui implements Listener {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return item;
-        meta.setDisplayName(name);
-        meta.setLore(List.of(loreLines));
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+        List<String> lore = new ArrayList<>();
+        for (String line : loreLines) lore.add(ChatColor.translateAlternateColorCodes('&', line));
+        meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
     }
@@ -187,7 +207,6 @@ public final class UtilidadesGui implements Listener {
         ChatColor color = parseColor(currentChatColor(player));
         ItemStack item = new ItemStack(dyeFor(color));
         ItemMeta meta = item.getItemMeta();
-
         if (meta != null) {
             meta.setDisplayName(color + "Cor da mensagem");
             meta.setLore(List.of(
@@ -195,7 +214,7 @@ public final class UtilidadesGui implements Listener {
                     "§7Sua cor atual:",
                     "§f▸ " + color + currentChatColorName(player),
                     "",
-                    "§7Escolha uma nova cor para", 
+                    "§7Escolha uma nova cor para",
                     "§7as suas mensagens no chat.",
                     "",
                     "§eClique para abrir as cores."
@@ -254,11 +273,6 @@ public final class UtilidadesGui implements Listener {
             case DARK_PURPLE -> Material.PURPLE_DYE;
             default -> Material.WHITE_DYE;
         };
-    }
-
-    private String title() {
-        String raw = plugin.getUtilidadesConfig().getString("gui.titulo", "&8Utilidades do jogador");
-        return ChatColor.translateAlternateColorCodes('&', raw == null ? "" : raw);
     }
 
     private int size() {
