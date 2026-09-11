@@ -40,12 +40,15 @@ identidade-visual:
 receber:
   entrada: true
   saida: true
+  tpa: true
 
 gui:
   ativado: true
   titulo: '&8Utilidades do jogador'
   tamanho: 27
   slots:
+    tpa: 11
+    preferencias: 15
     entrada: 11
     saida: 15
     cor: 13
