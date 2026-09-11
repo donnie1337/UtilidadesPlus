@@ -40,13 +40,19 @@ public final class UtilidadesPreferences {
         synchronized (this) { return config.getBoolean("receber.tpa", true); }
     }
 
+    public boolean globallyReceivesTell() {
+        synchronized (this) { return config.getBoolean("receber.tell", true); }
+    }
+
     public boolean receivesJoin(Player player) { return get(player, "entrada", globallyReceivesJoin()); }
     public boolean receivesQuit(Player player) { return get(player, "saida", globallyReceivesQuit()); }
     public boolean receivesTpa(Player player) { return get(player, "tpa", globallyReceivesTpa()); }
+    public boolean receivesTell(Player player) { return get(player, "tell", globallyReceivesTell()); }
 
     public void setReceivesJoin(Player player, boolean value) { set(player, "entrada", value); }
     public void setReceivesQuit(Player player, boolean value) { set(player, "saida", value); }
     public void setReceivesTpa(Player player, boolean value) { set(player, "tpa", value); }
+    public void setReceivesTell(Player player, boolean value) { set(player, "tell", value); }
 
     public boolean broadcastsJoin(Player player) { return get(player, "mostrar-entrada", true); }
     public boolean broadcastsQuit(Player player) { return get(player, "mostrar-saida", true); }
