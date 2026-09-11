@@ -89,6 +89,10 @@ public final class SistemaUtil extends JavaPlugin {
         return utilidadesPreferences == null || utilidadesPreferences.receivesTpa(player);
     }
 
+    public boolean receivesTell(Player player) {
+        return utilidadesPreferences == null || utilidadesPreferences.receivesTell(player);
+    }
+
     public void reloadConfigs() {
         configManager.reloadAll();
         if (visualText != null) visualText.reload();
