@@ -41,16 +41,19 @@ receber:
   entrada: true
   saida: true
   tpa: true
+  tell: true
 
 gui:
   ativado: true
   titulo: '&8Utilidades do jogador'
   tamanho: 27
   slots:
-    tpa: 11
-    preferencias: 15
+    teletransporte: 11
+    mensagens: 15
+    receber-tpa: 11
+    receber-tell: 15
     entrada: 11
-    saida: 15
+    notificacoes: 15
     cor: 13
 
 # Mensagens de entrada.
