@@ -85,6 +85,10 @@ public final class SistemaUtil extends JavaPlugin {
     public org.bukkit.configuration.file.FileConfiguration getTabConfig() { return configManager.tab(); }
     public org.bukkit.configuration.file.FileConfiguration getUtilidadesConfig() { return configManager.utilidades(); }
 
+    public boolean isTpaEnabled(Player player) {
+        return utilidadesPreferences == null || utilidadesPreferences.receivesTpa(player);
+    }
+
     public void reloadConfigs() {
         configManager.reloadAll();
         if (visualText != null) visualText.reload();
