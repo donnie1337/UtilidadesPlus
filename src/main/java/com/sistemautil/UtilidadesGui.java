@@ -19,6 +19,9 @@ import java.util.List;
 
 public final class UtilidadesGui implements Listener {
     private static final String PERMISSION = "utilidadesplus.configurar";
+    private static final String CHAT_PREFIX = "&e&lᴄʜᴀᴛ &8• &r";
+    private static final String MAIN_TITLE = "§8Configurações";
+    private static final String PREFERENCES_TITLE = "§8Preferências do jogador";
     private final SistemaUtil plugin;
     private final UtilidadesPreferences preferences;
 
@@ -33,7 +36,31 @@ public final class UtilidadesGui implements Listener {
             return;
         }
 
-        Inventory inventory = Bukkit.createInventory(null, size(), title());
+        Inventory inventory = Bukkit.createInventory(null, size(), MAIN_TITLE);
+
+        inventory.setItem(slot("tpa", 11), toggleItem(
+                Material.ENDER_PEARL,
+                "§bReceber TPA",
+                preferences.receivesTpa(player),
+                "§7Permite que outros jogadores", 
+                "§7enviem solicitações de TPA para você."
+        ));
+
+        inventory.setItem(slot("preferencias", 15), item(
+                Material.COMPASS,
+                "§ePreferências",
+                "§7Configure suas mensagens,", 
+                "§7visualização de entrada/saída", 
+                "§7e a cor do chat.",
+                "",
+                "§eClique para abrir."
+        ));
+
+        player.openInventory(inventory);
+    }
+
+    private void openPreferences(Player player) {
+        Inventory inventory = Bukkit.createInventory(null, size(), PREFERENCES_TITLE);
 
         inventory.setItem(slot("entrada", 11), toggleItem(
                 Material.OAK_DOOR,
@@ -53,24 +80,49 @@ public final class UtilidadesGui implements Listener {
                 "§7mensagens de entrada e saída."
         ));
 
+        inventory.setItem(22, item(
+                Material.ARROW,
+                "§fVoltar",
+                "§7Voltar para o menu principal."
+        ));
+
         player.openInventory(inventory);
     }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (!title().equals(event.getView().getTitle())) return;
+        String title = event.getView().getTitle();
+        if (!MAIN_TITLE.equals(title) && !PREFERENCES_TITLE.equals(title)) return;
         event.setCancelled(true);
         if (!(event.getWhoClicked() instanceof Player player)) return;
         if (event.getClickedInventory() != event.getView().getTopInventory()) return;
 
         int rawSlot = event.getRawSlot();
+
+        if (MAIN_TITLE.equals(title)) {
+            if (rawSlot == slot("tpa", 11)) {
+                boolean value = !preferences.receivesTpa(player);
+                preferences.setReceivesTpa(player, value);
+                player.sendMessage(value
+                        ? "§b&lᴛᴘᴀ §8• §aVocê agora pode receber solicitações de TPA."
+                        : "§b&lᴛᴘᴀ §8• §cVocê não receberá mais solicitações de TPA.");
+                open(player);
+                return;
+            }
+
+            if (rawSlot == slot("preferencias", 15)) {
+                openPreferences(player);
+            }
+            return;
+        }
+
         if (rawSlot == slot("entrada", 11)) {
             boolean value = !preferences.broadcastsJoinQuit(player);
             preferences.setBroadcastsJoinQuit(player, value);
             player.sendMessage(value
                     ? "§aSuas mensagens de entrada/saída agora são visíveis para todos."
                     : "§cSuas mensagens de entrada/saída foram ocultadas dos outros jogadores.");
-            open(player);
+            openPreferences(player);
             return;
         }
 
@@ -81,19 +133,25 @@ public final class UtilidadesGui implements Listener {
             player.sendMessage(value
                     ? "§aVisualização de entradas/saídas ativada."
                     : "§cVisualização de entradas/saídas desativada.");
-            open(player);
+            openPreferences(player);
             return;
         }
 
         if (rawSlot == slot("cor", 13)) {
             player.closeInventory();
             player.performCommand("cor");
+            return;
+        }
+
+        if (rawSlot == 22) {
+            open(player);
         }
     }
 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
-        if (title().equals(event.getView().getTitle())) event.setCancelled(true);
+        String title = event.getView().getTitle();
+        if (MAIN_TITLE.equals(title) || PREFERENCES_TITLE.equals(title)) event.setCancelled(true);
     }
 
     private ItemStack toggleItem(Material material, String name, boolean enabled, String... description) {
@@ -111,6 +169,16 @@ public final class UtilidadesGui implements Listener {
         lore.add("§8Clique para " + (enabled ? "desativar" : "ativar") + ".");
 
         meta.setLore(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private ItemStack item(Material material, String name, String... loreLines) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return item;
+        meta.setDisplayName(name);
+        meta.setLore(List.of(loreLines));
         item.setItemMeta(meta);
         return item;
     }
