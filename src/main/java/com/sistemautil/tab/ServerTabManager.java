@@ -81,13 +81,29 @@ public final class ServerTabManager {
         String clanTag = clan.getTag(player); String tagPart = "";
         if (!clanTag.isBlank()) {
             String tagColor = firstColorCode(clanTag); if (tagColor.isBlank()) tagColor = "§7";
-            tagPart = "§7[" + tagColor + stripTagColors(clanTag) + "§7]";
+            tagPart = " " + tagColor + toSmallCaps(stripTagColors(clanTag));
         }
-        player.setPlayerListName(colorize(prefix) + cargoColor + player.getName() + (tagPart.isBlank() ? "" : " " + tagPart));
+        player.setPlayerListName(colorize(prefix) + cargoColor + player.getName() + tagPart);
     }
 
     private String stripTagColors(String tag) { return tag.replaceAll("(?i)&[0-9A-F]", "").replaceAll("(?i)§[0-9A-F]", ""); }
     private String firstColorCode(String text) { if (text == null) return ""; for (int i = 0; i + 1 < text.length(); i++) { char marker = text.charAt(i); if (marker != '&' && marker != '§') continue; char code = text.charAt(i + 1); if ("0123456789abcdefABCDEF".indexOf(code) >= 0) return "§" + Character.toLowerCase(code); } return ""; }
+    private String toSmallCaps(String text) {
+        if (text == null || text.isEmpty()) return "";
+        StringBuilder result = new StringBuilder(text.length());
+        for (char character : text.toCharArray()) {
+            result.append(switch (character) {
+                case 'A', 'a' -> 'ᴀ'; case 'B', 'b' -> 'ʙ'; case 'C', 'c' -> 'ᴄ'; case 'D', 'd' -> 'ᴅ';
+                case 'E', 'e' -> 'ᴇ'; case 'F', 'f' -> 'ꜰ'; case 'G', 'g' -> 'ɢ'; case 'H', 'h' -> 'ʜ';
+                case 'I', 'i' -> 'ɪ'; case 'J', 'j' -> 'ᴊ'; case 'K', 'k' -> 'ᴋ'; case 'L', 'l' -> 'ʟ';
+                case 'M', 'm' -> 'ᴍ'; case 'N', 'n' -> 'ɴ'; case 'O', 'o' -> 'ᴏ'; case 'P', 'p' -> 'ᴘ';
+                case 'Q', 'q' -> 'ǫ'; case 'R', 'r' -> 'ʀ'; case 'S', 's' -> 's'; case 'T', 't' -> 'ᴛ';
+                case 'U', 'u' -> 'ᴜ'; case 'V', 'v' -> 'ᴠ'; case 'W', 'w' -> 'ᴡ'; case 'X', 'x' -> 'x';
+                case 'Y', 'y' -> 'ʏ'; case 'Z', 'z' -> 'ᴢ'; default -> character;
+            });
+        }
+        return result.toString();
+    }
     private String formatTabText(String text, int online, int max, int ping, String address, Player player) { String result = (text == null ? "" : text).replace("%online%", String.valueOf(online)).replace("%max%", String.valueOf(max)).replace("%ping%", String.valueOf(ping)).replace("%ip%", address == null ? "" : address); if (player != null) result = placeholders.resolve(player, result.replace("%player_name%", player.getName()).replace("%player_group%", cargo.getGroup(player)).replace("%player_world%", player.getWorld().getName())); return colorize(result); }
     private String colorize(String text) { return plugin.getVisualText().format(text == null ? "" : text); }
     private record TabState(String group, int priority) { }
