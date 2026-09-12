@@ -23,7 +23,6 @@ public final class ServerTabManager {
     private int taskId = -1;
 
     public ServerTabManager(SistemaUtil plugin) { this.plugin = plugin; }
-
     public void start() { stop(); updateAll(); taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::updateAll, 2L, 2L); }
     public void stop() { if (taskId != -1) { Bukkit.getScheduler().cancelTask(taskId); taskId = -1; } }
 
@@ -33,30 +32,25 @@ public final class ServerTabManager {
         int online = Bukkit.getOnlinePlayers().size(); int max = Bukkit.getMaxPlayers();
         String address = plugin.getTabConfig().getString("endereco-servidor", "play.seuservidor.com:25565");
         String header = formatTabText(plugin.getTabConfig().getString("header", "&6&lMEU SERVIDOR\n&7Seja bem-vindo!"), online, max, 0, address, null);
-        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-        Map<UUID, TabState> states = new HashMap<>();
+        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers()); Map<UUID, TabState> states = new HashMap<>();
         for (Player player : players) states.put(player.getUniqueId(), new TabState(cargo.getGroup(player), cargo.getPriority(cargo.getGroup(player))));
         players.sort(buildComparator(states));
         for (Player player : players) applyPlayer(player, states.get(player.getUniqueId()));
         for (int index = 0; index < players.size(); index++) {
-            Player player = players.get(index); player.setPlayerListOrder(index);
-            int ping = Math.max(0, player.getPing());
+            Player player = players.get(index); player.setPlayerListOrder(index); int ping = Math.max(0, player.getPing());
             String footer = formatTabText(plugin.getTabConfig().getString("footer", "&8&m----------------------------------------\n&fJogadores online: &a%online%/%max%\n&fSeu ping: &a%ping%ms\n&fIP: &b%ip%"), online, max, ping, address, player);
             player.setPlayerListHeaderFooter(header, footer);
         }
     }
-
     public void updatePlayer(Player player) { if (player == null || !player.isOnline()) return; updateAll(); player.updateCommands(); }
 
     private Comparator<Player> buildComparator(Map<UUID, TabState> states) {
-        List<Map<?, ?>> rules = plugin.getTabConfig().getMapList("sorting.rules");
-        boolean defaultCaseSensitive = plugin.getTabConfig().getBoolean("sorting.case-sensitive", false);
+        List<Map<?, ?>> rules = plugin.getTabConfig().getMapList("sorting.rules"); boolean defaultCaseSensitive = plugin.getTabConfig().getBoolean("sorting.case-sensitive", false);
         Comparator<Player> nameComparator = Comparator.comparing(Player::getName, stringComparator(defaultCaseSensitive));
         Comparator<Player> chain = Comparator.comparingInt(player -> { TabState state = states.get(player.getUniqueId()); return state == null ? Integer.MAX_VALUE : state.priority(); });
         if (plugin.getTabConfig().getBoolean("sorting.enabled", true)) for (Map<?, ?> raw : rules) {
             String type = string(raw.get("type")).toLowerCase(Locale.ROOT); if ("primary-group".equals(type)) continue;
-            boolean caseSensitive = raw.containsKey("case-sensitive") ? Boolean.parseBoolean(String.valueOf(raw.get("case-sensitive"))) : defaultCaseSensitive;
-            String order = string(raw.get("order")).toLowerCase(Locale.ROOT);
+            boolean caseSensitive = raw.containsKey("case-sensitive") ? Boolean.parseBoolean(String.valueOf(raw.get("case-sensitive"))) : defaultCaseSensitive; String order = string(raw.get("order")).toLowerCase(Locale.ROOT);
             Comparator<Player> rule = switch (type) {
                 case "permission" -> Comparator.comparingInt(player -> hasPermissionNode(player, string(raw.get("node"))) ? 1 : 0);
                 case "numeric-placeholder" -> Comparator.comparingDouble(player -> numericPlaceholder(player, string(raw.get("placeholder"))));
@@ -68,7 +62,6 @@ public final class ServerTabManager {
         }
         return chain.thenComparing(nameComparator);
     }
-
     private boolean hasPermissionNode(Player player, String node) { return !node.isBlank() && player.hasPermission(node); }
     private double numericPlaceholder(Player player, String token) { try { return Double.parseDouble(placeholder(player, token).trim().replace(',', '.')); } catch (NumberFormatException ex) { return Double.POSITIVE_INFINITY; } }
     private int predefinedValueIndex(Player player, String token, Object values, boolean caseSensitive) { if (!(values instanceof List<?> list)) return Integer.MAX_VALUE; String value = placeholder(player, token); for (int i = 0; i < list.size(); i++) { String candidate = String.valueOf(list.get(i)); if (caseSensitive ? candidate.equals(value) : candidate.equalsIgnoreCase(value)) return i; } return Integer.MAX_VALUE; }
@@ -79,7 +72,13 @@ public final class ServerTabManager {
     private void applyPlayer(Player player, TabState state) {
         CargoData data = cargo.getData(player); if (!data.available()) return;
         String prefix = cargo.getAnimatedPrefix(player); if (prefix == null || prefix.isBlank()) prefix = data.prefix() == null ? "" : data.prefix();
-        String cargoColor = firstColorCode(prefix); if (cargoColor.isBlank()) cargoColor = firstColorCode(data.prefix()); if (cargoColor.isBlank()) cargoColor = "§f";
+
+        // A animação pertence somente ao cargo. O nick usa a cor estática do cargo.
+        // Assim, quando DEV pisca, apenas "DEV" pisca; o nick continua vermelho.
+        String cargoColor = firstColorCode(data.prefix());
+        if (cargoColor.isBlank()) cargoColor = firstColorCode(prefix);
+        if (cargoColor.isBlank()) cargoColor = "§f";
+
         String clanTag = clan.getTag(player); String tagPart = "";
         if (!clanTag.isBlank()) {
             String tagColor = firstColorCode(clanTag); if (tagColor.isBlank()) tagColor = "§7";
@@ -95,8 +94,7 @@ public final class ServerTabManager {
     private record TabState(String group, int priority) { }
 
     private static final class CargoBridge {
-        private Plugin plugin; private Object api; private Object groups;
-        private Method apiMethod, getGroupMethod, getPrefixMethod, getAnimatedPrefixMethod, getNicknameColorMethod, groupsMethod, indexOfMethod;
+        private Plugin plugin; private Object api; private Object groups; private Method apiMethod, getGroupMethod, getPrefixMethod, getAnimatedPrefixMethod, getNicknameColorMethod, groupsMethod, indexOfMethod;
         void refresh() { Plugin current = Bukkit.getPluginManager().getPlugin("CargoPlus"); if (current == null || !current.isEnabled()) { clear(); return; } try { plugin = current; apiMethod = current.getClass().getMethod("api"); Object currentApi = apiMethod.invoke(current); if (currentApi == null) { clear(); return; } api = currentApi; getGroupMethod = api.getClass().getMethod("getGroup", UUID.class); getPrefixMethod = api.getClass().getMethod("getPrefix", UUID.class); getAnimatedPrefixMethod = api.getClass().getMethod("getAnimatedPrefix", UUID.class); getNicknameColorMethod = api.getClass().getMethod("getNicknameColor", UUID.class); groupsMethod = api.getClass().getMethod("groups"); groups = groupsMethod.invoke(api); indexOfMethod = groups == null ? null : groups.getClass().getMethod("indexOf", String.class); } catch (ReflectiveOperationException | LinkageError ex) { clear(); } }
         private void clear() { plugin = null; api = null; groups = null; apiMethod = null; getGroupMethod = null; getPrefixMethod = null; getAnimatedPrefixMethod = null; getNicknameColorMethod = null; groupsMethod = null; indexOfMethod = null; }
         String getGroup(Player player) { return invokeString(getGroupMethod, player.getUniqueId()); }
@@ -121,6 +119,5 @@ public final class ServerTabManager {
         void refresh() { Plugin current = Bukkit.getPluginManager().getPlugin("PlaceholderAPI"); if (current == plugin) return; plugin = current; method = null; if (current != null && current.isEnabled()) try { Class<?> type = Class.forName("me.clip.placeholderapi.PlaceholderAPI", true, current.getClass().getClassLoader()); method = type.getMethod("setPlaceholders", Player.class, String.class); } catch (ReflectiveOperationException | LinkageError ignored) { method = null; } }
         String resolve(Player player, String value) { if (method == null || plugin == null) return value; try { Object result = method.invoke(null, player, value); return result instanceof String s ? s : value; } catch (ReflectiveOperationException | LinkageError ex) { return value; } }
     }
-
     private record CargoData(boolean available, String prefix, String nicknameColor) { static CargoData empty() { return new CargoData(false, "", "&f"); } }
 }
