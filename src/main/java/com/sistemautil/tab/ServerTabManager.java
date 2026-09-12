@@ -167,18 +167,35 @@ public final class ServerTabManager {
         CargoData data = cargo.getData(player);
         if (!data.available()) return;
 
-        String nameColor = colorize(data.nicknameColor());
-        // Usa exatamente o mesmo relógio de animação do CargoPlus usado no nametag.
-        // Assim o DEV do TAB não possui um ciclo próprio nem fica alguns segundos atrás.
         String prefix = cargo.getAnimatedPrefix(player);
         if (prefix == null || prefix.isBlank()) prefix = data.prefix() == null ? "" : data.prefix();
 
-        // Identidade do TAB: cargo + nome + tag do clan, sem separador visual.
-        // A cor do nome continua vindo exclusivamente do CargoPlus e a tag mantém
-        // as cores configuradas no próprio ClanPlus.
+        String cargoColor = firstColorCode(prefix);
+        if (cargoColor.isBlank()) cargoColor = firstColorCode(data.prefix());
+        if (cargoColor.isBlank()) cargoColor = "§f";
+
         String clanTag = clan.getTag(player);
-        String clanSuffix = clanTag.isBlank() ? "" : " " + clanTag;
-        player.setPlayerListName(colorize(prefix) + nameColor + player.getName() + colorize(clanSuffix));
+        String tagPart = "";
+        if (!clanTag.isBlank()) {
+            String tagColor = firstColorCode(clanTag);
+            if (tagColor.isBlank()) tagColor = cargoColor;
+            tagPart = tagColor + "[" + colorize(clanTag) + tagColor + "]" + cargoColor + " ";
+        }
+
+        player.setPlayerListName(colorize(prefix) + tagPart + cargoColor + player.getName());
+    }
+
+    private String firstColorCode(String text) {
+        if (text == null) return "";
+        for (int i = 0; i + 1 < text.length(); i++) {
+            char marker = text.charAt(i);
+            if (marker != '&' && marker != '§') continue;
+            char code = text.charAt(i + 1);
+            if ("0123456789abcdefABCDEF".indexOf(code) >= 0) {
+                return "§" + Character.toLowerCase(code);
+            }
+        }
+        return "";
     }
 
     private String formatTabText(String text, int online, int max, int ping, String address, Player player) {
