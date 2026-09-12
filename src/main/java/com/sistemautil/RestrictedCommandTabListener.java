@@ -44,7 +44,9 @@ public final class RestrictedCommandTabListener implements Listener {
             "home",
             "homes",
             "sethome",
-            "delhome"
+            "delhome",
+            "clan",
+            "clans"
     );
 
     private static final Set<String> CARGO_COMMANDS = Set.of(
