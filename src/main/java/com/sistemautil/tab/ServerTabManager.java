@@ -18,6 +18,7 @@ import java.util.UUID;
 public final class ServerTabManager {
     private final SistemaUtil plugin;
     private final CargoBridge cargo = new CargoBridge();
+    private final ClanBridge clan = new ClanBridge();
     private final PlaceholderBridge placeholders = new PlaceholderBridge();
     private int taskId = -1;
 
@@ -40,6 +41,7 @@ public final class ServerTabManager {
         if (!plugin.getTabConfig().getBoolean("ativado", true)) return;
 
         cargo.refresh();
+        clan.refresh();
         placeholders.refresh();
 
         int online = Bukkit.getOnlinePlayers().size();
@@ -171,7 +173,12 @@ public final class ServerTabManager {
         String prefix = cargo.getAnimatedPrefix(player);
         if (prefix == null || prefix.isBlank()) prefix = data.prefix() == null ? "" : data.prefix();
 
-        player.setPlayerListName(colorize(prefix) + nameColor + player.getName());
+        // Identidade do TAB: cargo + nome + tag do clan, sem separador visual.
+        // A cor do nome continua vindo exclusivamente do CargoPlus e a tag mantém
+        // as cores configuradas no próprio ClanPlus.
+        String clanTag = clan.getTag(player);
+        String clanSuffix = clanTag.isBlank() ? "" : " " + clanTag;
+        player.setPlayerListName(colorize(prefix) + nameColor + player.getName() + colorize(clanSuffix));
     }
 
     private String formatTabText(String text, int online, int max, int ping, String address, Player player) {
@@ -308,6 +315,74 @@ public final class ServerTabManager {
             } catch (ReflectiveOperationException | LinkageError ex) {
                 return "";
             }
+        }
+    }
+
+    private static final class ClanBridge {
+        private Plugin plugin;
+        private Object api;
+        private Object manager;
+        private Method apiMethod;
+        private Method clansMethod;
+        private Method byPlayerMethod;
+        private Method tagMethod;
+
+        void refresh() {
+            Plugin current = Bukkit.getPluginManager().getPlugin("ClanPlus");
+            if (current == null || !current.isEnabled()) {
+                clear();
+                return;
+            }
+
+            try {
+                plugin = current;
+                apiMethod = current.getClass().getMethod("clans");
+                manager = apiMethod.invoke(current);
+                if (manager == null) {
+                    clear();
+                    return;
+                }
+
+                clansMethod = apiMethod;
+                byPlayerMethod = manager.getClass().getMethod("byPlayer", UUID.class);
+                Object sampleClan = null;
+                for (Object ignored : (Iterable<?>) manager.getClass().getMethod("all").invoke(manager)) {
+                    sampleClan = ignored;
+                    break;
+                }
+                if (sampleClan != null) {
+                    tagMethod = sampleClan.getClass().getMethod("tag");
+                } else {
+                    tagMethod = null;
+                }
+            } catch (ReflectiveOperationException | LinkageError ex) {
+                clear();
+            }
+        }
+
+        String getTag(Player player) {
+            if (manager == null || byPlayerMethod == null) return "";
+            try {
+                Object clan = byPlayerMethod.invoke(manager, player.getUniqueId());
+                if (clan == null) return "";
+
+                Method method = tagMethod;
+                if (method == null) method = clan.getClass().getMethod("tag");
+                Object value = method.invoke(clan);
+                return value == null ? "" : String.valueOf(value);
+            } catch (ReflectiveOperationException | LinkageError ex) {
+                return "";
+            }
+        }
+
+        private void clear() {
+            plugin = null;
+            api = null;
+            manager = null;
+            apiMethod = null;
+            clansMethod = null;
+            byPlayerMethod = null;
+            tagMethod = null;
         }
     }
 
