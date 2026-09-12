@@ -178,12 +178,12 @@ public final class ServerTabManager {
         String tagPart = "";
         if (!clanTag.isBlank()) {
             String tagColor = firstColorCode(clanTag);
-            if (tagColor.isBlank()) tagColor = cargoColor;
-            tagPart = "§7[" + colorize(clanTag) + "§7]";
+            if (tagColor.isBlank()) tagColor = "§f";
+            tagPart = "§7[" + tagColor + colorize(clanTag) + "§7]";
         }
 
         // O nick sempre volta explicitamente para a cor do cargo.
-        // A tag é colocada depois do nick para nunca alterar a cor dele.
+        // A tag usa exatamente a mesma cor no TAB e no chat.
         player.setPlayerListName(colorize(prefix) + cargoColor + player.getName() + (tagPart.isBlank() ? "" : " " + tagPart));
     }
 
@@ -440,9 +440,23 @@ public final class ServerTabManager {
         }
     }
 
-    private record CargoData(boolean available, String prefix, String nicknameColor) {
-        static CargoData empty() {
-            return new CargoData(false, "", "&f");
+    private static final class CargoData {
+        private final boolean available;
+        private final String prefix;
+        private final String nicknameColor;
+
+        private CargoData(boolean available, String prefix, String nicknameColor) {
+            this.available = available;
+            this.prefix = prefix;
+            this.nicknameColor = nicknameColor;
         }
+
+        static CargoData empty() {
+            return new CargoData(false, "", "");
+        }
+
+        boolean available() { return available; }
+        String prefix() { return prefix; }
+        String nicknameColor() { return nicknameColor; }
     }
 }
