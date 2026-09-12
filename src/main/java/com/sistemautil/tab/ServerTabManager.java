@@ -73,11 +73,10 @@ public final class ServerTabManager {
         CargoData data = cargo.getData(player); if (!data.available()) return;
         String prefix = cargo.getAnimatedPrefix(player); if (prefix == null || prefix.isBlank()) prefix = data.prefix() == null ? "" : data.prefix();
 
-        // A animação pertence somente ao cargo. O nick usa a cor estática do cargo.
-        // Assim, quando DEV pisca, apenas "DEV" pisca; o nick continua vermelho.
-        String cargoColor = firstColorCode(data.prefix());
-        if (cargoColor.isBlank()) cargoColor = firstColorCode(prefix);
-        if (cargoColor.isBlank()) cargoColor = "§f";
+        // A animação pertence somente ao cargo. O nick usa a cor estática do nickname
+        // fornecida pelo CargoPlus, nunca a cor/frame do prefixo animado.
+        String cargoColor = data.nicknameColor();
+        if (cargoColor == null || cargoColor.isBlank()) cargoColor = "§f";
 
         String clanTag = clan.getTag(player); String tagPart = "";
         if (!clanTag.isBlank()) {
@@ -104,7 +103,8 @@ public final class ServerTabManager {
         private int priorityFromCargoHierarchy(String group) { if (groups == null || indexOfMethod == null || group.isBlank()) return Integer.MAX_VALUE; try { Object value = indexOfMethod.invoke(groups, group); if (value instanceof Number number) return 100 - number.intValue(); } catch (ReflectiveOperationException | LinkageError ignored) {} return Integer.MAX_VALUE; }
         private String normalizeGroup(String group) { if (group == null) return ""; return group.replace('\u00A7', '&').replaceAll("(?i)&[0-9A-FK-ORX]", "").trim().toLowerCase(Locale.ROOT); }
         CargoData getData(Player player) { String prefix = invokeString(getPrefixMethod, player.getUniqueId()); String color = invokeString(getNicknameColorMethod, player.getUniqueId()); return api == null ? CargoData.empty() : new CargoData(true, prefix, color.isBlank() ? "&f" : color); }
-        private String invokeString(Method method, Object arg) { if (method == null || api == null) return ""; try { Object value = method.invoke(api, arg); return value == null ? "" : String.valueOf(value); } catch (ReflectiveOperationException | LinkageError ex) { return ""; } }
+        private String invokeString(Method method, Object arg) { if (method == null || api == null) return ""; try { Object value = method.invoke(api, arg); return value == null ? "" : String.valueOf(value); } catch (ReflectiveOperationException | LinkageError ex) { return ""; }
+        }
     }
 
     private static final class ClanBridge {
