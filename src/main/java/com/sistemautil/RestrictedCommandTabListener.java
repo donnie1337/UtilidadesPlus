@@ -25,6 +25,7 @@ public final class RestrictedCommandTabListener implements Listener {
     private static final String ADMIN_PERMISSION = "cargoplus.admin";
     private static final String COR_PERMISSION = "chatplus.cor";
     private static final String CONFIGURAR_PERMISSION = "utilidadesplus.configurar";
+    private static final String TELL_PERMISSION = "essentialsplus.tell";
 
     /** Comandos publicos sem permission declarada que devem continuar visiveis. */
     private static final Set<String> PUBLIC_COMMANDS = Set.of(
@@ -91,6 +92,7 @@ public final class RestrictedCommandTabListener implements Listener {
         if (root == null || root.indexOf(':') >= 0) return false;
         if (PUBLIC_COMMANDS.contains(root)) return true;
         if (CARGO_COMMANDS.contains(root)) return false;
+        if (root.equals("tell") || root.equals("r")) return player.hasPermission(TELL_PERMISSION);
         if (root.equals("?") || root.equals("about")) return player.hasPermission(ADMIN_PERMISSION);
 
         // /cor e /configurar usam permissões administradas pelo CargoPlus.
