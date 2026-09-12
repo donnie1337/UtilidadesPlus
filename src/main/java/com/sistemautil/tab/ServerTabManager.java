@@ -179,10 +179,12 @@ public final class ServerTabManager {
         if (!clanTag.isBlank()) {
             String tagColor = firstColorCode(clanTag);
             if (tagColor.isBlank()) tagColor = cargoColor;
-            tagPart = tagColor + "[" + colorize(clanTag) + tagColor + "]" + cargoColor + " ";
+            tagPart = "§7[" + colorize(clanTag) + "§7]";
         }
 
-        player.setPlayerListName(colorize(prefix) + tagPart + cargoColor + player.getName());
+        // O nick sempre volta explicitamente para a cor do cargo.
+        // A tag é colocada depois do nick para nunca alterar a cor dele.
+        player.setPlayerListName(colorize(prefix) + cargoColor + player.getName() + (tagPart.isBlank() ? "" : " " + tagPart));
     }
 
     private String firstColorCode(String text) {
