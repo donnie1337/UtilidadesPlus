@@ -1,22 +1,27 @@
-# =========================================
-#             UTILIDADES / CONFIGURAR
-# =========================================
-# Preferências pessoais dos jogadores.
-# Entrada/saída são notificações recebidas pelo próprio jogador.
+# ============================================================
+# UtilidadesPlus - Preferências do jogador
+# ============================================================
+# Configurações pessoais usadas pelo /configurar.
+# As mensagens e textos exibidos aos jogadores não são alterados aqui.
+# As chaves técnicas existentes são preservadas para compatibilidade.
+# ============================================================
 
-# =========================================
-#           IDENTIDADE VISUAL
-# =========================================
+# ------------------------------------------------------------
+# IDENTIDADE VISUAL
+# ------------------------------------------------------------
 identidade-visual:
   ativado: true
+  # Conversão para small caps usada nos elementos visuais.
   small-caps:
     ativado: true
     mapa-maiusculas: "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ"
     mapa-minusculas: "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ"
+  # Gradiente usado na identidade visual.
   gradient:
     ativado: true
     inicio: "#7C3AED"
     fim: "#22D3EE"
+  # Ícones disponíveis para os formatos do plugin.
   icones:
     ativado: true
     lista:
@@ -37,12 +42,18 @@ identidade-visual:
       cadeado: "🔒"
       trofeu: "🏆"
 
+# ------------------------------------------------------------
+# NOTIFICAÇÕES RECEBIDAS
+# ------------------------------------------------------------
 receber:
   entrada: true
   saida: true
   tpa: true
   tell: true
 
+# ------------------------------------------------------------
+# INTERFACE DO /CONFIGURAR
+# ------------------------------------------------------------
 gui:
   ativado: true
   titulo: '&8Utilidades do jogador'
@@ -56,10 +67,11 @@ gui:
     notificacoes: 15
     cor: 13
 
-# Mensagens de entrada.
-# O CargoPlus define o cargo do jogador. O UtilidadesPlus apenas lê o cargo.
-# Uma frase é escolhida aleatoriamente para qualquer cargo.
-# Placeholders: %player% = nome do jogador | %cargo% = cargo vindo do CargoPlus.
+# ------------------------------------------------------------
+# MENSAGENS DE ENTRADA
+# ------------------------------------------------------------
+# O CargoPlus fornece o cargo. O UtilidadesPlus apenas o exibe.
+# Placeholders: %player% = jogador | %cargo% = cargo do CargoPlus.
 mensagens-entrada:
   ativado: true
   mensagens:
@@ -69,10 +81,12 @@ mensagens-entrada:
     - "%cargo%%player% chegou chegando!"
     - "%cargo%%player% deu as caras por aqui!"
 
-# Mensagem de saída para qualquer cargo.
-# O CargoPlus define o cargo do jogador. O UtilidadesPlus apenas lê o cargo.
+# ------------------------------------------------------------
+# MENSAGEM DE SAÍDA
+# ------------------------------------------------------------
 mensagens-saida:
   ativado: false
   mensagem: "%cargo%%player% saiu do servidor!"
 
+# Preferências individuais dos jogadores.
 jogadores: {}
