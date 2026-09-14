@@ -1,12 +1,17 @@
-# =========================================
-#                  TAB
-# =========================================
-# A identidade visual é aplicada automaticamente pelo UtilidadesPlus.
+# ============================================================
+# UtilidadesPlus - TAB
+# ============================================================
+# A identidade visual é aplicada automaticamente.
 # Não é necessário repetir small caps em cada linha.
+# As regras técnicas de ordenação são preservadas para compatibilidade.
+# ============================================================
 
 ativado: true
 
 # Suporta {icon:nome}, <#RRGGBB> e <gradient:#RRGGBB:#RRGGBB>texto</gradient>.
+# ------------------------------------------------------------
+# CABEÇALHO
+# ------------------------------------------------------------
 header: |
   <gradient:#7C3AED:#22D3EE>SEU SERVIDOR</gradient> {icon:estrela}
   &7ᴛᴇᴍᴘᴏʀᴀᴅᴀ: &f1
@@ -26,22 +31,33 @@ header: |
 
 
 
+# ------------------------------------------------------------
+# RODAPÉ
+# ------------------------------------------------------------
 footer: |
   {icon:online} &fJogadores: &a%online%  &8•  &fPing: &a%ping%ms
 
   <gradient:#22D3EE:#7C3AED>JUNTE-SE À NOSSA COMUNIDADE</gradient>
   &bEntre e divirta-se!
 
+# Endereço exibido no TAB, quando configurado.
 endereco-servidor: ""
 
+# Formato dos jogadores exibidos no TAB.
 jogadores:
   formato: "%prefix%%name_color%%player_name%"
 
+# Configuração da tag acima da cabeça e no TAB.
 tag:
   ativada: true
   mostrar-no-tab: true
   mostrar-na-cabeca: true
 
+# ------------------------------------------------------------
+# ORDENAÇÃO
+# ------------------------------------------------------------
+# Os identificadores de regra abaixo são valores técnicos e não
+# devem ser traduzidos, pois são interpretados diretamente pelo código.
 sorting:
   enabled: true
   case-sensitive: false
