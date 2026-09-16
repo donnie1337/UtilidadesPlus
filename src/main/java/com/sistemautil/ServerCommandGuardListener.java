@@ -1,8 +1,6 @@
 package com.sistemautil;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,9 +11,9 @@ import java.lang.reflect.Method;
 import java.util.Locale;
 
 /**
- * Protege comandos administrativos e oculta comandos sem permissão.
- * Jogadores sem a permissão necessária recebem a mesma mensagem de um
- * comando inexistente, evitando revelar a existência do comando.
+ * Protege apenas comandos administrativos do servidor que não devem ser
+ * expostos a jogadores comuns. O tratamento de permissões dos comandos dos
+ * plugins fica centralizado no ChatPlus para evitar mensagens duplicadas.
  */
 public final class ServerCommandGuardListener implements Listener {
     private static final String ADMIN_PERMISSION = "cargoplus.admin";
@@ -51,15 +49,6 @@ public final class ServerCommandGuardListener implements Listener {
 
         if (isBukkitOrSpigotCommand(label) && !hasCargoPermission(player, ADMIN_PERMISSION)) {
             deny(event, player);
-            return;
-        }
-
-        Command registered = findCommand(label);
-        if (registered == null) return;
-
-        String permission = registered.getPermission();
-        if (permission != null && !permission.isBlank() && !player.hasPermission(permission)) {
-            deny(event, player);
         }
     }
 
@@ -82,27 +71,6 @@ public final class ServerCommandGuardListener implements Listener {
             return result instanceof Boolean && (Boolean) result;
         } catch (ReflectiveOperationException | LinkageError ex) {
             return false;
-        }
-    }
-
-    private Command findCommand(String label) {
-        CommandMap commandMap = getCommandMap();
-        return commandMap == null ? null : commandMap.getCommand(label);
-    }
-
-    private CommandMap getCommandMap() {
-        Method method = commandMapMethod;
-        if (method == null) {
-            method = resolveCommandMapMethod();
-            commandMapMethod = method;
-        }
-        if (method == null) return null;
-        try {
-            Object result = method.invoke(Bukkit.getServer());
-            return result instanceof CommandMap map ? map : null;
-        } catch (ReflectiveOperationException | LinkageError ex) {
-            commandMapMethod = null;
-            return null;
         }
     }
 
