@@ -11,7 +11,6 @@ import java.util.List;
 
 public final class ConfigurarCommand implements CommandExecutor, TabCompleter {
     private static final String PERMISSION = "utilidadesplus.configurar";
-    private static final String CHAT_PREFIX = "&e&lᴄʜᴀᴛ &8• &r";
     private final UtilidadesGui gui;
 
     public ConfigurarCommand(UtilidadesGui gui) {
@@ -25,7 +24,6 @@ public final class ConfigurarCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         if (!player.hasPermission(PERMISSION)) {
-            player.sendMessage(colorize(CHAT_PREFIX + "Comando não encontrado."));
             return true;
         }
         if (args.length != 0) {
@@ -39,9 +37,5 @@ public final class ConfigurarCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         return Collections.emptyList();
-    }
-
-    private String colorize(String message) {
-        return message.replace('&', '§');
     }
 }
