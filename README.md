@@ -1,66 +1,80 @@
 # UtilidadesPlus
 
-Conjunto de utilidades gerais do servidor, reunindo recursos de **MOTD, preferências pessoais, visual, TAB e proteção de comandos**.
+O UtilidadesPlus reúne aquelas funções gerais do servidor que não precisam ficar espalhadas em vários plugins.
 
-## ✨ Funcionalidades
+Aqui ficam coisas como MOTD, configurações pessoais, TAB, proteção de comandos e outras utilidades que eu quero deixar centralizadas.
 
-### 🏠 MOTD
-- MOTD configurável para entrada dos jogadores.
-- Mensagens de entrada e saída configuráveis.
-- `/motdplus reload` para recarregar as configurações do MOTD.
-- Alias `/motd`.
+## O que tem no plugin
 
-### ⚙️ Preferências pessoais
-- `/configurar` abre a interface de configuração das utilidades pessoais.
-- Preferências persistidas por jogador.
-- Configurações carregadas novamente durante o reload do plugin.
+### MOTD
 
-### 📋 Visual e TAB
-- Gerenciamento do visual do texto do servidor.
-- Sistema de TAB integrado ao plugin.
+- MOTD configurável.
+- Mensagem de entrada configurável.
+- Mensagem de saída configurável.
+- `/motdplus reload` para recarregar as configurações.
+- `/motd` como alias.
+
+### Configurações pessoais
+
+- `/configurar` abre o menu de configurações pessoais.
+- Preferências ficam salvas por jogador.
+- As configurações podem ser recarregadas sem precisar reiniciar o servidor.
+
+### Visual e TAB
+
+- Controle do visual do servidor.
+- Sistema de TAB integrado.
 - Monitoramento do TPS do servidor.
 
-### 🛡️ Proteção de comandos
-- Controle de acesso ao Tab Complete de comandos internos.
+### Proteção de comandos
+
+- Controle do Tab Complete de comandos internos.
 - Proteção relacionada aos comandos `/spigot` e `/bukkit`.
-- Lista de plugins pode ser protegida por permissão.
+- Proteção da lista de plugins através de permissão.
 
-### 🚫 Colisão entre jogadores
-O plugin mantém a colisão entre jogadores desativada de forma automática, inclusive para jogadores que entram posteriormente no servidor.
+### Colisão
 
-## 🎮 Comandos
+A colisão entre jogadores fica desativada automaticamente, inclusive para quem entrar no servidor depois.
 
-| Comando | Função |
+## Comandos
+
+| Comando | O que faz |
 |---|---|
 | `/motdplus reload` | Recarrega a configuração do MOTD. |
 | `/motd reload` | Alias do comando de MOTD. |
-| `/configurar` | Abre o menu de configuração das utilidades pessoais. |
+| `/configurar` | Abre o menu de configurações pessoais. |
 
-## 🔑 Permissões
+## Permissões
 
-| Permissão | Função | Padrão |
+| Permissão | O que faz | Padrão |
 |---|---|---|
 | `utilidadesplus.motd.admin` | Recarregar o MOTD | `op` |
 | `utilidadesplus.configurar` | Abrir o menu de configuração | `false` |
-| `utilidadesplus.plugins` | Visualizar a lista de plugins | `false` |
-| `utilidadesplus.admin` | Visualizar Tab Complete de comandos internos | `false` |
+| `utilidadesplus.plugins` | Ver a lista de plugins | `false` |
+| `utilidadesplus.admin` | Ver o Tab Complete de comandos internos | `false` |
 
-## 🔗 Integração
+## Integração
 
 O UtilidadesPlus possui integração com o CargoPlus para respeitar a estrutura de permissões do servidor.
 
-## 🏗️ Plataforma
+## Plataforma
 
 - Java 26
 - Spigot API 26.2
 - Maven
 
-## 🧪 Build
+## Build
 
 ```bash
 mvn -B clean package
 ```
 
-O projeto possui workflow de build no GitHub Actions.
+O projeto possui build automático pelo GitHub Actions.
 
-> **Nota:** o sistema de cores `/cor` pertence ao **ChatPlus** e não ao UtilidadesPlus.
+## Importante
+
+O sistema `/cor` pertence ao **ChatPlus**. Ele não faz parte do UtilidadesPlus.
+
+## Status
+
+O UtilidadesPlus está em desenvolvimento e serve como uma central de utilidades gerais do meu servidor. A ideia é ir colocando aqui as funções que fazem sentido ficar compartilhadas, sem misturar responsabilidades com os outros plugins.
