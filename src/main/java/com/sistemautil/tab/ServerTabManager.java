@@ -83,7 +83,7 @@ public final class ServerTabManager {
         if (!clanTag.isBlank()) {
             // Mantém a cor de cada letra exatamente como definida no ClanPlus.
             // Os colchetes permanecem sempre em cinza claro.
-            tagPart = "+ toSmallCapsPreservingColors(clanTag) +";
+            tagPart = " " + toSmallCapsPreservingColors(clanTag);
         }
         player.setPlayerListName(colorize(prefix) + cargoColor + player.getName() + tagPart);
     }
