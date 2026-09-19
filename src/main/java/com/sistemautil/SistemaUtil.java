@@ -9,6 +9,7 @@ import com.sistemautil.tab.ServerTabManager;
 import com.sistemautil.visual.VisualText;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -25,6 +26,10 @@ public final class SistemaUtil extends JavaPlugin {
     @Override
     public void onEnable() {
         configManager.loadAll();
+        AdvancementMessageListener advancementMessageListener = new AdvancementMessageListener();
+        for (World world : Bukkit.getWorlds()) advancementMessageListener.disableFor(world);
+        getServer().getPluginManager().registerEvents(advancementMessageListener, this);
+
         visualText = new VisualText(configManager.utilidades());
         utilidadesPreferences = new UtilidadesPreferences(this);
         utilidadesPreferences.load();
