@@ -21,12 +21,14 @@ public final class ServerTabManager {
     private final ClanBridge clan = new ClanBridge();
     private final PlaceholderBridge placeholders = new PlaceholderBridge();
     private int taskId = -1;
+    private long lastFooterFrame = Long.MIN_VALUE;
+    private String lastFooterText = null;
 
     public ServerTabManager(SistemaUtil plugin) { this.plugin = plugin; }
     public void start() { stop(); updateAll(); taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::updateAll, 2L, 2L); }
     public void stop() { if (taskId != -1) { Bukkit.getScheduler().cancelTask(taskId); taskId = -1; } }
 
-    public void updateAll() {
+    private long currentFooterFrame() {\n        if (!plugin.getTabConfig().getBoolean("footer-animado.ativado", false)) return 0L;\n        int intervalo = Math.max(1, plugin.getTabConfig().getInt("footer-animado.intervalo-segundos", 3));\n        int quantidade = Math.max(1, plugin.getTabConfig().getMapList("footer-animado.estados").size());\n        return (System.currentTimeMillis() / 1000L / intervalo) % quantidade;\n    }\n\n    private String formatFooter(int online, int max, int ping, String address, Player player) {\n        if (!plugin.getTabConfig().getBoolean("footer-animado.ativado", false)) {\n            return formatTabText(plugin.getTabConfig().getString("footer", "&8&m----------------------------------------\\n&fJogadores online: &a%online%/%max%\\n&fSeu ping: &a%ping%ms\\n&fIP: &b%ip%"), online, max, ping, address, player);\n        }\n\n        List<Map<?, ?>> estados = plugin.getTabConfig().getMapList("footer-animado.estados");\n        if (estados.isEmpty()) {\n            return formatTabText(plugin.getTabConfig().getString("footer", ""), online, max, ping, address, player);\n        }\n\n        int intervalo = Math.max(1, plugin.getTabConfig().getInt("footer-animado.intervalo-segundos", 3));\n        int frame = (int) ((System.currentTimeMillis() / 1000L / intervalo) % estados.size());\n        Map<?, ?> estado = estados.get(frame);\n        String riscos = stringValue(estado.get("riscos"), "");\n        String mensagem = stringValue(estado.get("mensagem"), "");\n        String separador = plugin.getTabConfig().getString("footer-animado.separador", " ");\n        String texto = riscos + "\\n" + mensagem;\n        return formatTabText(texto, online, max, ping, address, player);\n    }\n\n    private String stringValue(Object value, String fallback) {\n        return value == null ? fallback : String.valueOf(value);\n    }\n\n    public void updateAll() {
         if (!plugin.getTabConfig().getBoolean("ativado", true)) return;
         cargo.refresh(); clan.refresh(); placeholders.refresh();
         int online = Bukkit.getOnlinePlayers().size(); int max = Bukkit.getMaxPlayers();
