@@ -1,99 +1,141 @@
 # ============================================================
 # UtilidadesPlus - TAB
 # ============================================================
-# A identidade visual é aplicada automaticamente.
-# Não é necessário repetir small caps em cada linha.
-# As regras técnicas de ordenação são preservadas para compatibilidade.
+# Configuração visual completa do TAB.
+# Você pode alterar o cabeçalho e o rodapé diretamente neste arquivo.
+# Cores: &a, &b, &c...
+# Gradiente: <gradient:#7C3AED:#22D3EE>texto</gradient>
+# Ícones: {icon:nome}
+# Placeholders suportados dependem dos sistemas instalados.
 # ============================================================
 
 ativado: true
 
-# Suporta {icon:nome}, <#RRGGBB> e <gradient:#RRGGBB:#RRGGBB>texto</gradient>.
-# ------------------------------------------------------------
+# ============================================================
 # CABEÇALHO
-# ------------------------------------------------------------
+# ============================================================
 header-ativado: true
+
 header: |
   <gradient:#7C3AED:#22D3EE>SEU SERVIDOR</gradient> {icon:estrela}
   &7ᴛᴇᴍᴘᴏʀᴀᴅᴀ: &f1
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ------------------------------------------------------------
+# ============================================================
 # RODAPÉ
-# ------------------------------------------------------------
+# ============================================================
 footer-ativado: true
+
+# Rodapé normal.
+# Usado quando o rodapé animado estiver desativado.
 footer: |
-  {icon:online} &fJogadores: &a%online%  &8•  &fPing: &a%ping%ms
+  {icon:online} &fJogadores: &a%online% &8• &fPing: &a%ping%ms
 
   <gradient:#22D3EE:#7C3AED>JUNTE-SE À NOSSA COMUNIDADE</gradient>
   &bEntre e divirta-se!
 
-# ------------------------------------------------------------
-# FOOTER ANIMADO
-# ------------------------------------------------------------
-# Mostra três riscos coloridos e alterna a mensagem abaixo deles.
-# Cada estado representa um risco ativo e sua mensagem correspondente.
-# O ciclo é: estado 1 -> estado 2 -> estado 3 -> estado 1...
+# ============================================================
+# RODAPÉ ANIMADO
+# ============================================================
+# Deixe "ativado: false" para usar somente o footer acima.
+#
+# "efeito" define a predefinição utilizada:
+# alternancia, pulso, arco-iris, deslizante ou personalizado.
 footer-animado:
   ativado: true
+  efeito: "alternancia"
   intervalo-segundos: 3
+
+  predefinicoes:
+
+    # Alterna entre as cores configuradas.
+    alternancia:
+      espacos-centralizacao: "                    "
+      texto: "Servidor online!"
+      cores:
+        - "&c"
+        - "&9"
+        - "&a"
+
+    # Alterna entre duas cores.
+    pulso:
+      espacos-centralizacao: "                    "
+      texto: "Servidor online!"
+      cor-inicial: "&c"
+      cor-final: "&f"
+
+    # Percorre as cores em sequência.
+    arco-iris:
+      espacos-centralizacao: "                    "
+      texto: "Servidor online!"
+      cores:
+        - "&c"
+        - "&6"
+        - "&e"
+        - "&a"
+        - "&b"
+        - "&9"
+        - "&d"
+
+    # Move o texto horizontalmente.
+    deslizante:
+      espacos-centralizacao: "                    "
+      texto: "SEU SERVIDOR"
+      cor: "&b"
+      largura: 24
+
+  # Usado quando efeito: "personalizado".
   estados:
-    - riscos: "&c━━━━━━━━━━━━━━━━━━━━━━━━"
+    - espacos-centralizacao: "                    "
+      riscos: "&c━━━━━━━━━━━━━━━━━━━━━━━━"
       mensagem: "&cMensagem vermelha do servidor."
-      espacos-centralizacao: "                    "
-    - riscos: "&9━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    - espacos-centralizacao: "                    "
+      riscos: "&9━━━━━━━━━━━━━━━━━━━━━━━━"
       mensagem: "&9Mensagem azul do servidor."
-      espacos-centralizacao: "                    "
-    - riscos: "&a━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    - espacos-centralizacao: "                    "
+      riscos: "&a━━━━━━━━━━━━━━━━━━━━━━━━"
       mensagem: "&aMensagem verde do servidor."
-      espacos-centralizacao: "                    "
 
-# Footer padrão usado quando a animação estiver desativada.
-footer: |
-  {icon:online} &fJogadores: &a%online%  &8•  &fPing: &a%ping%ms
-
-  <gradient:#22D3EE:#7C3AED>JUNTE-SE À NOSSA COMUNIDADE</gradient>
-  &bEntre e divirta-se!
-
-# Endereço exibido no TAB, quando configurado.
-endereco-servidor: ""
-
-# Formato dos jogadores exibidos no TAB.
+# ============================================================
+# JOGADORES
+# ============================================================
+# Formato do nome de cada jogador no TAB.
 jogadores:
   formato: "%prefix%%name_color%%player_name%%clan_tag%"
-  # Placeholders: %prefix%, %name_color%, %player_name%, %clan_tag%, %group%
+  # Placeholders:
+  # %prefix%
+  # %name_color%
+  # %player_name%
+  # %clan_tag%
+  # %group%
 
-# Configuração da tag acima da cabeça e no TAB.
+# ============================================================
+# TAG
+# ============================================================
 tag:
   ativada: true
   mostrar-no-tab: true
   mostrar-na-cabeca: false
 
-# ------------------------------------------------------------
+# ============================================================
 # ORDENAÇÃO
-# ------------------------------------------------------------
-# Os identificadores de regra abaixo são valores técnicos e não
-# devem ser traduzidos, pois são interpretados diretamente pelo código.
+# ============================================================
+# Os valores técnicos abaixo não devem ser traduzidos.
 sorting:
   enabled: true
   case-sensitive: false
   rules:
     - type: primary-group
       order: ascending
+
     - type: placeholder
       placeholder: "%player_name%"
       order: ascending
+      case-sensitive: false
+
+# ============================================================
+# ENDEREÇO DO SERVIDOR
+# ============================================================
+# Deixe vazio para não exibir endereço adicional.
+endereco-servidor: ""
