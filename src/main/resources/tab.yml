@@ -50,12 +50,15 @@ footer-animado:
   ativado: true
   intervalo-segundos: 3
   estados:
-    - riscos: "&c_______ &9_______ &a_______"
+    - riscos: "&c━━━━━━━━━━━━━━━━━━━━━━━━"
       mensagem: "&cMensagem vermelha do servidor."
-    - riscos: "&c_______ &9_______ &a_______"
+      espacos-centralizacao: "                    "
+    - riscos: "&9━━━━━━━━━━━━━━━━━━━━━━━━"
       mensagem: "&9Mensagem azul do servidor."
-    - riscos: "&c_______ &9_______ &a_______"
+      espacos-centralizacao: "                    "
+    - riscos: "&a━━━━━━━━━━━━━━━━━━━━━━━━"
       mensagem: "&aMensagem verde do servidor."
+      espacos-centralizacao: "                    "
 
 # Footer padrão usado quando a animação estiver desativada.
 footer: |
