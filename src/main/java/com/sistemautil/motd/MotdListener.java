@@ -42,7 +42,9 @@ public final class MotdListener implements Listener {
         }
 
         String textoFinal = PlaceholderUtil.aplicar(linhaEscolhida, plugin, event);
-        String[] partes = textoFinal.split("\\|", 2);
+        String separador = plugin.getMotdConfig().getString("formato.separador", "|");
+        if (separador == null || separador.isEmpty()) separador = "|";
+        String[] partes = textoFinal.split(java.util.regex.Pattern.quote(separador), 2);
         String linha1 = plugin.getVisualText().format(partes[0].trim());
         String linha2 = partes.length > 1
                 ? plugin.getVisualText().format(partes[1].trim())
