@@ -62,7 +62,9 @@ public final class ServerTabManager {
         for (int index = 0; index < players.size(); index++) {
             Player player = players.get(index); player.setPlayerListOrder(index); int ping = Math.max(0, player.getPing());
             String footer = formatFooter(online, max, ping, address, player);
-            player.setPlayerListHeaderFooter(header, footer);
+            String configuredHeader = plugin.getTabConfig().getBoolean("header-ativado", true) ? header : "";
+            String configuredFooter = plugin.getTabConfig().getBoolean("footer-ativado", true) ? footer : "";
+            player.setPlayerListHeaderFooter(configuredHeader, configuredFooter);
         }
     }
     public void updatePlayer(Player player) { if (player == null || !player.isOnline()) return; updateAll(); player.updateCommands(); }
@@ -93,22 +95,29 @@ public final class ServerTabManager {
     private String string(Object value) { return value == null ? "" : String.valueOf(value); }
 
     private void applyPlayer(Player player, TabState state) {
+        if (!plugin.getTabConfig().getBoolean("tag.ativada", true)) {
+            player.setPlayerListName(formatConfiguredPlayerName(player, "", ""));
+            return;
+        }
         CargoData data = cargo.getData(player); if (!data.available()) return;
         String prefix = cargo.getAnimatedPrefix(player); if (prefix == null || prefix.isBlank()) prefix = data.prefix() == null ? "" : data.prefix();
-
-        // A animação pertence somente ao cargo. O nick usa a cor estática do nickname
-        // fornecida pelo CargoPlus, nunca a cor/frame do prefixo animado.
         String cargoColor = data.nicknameColor();
         if (cargoColor == null || cargoColor.isBlank()) cargoColor = "§f";
-
         String clanTag = clan.getTag(player);
-        String tagPart = "";
-        if (!clanTag.isBlank()) {
-            // Mantém a cor de cada letra exatamente como definida no ClanPlus.
-            // Os colchetes permanecem sempre em cinza claro.
-            tagPart = " " + toSmallCapsPreservingColors(clanTag);
-        }
-        player.setPlayerListName(colorize(prefix) + cargoColor + player.getName() + tagPart);
+        String tagPart = clanTag.isBlank() ? "" : " " + toSmallCapsPreservingColors(clanTag);
+        String configured = plugin.getTabConfig().getString("jogadores.formato", "%prefix%%name_color%%player_name%%clan_tag%");
+        String name = configured.replace("%prefix%", colorize(prefix))
+                .replace("%name_color%", cargoColor)
+                .replace("%player_name%", player.getName())
+                .replace("%clan_tag%", tagPart)
+                .replace("%group%", cargo.getGroup(player));
+        if (!plugin.getTabConfig().getBoolean("tag.mostrar-no-tab", true)) name = name.replace(tagPart, "");
+        player.setPlayerListName(colorize(name));
+    }
+
+    private String formatConfiguredPlayerName(Player player, String prefix, String clanTag) {
+        String configured = plugin.getTabConfig().getString("jogadores.formato", "%prefix%%name_color%%player_name%%clan_tag%");
+        return colorize(configured.replace("%prefix%", prefix).replace("%name_color%", "§f").replace("%player_name%", player.getName()).replace("%clan_tag%", clanTag));
     }
 
     private String toSmallCapsPreservingColors(String text) {
