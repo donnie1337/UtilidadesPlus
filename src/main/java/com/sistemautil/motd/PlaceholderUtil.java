@@ -8,8 +8,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public final class PlaceholderUtil {
-    private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm");
-    private static final DateTimeFormatter DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    
 
     private PlaceholderUtil() {}
 
@@ -18,14 +17,18 @@ public final class PlaceholderUtil {
         int max = event.getMaxPlayers();
         int vagas = Math.max(0, max - online);
         LocalDateTime agora = LocalDateTime.now();
+        String formatoHora = plugin.getMotdConfig().getString("placeholders.hora.formato", "HH:mm");
+        String formatoData = plugin.getMotdConfig().getString("placeholders.data.formato", "dd/MM/yyyy");
+        String hora = agora.format(DateTimeFormatter.ofPattern(formatoHora));
+        String data = agora.format(DateTimeFormatter.ofPattern(formatoData));
 
         return texto
                 .replace("%online%", String.valueOf(online))
                 .replace("%max%", String.valueOf(max))
                 .replace("%vagas%", String.valueOf(vagas))
                 .replace("%tps%", String.valueOf(plugin.getTpsMonitor().getTPS()))
-                .replace("%hora%", agora.format(HORA))
-                .replace("%data%", agora.format(DATA))
+                .replace("%hora%", hora)
+                .replace("%data%", data)
                 .replace("%servidor%", Bukkit.getServer().getName())
                 .replace("%versao%", Bukkit.getVersion());
     }
