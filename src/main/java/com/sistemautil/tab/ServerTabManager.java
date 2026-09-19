@@ -29,6 +29,96 @@ public final class ServerTabManager {
     public void stop() { if (taskId != -1) { Bukkit.getScheduler().cancelTask(taskId); taskId = -1; } }
 
     private String formatFooter(int online, int max, int ping, String address, Player player) {
+        String fallback = plugin.getTabConfig().getString("footer", "");
+        if (!plugin.getTabConfig().getBoolean("footer-animado.ativado", false)) {
+            return formatTabText(fallback, online, max, ping, address, player);
+        }
+        String efeito = plugin.getTabConfig().getString("footer-animado.efeito", "personalizado");
+        if (!"personalizado".equalsIgnoreCase(efeito)) {
+            String preset = buildFooterPreset(efeito, online, max, ping, address, player);
+            if (preset != null) return preset;
+        }
+        List<Map<?, ?>> estados = plugin.getTabConfig().getMapList("footer-animado.estados");
+        if (estados.isEmpty()) return formatTabText(fallback, online, max, ping, address, player);
+        int intervalo = Math.max(1, plugin.getTabConfig().getInt("footer-animado.intervalo-segundos", 3));
+        int frame = (int) ((System.currentTimeMillis() / 1000L / intervalo) % estados.size());
+        Map<?, ?> estado = estados.get(frame);
+        String riscos = stringValue(estado.get("riscos"), "");
+        String mensagem = stringValue(estado.get("mensagem"), "");
+        String espacos = stringValue(estado.get("espacos-centralizacao"), "                    ");
+        return formatTabText(espacos + riscos + "\\n" + espacos + mensagem, online, max, ping, address, player);
+    }
+
+    private String buildFooterPreset(String efeito, int online, int max, int ping, String address, Player player) {
+        int intervalo = Math.max(1, plugin.getTabConfig().getInt("footer-animado.intervalo-segundos", 3));
+        long tick = System.currentTimeMillis() / 50L;
+        long frame = tick / (intervalo * 20L);
+        String espacos = plugin.getTabConfig().getString("footer-animado.predefinicoes." + efeito + ".espacos-centralizacao", "                    ");
+        String barra = plugin.getTabConfig().getString("footer-animado.predefinicoes." + efeito + ".barra", "&c━━━━━━━━━━━━━━━━━━━━━━━━");
+        String mensagem = plugin.getTabConfig().getString("footer-animado.predefinicoes." + efeito + ".mensagem", "&cServidor online!");
+        if ("alternancia".equalsIgnoreCase(efeito)) {
+            List<?> cores = plugin.getTabConfig().getList("footer-animado.predefinicoes.alternancia.cores");
+            if (cores != null && !cores.isEmpty()) {
+                String cor = String.valueOf(cores.get((int) (frame % cores.size())));
+                barra = cor + "━━━━━━━━━━━━━━━━━━━━━━━━";
+                mensagem = cor + plugin.getTabConfig().getString("footer-animado.predefinicoes.alternancia.texto", "Servidor online!");
+            }
+        } else if ("pulso".equalsIgnoreCase(efeito)) {
+            String corA = plugin.getTabConfig().getString("footer-animado.predefinicoes.pulso.cor-inicial", "&c");
+            String corB = plugin.getTabConfig().getString("footer-animado.predefinicoes.pulso.cor-final", "&f");
+            boolean invertido = frame % 2 == 1;
+            String cor = invertido ? corB : corA;
+            barra = cor + "━━━━━━━━━━━━━━━━━━━━━━━━";
+            mensagem = cor + plugin.getTabConfig().getString("footer-animado.predefinicoes.pulso.texto", "Servidor online!");
+        } else if ("arco-iris".equalsIgnoreCase(efeito)) {
+            List<?> cores = plugin.getTabConfig().getList("footer-animado.predefinicoes.arco-iris.cores");
+            if (cores != null && !cores.isEmpty()) {
+                String cor = String.valueOf(cores.get((int) (frame % cores.size())));
+                barra = cor + "━━━━━━━━━━━━━━━━━━━━━━━━";
+                mensagem = cor + plugin.getTabConfig().getString("footer-animado.predefinicoes.arco-iris.texto", "Servidor online!");
+            }
+        } else if ("deslizante".equalsIgnoreCase(efeito)) {
+            String base = plugin.getTabConfig().getString("footer-animado.predefinicoes.deslizante.texto", "SEU SERVIDOR");
+            String cor = plugin.getTabConfig().getString("footer-animado.predefinicoes.deslizante.cor", "&b");
+            int largura = Math.max(1, plugin.getTabConfig().getInt("footer-animado.predefinicoes.deslizante.largura", 24));
+            int pos = (int) (frame % (base.length() + largura));
+            String texto = " ".repeat(Math.max(0, Math.min(pos, largura))) + base;
+            barra = cor + "━".repeat(largura);
+            mensagem = cor + texto;
+        }
+        return formatTabText(espacos + barra + "\\n" + espacos + mensagem, online, max, ping, address, player);
+    }
+package com.sistemautil.tab;
+
+import com.sistemautil.SistemaUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
+
+/** Controla a identidade visual, ordenação e informações do TAB. */
+public final class ServerTabManager {
+    private final SistemaUtil plugin;
+    private final CargoBridge cargo = new CargoBridge();
+    private final ClanBridge clan = new ClanBridge();
+    private final PlaceholderBridge placeholders = new PlaceholderBridge();
+    private int taskId = -1;
+    private long lastFooterFrame = Long.MIN_VALUE;
+    private String lastFooterText = null;
+
+    public ServerTabManager(SistemaUtil plugin) { this.plugin = plugin; }
+    public void start() { stop(); updateAll(); taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::updateAll, 2L, 2L); }
+    public void stop() { if (taskId != -1) { Bukkit.getScheduler().cancelTask(taskId); taskId = -1; } }
+
+    private String formatFooter(int online, int max, int ping, String address, Player player) {
         if (!plugin.getTabConfig().getBoolean("footer-animado.ativado", false)) {
             return formatTabText(plugin.getTabConfig().getString("footer",
                     "&8&m----------------------------------------\\n&fJogadores online: &a%online%/%max%\\n&fSeu ping: &a%ping%ms\\n&fIP: &b%ip%"),
