@@ -54,18 +54,148 @@ receber:
 # ------------------------------------------------------------
 # INTERFACE DO /CONFIGURAR
 # ------------------------------------------------------------
+# Toda a aparência dos menus pode ser alterada aqui:
+# - título e tamanho de cada tela
+# - slot, material, nome e lore de cada item
+# - preenchimento dos slots vazios
+# - textos de status e ação dos botões
+# - mensagens enviadas ao clicar nas opções
+#
+# Placeholders dos botões de alternância:
+# {status} = texto configurado de ativado/desativado
+# {acao} = texto configurado da ação disponível
+#
+# Placeholders do botão de cor:
+# {cor} = código da cor atual
+# {nome-cor} = nome da cor atual
 gui:
   ativado: true
-  titulo: '&8Utilidades do jogador'
-  tamanho: 27
-  slots:
-    teletransporte: 11
-    mensagens: 15
-    receber-tpa: 11
-    receber-tell: 15
-    entrada: 11
-    notificacoes: 15
-    cor: 13
+
+  preenchimento:
+    ativado: true
+    material: "GRAY_STAINED_GLASS_PANE"
+    nome: " "
+
+  textos:
+    status-ativado: "&a● ATIVADO"
+    status-desativado: "&c● DESATIVADO"
+    acao-ativar: "&8Clique para ativar."
+    acao-desativar: "&8Clique para desativar."
+
+  mensagens:
+    mensagem-tpa-ativado: "&b&lᴛᴘᴀ &8• &aVocê agora pode receber solicitações de TPA."
+    mensagem-tpa-desativado: "&b&lᴛᴘᴀ &8• &cVocê não receberá mais solicitações de TPA."
+    mensagem-tell-ativado: "&e&lᴄʜᴀᴛ &8• &aVocê agora pode receber mensagens privadas."
+    mensagem-tell-desativado: "&e&lᴄʜᴀᴛ &8• &cVocê não receberá mais mensagens privadas."
+    mensagem-entrada-ativada: "&aSuas mensagens de entrada/saída agora são visíveis para todos."
+    mensagem-entrada-desativada: "&cSuas mensagens de entrada/saída foram ocultadas dos outros jogadores."
+    mensagem-notificacoes-ativadas: "&aNotificações de entrada/saída ativadas."
+    mensagem-notificacoes-desativadas: "&cNotificações de entrada/saída desativadas."
+
+  telas:
+    principal:
+      titulo: "&8Utilidades do jogador"
+      tamanho: 27
+      itens:
+        teletransporte:
+          slot: 11
+          material: "OAK_BOAT"
+          nome: "&b&lTeletransporte"
+          lore:
+            - ""
+            - "&7Controle solicitações de TPA"
+            - "&7e mensagens privadas."
+            - ""
+            - "&eClique para abrir."
+        mensagens:
+          slot: 15
+          material: "COMPASS"
+          nome: "&e&lMensagens de entrada"
+          lore:
+            - ""
+            - "&7Configure suas mensagens,"
+            - "&7notificações e cor do chat."
+            - ""
+            - "&eClique para abrir."
+
+    teletransporte:
+      titulo: "&8Teletransporte e comunicação"
+      tamanho: 27
+      itens:
+        receber-tpa:
+          slot: 11
+          material: "OAK_BOAT"
+          nome: "&b&lReceber TPA"
+          lore:
+            - ""
+            - "&7Permite que outros jogadores"
+            - "&7enviem solicitações de TPA para você."
+            - ""
+            - "{status}"
+            - "{acao}"
+        receber-tell:
+          slot: 15
+          material: "PAPER"
+          nome: "&e&lReceber /tell"
+          lore:
+            - ""
+            - "&7Permite que outros jogadores"
+            - "&7enviem mensagens privadas para você."
+            - ""
+            - "{status}"
+            - "{acao}"
+        voltar:
+          slot: 22
+          material: "ARROW"
+          nome: "&fVoltar"
+          lore:
+            - "&7Voltar para configurações."
+
+    mensagens:
+      titulo: "&8Mensagens de entrada"
+      tamanho: 27
+      itens:
+        entrada:
+          slot: 11
+          material: "OAK_DOOR"
+          nome: "&e&lMensagens de entrada/saída"
+          lore:
+            - ""
+            - "&7Controla se sua entrada e saída"
+            - "&7podem ser exibidas para os jogadores."
+            - ""
+            - "{status}"
+            - "{acao}"
+        cor:
+          slot: 13
+          material: ""
+          nome: "&fCor da mensagem"
+          lore:
+            - ""
+            - "&7Sua cor atual:"
+            - "&f▸ {cor}{nome-cor}"
+            - ""
+            - "&7Escolha uma nova cor para"
+            - "&7as suas mensagens no chat."
+            - ""
+            - "&eClique para abrir as cores."
+        notificacoes:
+          slot: 15
+          material: "ENDER_EYE"
+          nome: "&b&lNotificações de entrada/saída"
+          lore:
+            - ""
+            - "&7Controla se você recebe as"
+            - "&7mensagens de entrada e saída."
+            - ""
+            - "{status}"
+            - "{acao}"
+        voltar:
+          slot: 22
+          material: "ARROW"
+          nome: "&fVoltar"
+          lore:
+            - "&7Voltar para configurações."
 
 # ------------------------------------------------------------
 # MENSAGENS DE ENTRADA
