@@ -8,6 +8,19 @@ ativado: true
 animado: true
 intervalo-segundos: 4
 
+# Separador usado para dividir a MOTD em duas linhas.
+# Exemplo: linha 1|linha 2
+formato:
+  separador: "|"
+
+# Placeholders dinâmicos usados nas linhas abaixo.
+# Você pode alterar o formato de hora/data sem mexer no código.
+placeholders:
+  hora:
+    formato: "HH:mm"
+  data:
+    formato: "dd/MM/yyyy"
+
 # Use | para separar a linha 1 da linha 2.
 linhas:
   - "<gradient:#7C3AED:#22D3EE>SEU SERVIDOR</gradient> &8• &fBem-vindo(a)!|{icon:online} &aOnline: %online%/%max% jogadores"
