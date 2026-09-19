@@ -41,7 +41,8 @@ public final class ServerTabManager {
         Map<?, ?> estado = estados.get(frame);
         String riscos = stringValue(estado.get("riscos"), "");
         String mensagem = stringValue(estado.get("mensagem"), "");
-        return formatTabText(riscos + "\\n" + mensagem, online, max, ping, address, player);
+        String espacos = stringValue(estado.get("espacos-centralizacao"), "                    ");
+        return formatTabText(espacos + riscos + "\\n" + espacos + mensagem, online, max, ping, address, player);
     }
 
     private String stringValue(Object value, String fallback) {
