@@ -40,6 +40,30 @@ footer: |
   <gradient:#22D3EE:#7C3AED>JUNTE-SE À NOSSA COMUNIDADE</gradient>
   &bEntre e divirta-se!
 
+# ------------------------------------------------------------
+# FOOTER ANIMADO
+# ------------------------------------------------------------
+# Mostra três riscos coloridos e alterna a mensagem abaixo deles.
+# Cada estado representa um risco ativo e sua mensagem correspondente.
+# O ciclo é: estado 1 -> estado 2 -> estado 3 -> estado 1...
+footer-animado:
+  ativado: true
+  intervalo-segundos: 3
+  estados:
+    - riscos: "&c_______ &9_______ &a_______"
+      mensagem: "&cMensagem vermelha do servidor."
+    - riscos: "&c_______ &9_______ &a_______"
+      mensagem: "&9Mensagem azul do servidor."
+    - riscos: "&c_______ &9_______ &a_______"
+      mensagem: "&aMensagem verde do servidor."
+
+# Footer padrão usado quando a animação estiver desativada.
+footer: |
+  {icon:online} &fJogadores: &a%online%  &8•  &fPing: &a%ping%ms
+
+  <gradient:#22D3EE:#7C3AED>JUNTE-SE À NOSSA COMUNIDADE</gradient>
+  &bEntre e divirta-se!
+
 # Endereço exibido no TAB, quando configurado.
 endereco-servidor: ""
 
