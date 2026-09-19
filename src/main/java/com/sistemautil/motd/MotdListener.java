@@ -50,7 +50,63 @@ public final class MotdListener implements Listener {
                 ? plugin.getVisualText().format(partes[1].trim())
                 : "";
 
-        event.setMotd(linha2.isEmpty() ? linha1 : linha1 + "\n" + linha2);
+        StringBuilder motd = new StringBuilder(linha1);
+        if (!linha2.isEmpty()) {
+            motd.append("\\n").append(linha2);
+        }
+
+        String footer = construirFooter();
+        if (!footer.isEmpty()) {
+            motd.append("\\n").append(footer);
+        }
+
+        event.setMotd(motd.toString());
+    }
+
+    private String construirFooter() {
+        if (!plugin.getMotdConfig().getBoolean("footer.ativado", false)) return "";
+
+        List<?> riscos = plugin.getMotdConfig().getList("footer.riscos");
+        if (riscos == null || riscos.size() < 3) return "";
+
+        boolean animado = plugin.getMotdConfig().getBoolean("footer.animado", true);
+        int intervalo = Math.max(1, plugin.getMotdConfig().getInt("footer.intervalo-segundos", 4));
+        int indice = 0;
+
+        if (animado) {
+            long frame = (System.currentTimeMillis() / 1000L / intervalo) % 3;
+            indice = (int) frame;
+        }
+
+        StringBuilder riscosTexto = new StringBuilder();
+        String mensagem = "";
+
+        for (int i = 0; i < 3; i++) {
+            Object valor = riscos.get(i);
+            if (!(valor instanceof java.util.Map<?, ?> mapa)) continue;
+
+            String cor = String.valueOf(mapa.getOrDefault("cor", "&f"));
+            String risco = String.valueOf(mapa.getOrDefault("risco", "_______"));
+            String texto = String.valueOf(mapa.getOrDefault("mensagem", ""));
+
+            if (i > 0) riscosTexto.append(" ");
+            riscosTexto.append(cor).append(risco);
+
+            if (i == indice) {
+                mensagem = cor + texto;
+            }
+        }
+
+        String prefixo = plugin.getMotdConfig().getString("footer.prefixo", "");
+        String separador = plugin.getMotdConfig().getString("footer.separador", "\\n");
+
+        String riscosFormatados = plugin.getVisualText().format(prefixo + riscosTexto);
+        String mensagemFormatada = plugin.getVisualText().format(mensagem);
+
+        if (mensagemFormatada.isEmpty()) return riscosFormatados;
+        if ("\\n".equals(separador)) return riscosFormatados + "\\n" + mensagemFormatada;
+
+        return riscosFormatados + plugin.getVisualText().format(separador) + mensagemFormatada;
     }
 
     private void aplicarMaxFicticio(ServerListPingEvent event) {
