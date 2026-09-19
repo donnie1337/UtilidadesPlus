@@ -31,6 +31,7 @@ public final class UtilidadesGui implements Listener {
     }
 
     public void open(Player player) {
+        if (!plugin.getUtilidadesConfig().getBoolean("gui.ativado", true)) return;
         if (!player.hasPermission(PERMISSION)) {
             player.sendMessage("§cVocê não tem permissão para usar este menu.");
             return;
@@ -120,8 +121,9 @@ public final class UtilidadesGui implements Listener {
             if (rawSlot == slot(TELEPORT_PATH, "receber-tpa", 11)) {
                 boolean value = !preferences.receivesTpa(player);
                 preferences.setReceivesTpa(player, value);
-                sendConfiguredMessage(player, "mensagem-tpa-ativado", "§b&lᴛᴘᴀ §8• §aVocê agora pode receber solicitações de TPA.");
-                if (!value) sendConfiguredMessage(player, "mensagem-tpa-desativado", "§b&lᴛᴘᴀ §8• §cVocê não receberá mais solicitações de TPA.");
+                sendConfiguredMessage(player, value ? "mensagem-tpa-ativado" : "mensagem-tpa-desativado",
+                        value ? "§b&lᴛᴘᴀ §8• §aVocê agora pode receber solicitações de TPA."
+                                : "§b&lᴛᴘᴀ §8• §cVocê não receberá mais solicitações de TPA.");
                 openTeleport(player);
                 return;
             }
