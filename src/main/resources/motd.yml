@@ -27,6 +27,31 @@ linhas:
   - "<gradient:#00C6FF:#0072FF>VERSÃO %versao%</gradient> &8• &fVenha se divertir!|{icon:estrela} &eHorário do servidor: %hora%"
   - "{icon:espada} <gradient:#FF4D6D:#C850C0>COMUNIDADE</gradient> &8• &fBem-vindo à comunidade!|{icon:raio} &7TPS atual: %tps% &8• &fVagas: %vagas%"
 
+# =========================================
+#                 FOOTER
+# =========================================
+# Exibe três riscos coloridos e uma mensagem animada abaixo deles.
+# Cada risco possui sua própria cor e mensagem.
+footer:
+  ativado: true
+  animado: true
+  intervalo-segundos: 4
+  prefixo: ""
+  separador: "\\n"
+
+  riscos:
+    - risco: "_______"
+      cor: "&c"
+      mensagem: "Explore, construa e conquiste."
+
+    - risco: "_______"
+      cor: "&b"
+      mensagem: "Uma nova aventura começa aqui."
+
+    - risco: "_______"
+      cor: "&a"
+      mensagem: "Divirta-se e faça parte da comunidade."
+
 # Ícone 64x64 dentro da pasta do plugin.
 # Desativado por padrão porque nenhum icon.png acompanha o JAR.
 icone:
