@@ -19,9 +19,9 @@ import java.util.List;
 
 public final class UtilidadesGui implements Listener {
     private static final String PERMISSION = "utilidadesplus.configurar";
-    private static final String MAIN_TITLE = "§8Configurações";
-    private static final String TELEPORT_TITLE = "§8Teletransporte e comunicação";
-    private static final String PREFERENCES_TITLE = "§8Mensagens de entrada";
+    private static final String MAIN_PATH = "gui.telas.principal";
+    private static final String TELEPORT_PATH = "gui.telas.teletransporte";
+    private static final String PREFERENCES_PATH = "gui.telas.mensagens";
     private final SistemaUtil plugin;
     private final UtilidadesPreferences preferences;
 
@@ -36,192 +36,256 @@ public final class UtilidadesGui implements Listener {
             return;
         }
 
-        Inventory inventory = Bukkit.createInventory(null, size(), MAIN_TITLE);
-        inventory.setItem(slot("teletransporte", 11), item(
-                Material.OAK_BOAT,
-                "§b&lTeletransporte",
-                "",
-                "§7Controle solicitações de TPA",
-                "§7e mensagens privadas.",
-                "",
-                "§eClique para abrir."
+        Inventory inventory = createInventory(MAIN_PATH, "&8Utilidades do jogador");
+        inventory.setItem(slot(MAIN_PATH, "teletransporte", 11), configuredItem(
+                MAIN_PATH + ".itens.teletransporte", Material.OAK_BOAT,
+                "&b&lTeletransporte", "", "&7Controle solicitações de TPA",
+                "&7e mensagens privadas.", "", "&eClique para abrir."
         ));
-        inventory.setItem(slot("mensagens", 15), item(
-                Material.COMPASS,
-                "§e&lMensagens de entrada",
-                "",
-                "§7Configure suas mensagens,",
-                "§7notificações e cor do chat.",
-                "",
-                "§eClique para abrir."
+        inventory.setItem(slot(MAIN_PATH, "mensagens", 15), configuredItem(
+                MAIN_PATH + ".itens.mensagens", Material.COMPASS,
+                "&e&lMensagens de entrada", "", "&7Configure suas mensagens,",
+                "&7notificações e cor do chat.", "", "&eClique para abrir."
         ));
-
+        fill(inventory);
         player.openInventory(inventory);
     }
 
     private void openTeleport(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, size(), TELEPORT_TITLE);
-        inventory.setItem(slot("receber-tpa", 11), toggleItem(
-                Material.OAK_BOAT,
-                "§b&lReceber TPA",
-                preferences.receivesTpa(player),
-                "§7Permite que outros jogadores",
-                "§7enviem solicitações de TPA para você."
+        Inventory inventory = createInventory(TELEPORT_PATH, "&8Teletransporte e comunicação");
+        inventory.setItem(slot(TELEPORT_PATH, "receber-tpa", 11), toggleItem(
+                TELEPORT_PATH + ".itens.receber-tpa", Material.OAK_BOAT,
+                "&b&lReceber TPA", preferences.receivesTpa(player),
+                "&7Permite que outros jogadores", "&7enviem solicitações de TPA para você."
         ));
-        inventory.setItem(slot("receber-tell", 15), toggleItem(
-                Material.PAPER,
-                "§e&lReceber /tell",
-                preferences.receivesTell(player),
-                "§7Permite que outros jogadores",
-                "§7enviem mensagens privadas para você."
+        inventory.setItem(slot(TELEPORT_PATH, "receber-tell", 15), toggleItem(
+                TELEPORT_PATH + ".itens.receber-tell", Material.PAPER,
+                "&e&lReceber /tell", preferences.receivesTell(player),
+                "&7Permite que outros jogadores", "&7enviem mensagens privadas para você."
         ));
-        inventory.setItem(22, item(Material.ARROW, "§fVoltar", "§7Voltar para configurações."));
+        inventory.setItem(backSlot(TELEPORT_PATH), configuredItem(
+                TELEPORT_PATH + ".itens.voltar", Material.ARROW,
+                "&fVoltar", "&7Voltar para configurações."
+        ));
+        fill(inventory);
         player.openInventory(inventory);
     }
 
     private void openPreferences(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, size(), PREFERENCES_TITLE);
-        inventory.setItem(slot("entrada", 11), toggleItem(
-                Material.OAK_DOOR,
-                "§e&lMensagens de entrada/saída",
+        Inventory inventory = createInventory(PREFERENCES_PATH, "&8Mensagens de entrada");
+        inventory.setItem(slot(PREFERENCES_PATH, "entrada", 11), toggleItem(
+                PREFERENCES_PATH + ".itens.entrada", Material.OAK_DOOR,
+                "&e&lMensagens de entrada/saída",
                 preferences.broadcastsJoinQuit(player),
-                "§7Controla se sua entrada e saída",
-                "§7podem ser exibidas para os jogadores."
+                "&7Controla se sua entrada e saída",
+                "&7podem ser exibidas para os jogadores."
         ));
-        inventory.setItem(slot("cor", 13), colorItem(player));
-        inventory.setItem(slot("notificacoes", 15), toggleItem(
-                Material.ENDER_EYE,
-                "§b&lNotificações de entrada/saída",
+        inventory.setItem(slot(PREFERENCES_PATH, "cor", 13), colorItem(player));
+        inventory.setItem(slot(PREFERENCES_PATH, "notificacoes", 15), toggleItem(
+                PREFERENCES_PATH + ".itens.notificacoes", Material.ENDER_EYE,
+                "&b&lNotificações de entrada/saída",
                 preferences.receivesJoin(player) && preferences.receivesQuit(player),
-                "§7Controla se você recebe as",
-                "§7mensagens de entrada e saída."
+                "&7Controla se você recebe as",
+                "&7mensagens de entrada e saída."
         ));
-        inventory.setItem(22, item(Material.ARROW, "§fVoltar", "§7Voltar para configurações."));
+        inventory.setItem(backSlot(PREFERENCES_PATH), configuredItem(
+                PREFERENCES_PATH + ".itens.voltar", Material.ARROW,
+                "&fVoltar", "&7Voltar para configurações."
+        ));
+        fill(inventory);
         player.openInventory(inventory);
     }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         String title = event.getView().getTitle();
-        if (!MAIN_TITLE.equals(title) && !TELEPORT_TITLE.equals(title) && !PREFERENCES_TITLE.equals(title)) return;
+        String mainTitle = title(MAIN_PATH, "&8Utilidades do jogador");
+        String teleportTitle = title(TELEPORT_PATH, "&8Teletransporte e comunicação");
+        String preferencesTitle = title(PREFERENCES_PATH, "&8Mensagens de entrada");
+        if (!mainTitle.equals(title) && !teleportTitle.equals(title) && !preferencesTitle.equals(title)) return;
+
         event.setCancelled(true);
         if (!(event.getWhoClicked() instanceof Player player)) return;
         if (event.getClickedInventory() != event.getView().getTopInventory()) return;
 
         int rawSlot = event.getRawSlot();
 
-        if (MAIN_TITLE.equals(title)) {
-            if (rawSlot == slot("teletransporte", 11)) {
-                openTeleport(player);
-            } else if (rawSlot == slot("mensagens", 15)) {
-                openPreferences(player);
-            }
+        if (mainTitle.equals(title)) {
+            if (rawSlot == slot(MAIN_PATH, "teletransporte", 11)) openTeleport(player);
+            else if (rawSlot == slot(MAIN_PATH, "mensagens", 15)) openPreferences(player);
             return;
         }
 
-        if (TELEPORT_TITLE.equals(title)) {
-            if (rawSlot == slot("receber-tpa", 11)) {
+        if (teleportTitle.equals(title)) {
+            if (rawSlot == slot(TELEPORT_PATH, "receber-tpa", 11)) {
                 boolean value = !preferences.receivesTpa(player);
                 preferences.setReceivesTpa(player, value);
-                player.sendMessage(value
-                        ? "§b&lᴛᴘᴀ §8• §aVocê agora pode receber solicitações de TPA."
-                        : "§b&lᴛᴘᴀ §8• §cVocê não receberá mais solicitações de TPA.");
+                sendConfiguredMessage(player, "mensagem-tpa-ativado", "§b&lᴛᴘᴀ §8• §aVocê agora pode receber solicitações de TPA.");
+                if (!value) sendConfiguredMessage(player, "mensagem-tpa-desativado", "§b&lᴛᴘᴀ §8• §cVocê não receberá mais solicitações de TPA.");
                 openTeleport(player);
                 return;
             }
-            if (rawSlot == slot("receber-tell", 15)) {
+            if (rawSlot == slot(TELEPORT_PATH, "receber-tell", 15)) {
                 boolean value = !preferences.receivesTell(player);
                 preferences.setReceivesTell(player, value);
-                player.sendMessage(value
-                        ? "§e&lᴄʜᴀᴛ §8• §aVocê agora pode receber mensagens privadas."
-                        : "§e&lᴄʜᴀᴛ §8• §cVocê não receberá mais mensagens privadas.");
+                sendConfiguredMessage(player, value ? "mensagem-tell-ativado" : "mensagem-tell-desativado",
+                        value ? "§e&lᴄʜᴀᴛ §8• §aVocê agora pode receber mensagens privadas."
+                                : "§e&lᴄʜᴀᴛ §8• §cVocê não receberá mais mensagens privadas.");
                 openTeleport(player);
                 return;
             }
-            if (rawSlot == 22) open(player);
+            if (rawSlot == backSlot(TELEPORT_PATH)) open(player);
             return;
         }
 
-        if (rawSlot == slot("entrada", 11)) {
+        if (rawSlot == slot(PREFERENCES_PATH, "entrada", 11)) {
             boolean value = !preferences.broadcastsJoinQuit(player);
             preferences.setBroadcastsJoinQuit(player, value);
-            player.sendMessage(value
-                    ? "§aSuas mensagens de entrada/saída agora são visíveis para todos."
-                    : "§cSuas mensagens de entrada/saída foram ocultadas dos outros jogadores.");
+            sendConfiguredMessage(player, value ? "mensagem-entrada-ativada" : "mensagem-entrada-desativada",
+                    value ? "§aSuas mensagens de entrada/saída agora são visíveis para todos."
+                            : "§cSuas mensagens de entrada/saída foram ocultadas dos outros jogadores.");
             openPreferences(player);
             return;
         }
-        if (rawSlot == slot("notificacoes", 15)) {
+        if (rawSlot == slot(PREFERENCES_PATH, "notificacoes", 15)) {
             boolean value = !(preferences.receivesJoin(player) && preferences.receivesQuit(player));
             preferences.setReceivesJoin(player, value);
             preferences.setReceivesQuit(player, value);
-            player.sendMessage(value
-                    ? "§aNotificações de entrada/saída ativadas."
-                    : "§cNotificações de entrada/saída desativadas.");
+            sendConfiguredMessage(player, value ? "mensagem-notificacoes-ativadas" : "mensagem-notificacoes-desativadas",
+                    value ? "§aNotificações de entrada/saída ativadas."
+                            : "§cNotificações de entrada/saída desativadas.");
             openPreferences(player);
             return;
         }
-        if (rawSlot == slot("cor", 13)) {
+        if (rawSlot == slot(PREFERENCES_PATH, "cor", 13)) {
             player.closeInventory();
             player.performCommand("cor");
             return;
         }
-        if (rawSlot == 22) open(player);
+        if (rawSlot == backSlot(PREFERENCES_PATH)) open(player);
     }
 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
         String title = event.getView().getTitle();
-        if (MAIN_TITLE.equals(title) || TELEPORT_TITLE.equals(title) || PREFERENCES_TITLE.equals(title)) event.setCancelled(true);
+        if (title.equals(title(MAIN_PATH, "&8Utilidades do jogador"))
+                || title.equals(title(TELEPORT_PATH, "&8Teletransporte e comunicação"))
+                || title.equals(title(PREFERENCES_PATH, "&8Mensagens de entrada"))) {
+            event.setCancelled(true);
+        }
     }
 
-    private ItemStack toggleItem(Material material, String name, boolean enabled, String... description) {
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) return item;
-        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-        List<String> lore = new ArrayList<>();
-        lore.add("");
-        for (String line : description) lore.add(ChatColor.translateAlternateColorCodes('&', line));
-        lore.add("");
-        lore.add(enabled ? "§a● ATIVADO" : "§c● DESATIVADO");
-        lore.add("§8Clique para " + (enabled ? "desativar" : "ativar") + ".");
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        return item;
+    private Inventory createInventory(String path, String fallbackTitle) {
+        int size = plugin.getUtilidadesConfig().getInt(path + ".tamanho", 27);
+        if (size < 9 || size > 54 || size % 9 != 0) size = 27;
+        return Bukkit.createInventory(null, size, title(path, fallbackTitle));
     }
 
-    private ItemStack item(Material material, String name, String... loreLines) {
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) return item;
-        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-        List<String> lore = new ArrayList<>();
-        for (String line : loreLines) lore.add(ChatColor.translateAlternateColorCodes('&', line));
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        return item;
+    private String title(String path, String fallback) {
+        return color(plugin.getUtilidadesConfig().getString(path + ".titulo", fallback));
+    }
+
+    private void fill(Inventory inventory) {
+        if (!plugin.getUtilidadesConfig().getBoolean("gui.preenchimento.ativado", true)) return;
+        Material material = material("gui.preenchimento.material", Material.GRAY_STAINED_GLASS_PANE);
+        ItemStack filler = item(material, plugin.getUtilidadesConfig().getString("gui.preenchimento.nome", " "), List.of());
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
+            if (inventory.getItem(slot) == null) inventory.setItem(slot, filler.clone());
+        }
+    }
+
+    private ItemStack configuredItem(String path, Material fallbackMaterial, String fallbackName, String... fallbackLore) {
+        Material material = material(path + ".material", fallbackMaterial);
+        String name = plugin.getUtilidadesConfig().getString(path + ".nome", fallbackName);
+        List<String> lore = plugin.getUtilidadesConfig().getStringList(path + ".lore");
+        if (lore.isEmpty()) lore = List.of(fallbackLore);
+        return item(material, name, lore);
+    }
+
+    private ItemStack toggleItem(String path, Material fallbackMaterial, String fallbackName,
+                                 boolean enabled, String... fallbackLore) {
+        Material material = material(path + ".material", fallbackMaterial);
+        String name = plugin.getUtilidadesConfig().getString(path + ".nome", fallbackName);
+        List<String> lore = plugin.getUtilidadesConfig().getStringList(path + ".lore");
+        if (lore.isEmpty()) lore = List.of(fallbackLore);
+
+        String status = enabled
+                ? plugin.getUtilidadesConfig().getString("gui.textos.status-ativado", "&a● ATIVADO")
+                : plugin.getUtilidadesConfig().getString("gui.textos.status-desativado", "&c● DESATIVADO");
+        String action = enabled
+                ? plugin.getUtilidadesConfig().getString("gui.textos.acao-desativar", "&8Clique para desativar.")
+                : plugin.getUtilidadesConfig().getString("gui.textos.acao-ativar", "&8Clique para ativar.");
+
+        List<String> parsed = new ArrayList<>();
+        for (String line : lore) parsed.add(apply(line, status, action, null, null));
+        return item(material, apply(name, status, action, null, null), parsed);
     }
 
     private ItemStack colorItem(Player player) {
+        String path = PREFERENCES_PATH + ".itens.cor";
         ChatColor color = parseColor(currentChatColor(player));
-        ItemStack item = new ItemStack(dyeFor(color));
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName(color + "Cor da mensagem");
-            meta.setLore(List.of(
-                    "",
-                    "§7Sua cor atual:",
-                    "§f▸ " + color + currentChatColorName(player),
-                    "",
-                    "§7Escolha uma nova cor para",
-                    "§7as suas mensagens no chat.",
-                    "",
-                    "§eClique para abrir as cores."
-            ));
-            item.setItemMeta(meta);
+        String colorCode = color.toString();
+        String colorName = currentChatColorName(player);
+        String name = plugin.getUtilidadesConfig().getString(path + ".nome", "&fCor da mensagem");
+        String materialName = plugin.getUtilidadesConfig().getString(path + ".material", "");
+        Material material = materialName.isBlank() ? dyeFor(color) : material(path + ".material", dyeFor(color));
+
+        List<String> lore = plugin.getUtilidadesConfig().getStringList(path + ".lore");
+        if (lore.isEmpty()) {
+            lore = List.of("", "&7Sua cor atual:", "&f▸ {cor}{nome-cor}", "",
+                    "&7Escolha uma nova cor para", "&7as suas mensagens no chat.", "",
+                    "&eClique para abrir as cores.");
         }
+
+        List<String> parsed = new ArrayList<>();
+        for (String line : lore) parsed.add(apply(line, null, null, colorCode, colorName));
+        return item(material, apply(name, null, null, colorCode, colorName), parsed);
+    }
+
+    private String apply(String text, String status, String action, String color, String colorName) {
+        if (text == null) return "";
+        return color(text.replace("{status}", status == null ? "" : status)
+                .replace("{acao}", action == null ? "" : action)
+                .replace("{cor}", color == null ? "§f" : color)
+                .replace("{nome-cor}", colorName == null ? "branco" : colorName));
+    }
+
+    private void sendConfiguredMessage(Player player, String key, String fallback) {
+        player.sendMessage(color(plugin.getUtilidadesConfig().getString("gui.mensagens." + key, fallback)));
+    }
+
+    private ItemStack item(Material material, String name, List<String> loreLines) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return item;
+        meta.setDisplayName(color(name));
+        List<String> lore = new ArrayList<>();
+        for (String line : loreLines) lore.add(color(line));
+        meta.setLore(lore);
+        item.setItemMeta(meta);
         return item;
+    }
+
+    private String color(String text) {
+        return ChatColor.translateAlternateColorCodes('&', text == null ? "" : text);
+    }
+
+    private Material material(String path, Material fallback) {
+        String value = plugin.getUtilidadesConfig().getString(path);
+        if (value == null || value.isBlank()) return fallback;
+        try {
+            return Material.valueOf(value.trim().toUpperCase());
+        } catch (IllegalArgumentException ignored) {
+            return fallback;
+        }
+    }
+
+    private int slot(String path, String key, int fallback) {
+        return plugin.getUtilidadesConfig().getInt(path + ".itens." + key + ".slot", fallback);
+    }
+
+    private int backSlot(String path) {
+        return slot(path, "voltar", 22);
     }
 
     private String currentChatColor(Player player) {
@@ -273,14 +337,5 @@ public final class UtilidadesGui implements Listener {
             case DARK_PURPLE -> Material.PURPLE_DYE;
             default -> Material.WHITE_DYE;
         };
-    }
-
-    private int size() {
-        int size = plugin.getUtilidadesConfig().getInt("gui.tamanho", 27);
-        return size >= 9 && size <= 54 && size % 9 == 0 ? size : 27;
-    }
-
-    private int slot(String key, int fallback) {
-        return plugin.getUtilidadesConfig().getInt("gui.slots." + key, fallback);
     }
 }
