@@ -14,12 +14,12 @@ header-ativado: true
 
 header: |
   &8
-                      &d&k!&r &5&lREDE INOVA&r &d&k!&r
-             &7Inovando a sua jornada no Minecraft
-
-      &fJogadores Conectados: &b%online%&7/&3500  &7|  &fSeu Ping: &a%player_ping%ms
-      &fMeta Global VIP: &d%donationgoal_progress%% &7(&e%donationgoal_current%&7/&6%donationgoal_target%&7)
-    &8
+  &2&l🌱 ECO LANDS &r&8| &a&lSURVIVAL RAIZ&r
+  &7Um mundo vivo, aberto à exploração e à aventura
+  &8
+  &7Mundo em Exploração: &f%multiverse_world_display% &8| &7Clima: &a%world_weather%
+  &7Aventureiros no Mapa: &a%online% &7conectados
+  &8
 
 # ============================================================
 # FOOTER
@@ -28,17 +28,15 @@ header: |
 footer-ativado: true
 
 footer: |
-    &8
-     &a&lEVENTO ATIVO: &eDobro de Coins habilitado até às 22h!
-    &8
-      &f🛸 Site: &ainova.net&r      &f🛒 Loja: &aloja.inova.net
-      &f💬 Discord: &ddiscord.gg/inova&r  &f🛠️ Suporte: &aticket
-    &8
-     &6👑 Seja VIP: &fhttps://aethel.com &7(Adquira Ranks e Cosméticos)
-     &6🛡️ Comunidade: &ediscord.gg/aethel &7(Suporte & Avisos)
-    &8
-            &7Obrigado por jogar conosco hoje, &d%player_name%&7!
-    &8
+  &8
+  &6🍂 &e&lAVISO DA VILA: &fTerrenos protegidos contra monstros ativados!
+  &8
+  &a🛒 &fMercado Geral: &a&lecolands.net &7(Vantagens e Chaves de Caixas)
+  &a💬 &fAcampamento: &ddiscord.gg/ecolands &7(Comunidade e Chat)
+  &8
+  &7Bom descanso em sua jornada, &a%player_name%&7
+  &7Dias vividos: &e%statistic_days_played% &8| &7Aventureiros conectados: &a%online%
+  &8
 
 # ============================================================
 # NOMES DOS JOGADORES
