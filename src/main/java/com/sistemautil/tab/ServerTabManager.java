@@ -222,7 +222,6 @@ public final class ServerTabManager {
         String vanishColor = plugin.getTabConfig().getString("tag.cabeca.invisivel.cor", "&c");
         boolean vanishEnabled = plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.ativado", true);
 
-        // Cada bloco visual mantém sua própria cor. O clan é encerrado antes da tag de invisibilidade.
         String prefixPart = replaceHeadPlaceholders(configuredPrefix, prefix, nameColor, playerName, clanTag, "");
         String namePart = replaceHeadPlaceholders(configuredName, prefix, nameColor, playerName, clanTag, "");
         String clanPart = clanTag == null || clanTag.isBlank()
@@ -232,42 +231,29 @@ public final class ServerTabManager {
                 ? replaceHeadPlaceholders(configuredVanish, prefix, nameColor, playerName, clanTag, vanishColor + vanishText)
                 : "";
 
-        boolean vanishBelowName = plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.abaixo-do-nome", true);
-        if (vanishBelowName && !invisPart.isBlank()) {
-            invisPart = "\n" + centerVanishUnderName(invisPart, namePart, prefixPart, clanPart);
+        if (plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.abaixo-do-nome", true) && !invisPart.isBlank()) {
+            invisPart = "\\n" + centerVanishUnderName(invisPart, namePart, prefixPart, clanPart);
         }
 
-        String format = plugin.getTabConfig().getString("tag.cabeca.formato", "%prefixo%%name_color%%player_name%%clan%%invisivel%");
-        String result = format
-                .replace("%prefixo%", prefixPart)
-                .replace("%nome%", namePart)
-                .replace("%name%", namePart)
-                .replace("%clan%", clanPart)
-                .replace("%invisivel%", invisPart)
-                .replace("%prefix%", prefix == null ? "" : prefix)
-                .replace("%name_color%", nameColor == null ? "§f" : nameColor)
-                .replace("%player_name%", playerName == null ? player.getName() : playerName)
-                .replace("%clan_tag%", clanTag == null ? "" : clanTag)
-                .replace("%vanish_suffix%", vanishColor + vanishText)
-                + (invisPart.isBlank() ? "" : "§r");
-
-        ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, prefixPart, nameColor, clanPart, invisPart, namePart);
+        ScoreboardManagerPlaceholder.apply(
+                plugin, player, headTeams, prefixPart, nameColor, clanPart, invisPart
+        );
     }
 
     private String centerVanishUnderName(String invisPart, String namePart, String prefixPart, String clanPart) {
         boolean automatic = plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.centralizar-automaticamente", true);
         int extraSpaces = Math.max(0, plugin.getTabConfig().getInt("tag.cabeca.invisivel.espacos-extra", 0));
         if (!automatic) {
-            String configuredSpaces = plugin.getTabConfig().getString("tag.cabeca.invisivel.espacos-centralizacao", "       ");
-            return configuredSpaces + invisPart;
+            return plugin.getTabConfig().getString("tag.cabeca.invisivel.espacos-centralizacao", "       ") + invisPart;
         }
 
-        String cleanName = plugin.getVisualText().format((prefixPart == null ? "" : prefixPart) + (namePart == null ? "" : namePart) + (clanPart == null ? "" : clanPart))
-                .replaceAll("§[0-9A-FK-ORXx]", "")
-                .replaceAll("<[^>]+>", "");
+        String cleanName = plugin.getVisualText().format(
+                (prefixPart == null ? "" : prefixPart)
+                        + (namePart == null ? "" : namePart)
+                        + (clanPart == null ? "" : clanPart)
+        ).replaceAll("§[0-9A-FK-ORXx]", "").replaceAll("<[^>]+>", "");
         String cleanInvis = plugin.getVisualText().format(invisPart)
-                .replaceAll("§[0-9A-FK-ORXx]", "")
-                .replaceAll("<[^>]+>", "");
+                .replaceAll("§[0-9A-FK-ORXx]", "").replaceAll("<[^>]+>", "");
 
         int padding = Math.max(0, (cleanName.length() - cleanInvis.length()) / 2) + extraSpaces;
         return " ".repeat(padding) + invisPart;
@@ -284,7 +270,7 @@ public final class ServerTabManager {
 
     private static final class ScoreboardManagerPlaceholder {
         private static void apply(SistemaUtil plugin, Player player, Map<UUID, String> headTeams,
-                                  String prefixPart, String nameColor, String clanPart, String invisPart, String namePart) {
+                                  String prefixPart, String nameColor, String clanPart, String invisPart) {
             if (Bukkit.getScoreboardManager() == null) return;
 
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
@@ -294,30 +280,28 @@ public final class ServerTabManager {
             Team team = scoreboard.getTeam(teamName);
             if (team == null) team = scoreboard.registerNewTeam(teamName);
 
+            // A Team prefix is prepended to the real entry. The entry itself is
+            // the player's actual name, so the nickname is rendered exactly once.
             if (!team.hasEntry(player.getName())) {
                 team.addEntry(player.getName());
             }
 
-            /*
-             * A Team prefix is prepended to the real player-name entry.
-             * The previous implementation put the complete nickname inside
-             * the prefix, which made Minecraft render the nickname twice.
-             *
-             * Keep the real player name as the entry and put only the cargo
-             * visual + nickname color in the prefix. This makes the nametag
-             * use exactly the same CargoPlus prefix/effect and nickname color
-             * as TAB without creating a second nickname.
-             */
             String formattedPrefix = plugin.getVisualText().format(
                     (prefixPart == null ? "" : prefixPart)
                             + (nameColor == null || nameColor.isBlank() ? "§f" : nameColor)
             );
 
+            // Always terminate the nickname/clan formatting before the suffix.
             String formattedSuffix = plugin.getVisualText().format(
                     clanPart == null ? "" : clanPart
             );
 
-            // Do not rewrite the scoreboard packet every 2 ticks when nothing changed.
+            // The vanish line is part of the same suffix so there is only one
+            // scoreboard Team responsible for this player's nametag.
+            if (invisPart != null && !invisPart.isBlank()) {
+                formattedSuffix += "§r" + plugin.getVisualText().format(invisPart);
+            }
+
             if (!formattedPrefix.equals(team.getPrefix())) {
                 team.setPrefix(formattedPrefix);
             }
