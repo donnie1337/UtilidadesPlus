@@ -147,7 +147,7 @@ public final class ServerTabManager {
         String cargoColor = data.nicknameColor();
         if (cargoColor == null || cargoColor.isBlank()) cargoColor = "§f";
         String clanTag = clan.getTag(player);
-        String tagPart = clanTag.isBlank() ? "" : " " + toSmallCapsPreservingColors(clanTag);
+        String tagPart = clanTag.isBlank() ? "" : " " + clanTag;
         String configured = plugin.getTabConfig().getString("jogadores.formato", "%prefix%%name_color%%player_name%%clan_tag%");
         String name = configured.replace("%prefix%", colorize(prefix))
                 .replace("%name_color%", cargoColor)
@@ -163,6 +163,7 @@ public final class ServerTabManager {
         return colorize(configured.replace("%prefix%", prefix).replace("%name_color%", "§f").replace("%player_name%", player.getName()).replace("%clan_tag%", clanTag));
     }
 
+    /* Small Caps is controlled by <small> tags in the configured TAB text. */
     private String toSmallCapsPreservingColors(String text) {
         if (text == null || text.isEmpty()) return "";
         StringBuilder result = new StringBuilder(text.length());
