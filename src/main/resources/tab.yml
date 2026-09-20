@@ -1,71 +1,9 @@
 # ============================================================
 # UtilidadesPlus - TAB
 # ============================================================
-# Toda a aparência do TAB pode ser alterada neste arquivo.
-#
-# Small Caps é opcional e só é aplicado dentro de <small>...</small>.
-# Você pode misturar texto normal e Small Caps na mesma linha.
-# Você pode usar <small> no header, footer e no formato dos jogadores.
-# Os efeitos e <small> seguem o mesmo processamento em todas essas áreas.
-#
-# Cores: &a, &b, &c...
-# Gradiente: <gradient:#7C3AED:#22D3EE>texto</gradient>
-# Ícones: {icon:nome}
-#
-# ============================================================
-# EFEITOS ANIMADOS
-# ============================================================
-# Os efeitos funcionam separadamente ou junto com <small>.
-#
-# <small>UTILIDADESPLUS</small>
-#   Converte somente este trecho para Small Caps.
-#
-# <carregamento:3>UTILIDADESPLUS</carregamento>
-#   Uma cor branca percorre o texto do começo ao fim.
-#   Depois o texto pisca 3 vezes e volta à cor original.
-#   O número define a quantidade de piscadas.
-#   Se omitido, usa 3: <carregamento>texto</carregamento>
-#
-# <brilho>texto</brilho>
-#   Um brilho branco passa continuamente pelo texto.
-#
-# <pulso>texto</pulso>
-#   O texto pulsa entre a cor original e branco.
-#
-# <piscar:3>texto</piscar>
-#   Faz o texto piscar a quantidade de vezes informada.
-#
-# <onda>texto</onda>
-#   Uma onda de brilho percorre o texto da esquerda para a direita.
-#
-# <onda-reversa>texto</onda-reversa>
-#   Uma onda de brilho percorre o texto da direita para a esquerda.
-#
-# <arcoiris>texto</arcoiris>
-#   Aplica um arco-íris animado que percorre o texto.
-#
-# <arcoiris-pulso>texto</arcoiris-pulso>
-#   Arco-íris animado com uma variação de pulso.
-#
-# <fade>texto</fade>
-#   Faz o texto aparecer e desaparecer suavemente.
-#
-# <shake>texto</shake>
-#   Move horizontalmente o texto em pequenos passos.
-#
-# ============================================================
-# COMBINAÇÕES
-# ============================================================
-# Small Caps + efeito:
-# <small><carregamento:3>UTILIDADESPLUS</carregamento></small>
-#
-# Efeito + Small Caps:
-# <carregamento:3><small>UTILIDADESPLUS</small></carregamento>
-#
-# Vários trechos podem usar efeitos diferentes na mesma linha.
+# Header e footer configuráveis.
 # ============================================================
 
-# Ativa ou desativa o TAB inteiro.
 ativado: true
 
 # ============================================================
@@ -75,12 +13,13 @@ ativado: true
 header-ativado: true
 
 header: |
-  &8━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  <gradient:#7C3AED:#22D3EE><small>UTILIDADESPLUS</small></gradient>
-  &7Bem-vindo, &f%player_name%&7!
   &8
-  &7Temporada: &f1
-  &8━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                      &d&k!&r &5&lREDE INOVA&r &d&k!&r
+             &7Inovando a sua jornada no Minecraft
+
+      &fJogadores Conectados: &b%online%&7/&3500  &7|  &fSeu Ping: &a%player_ping%ms
+      &fMeta Global VIP: &d%donationgoal_progress%% &7(&e%donationgoal_current%&7/&6%donationgoal_target%&7)
+    &8
 
 # ============================================================
 # FOOTER
@@ -89,42 +28,17 @@ header: |
 footer-ativado: true
 
 footer: |
-  &8━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  &7Jogadores online: &a%online%&7/&f%max%
-  &7Seu ping: &a%ping%ms
-  &8
-  <gradient:#22D3EE:#7C3AED><small>UTILIDADESPLUS</small></gradient>
-  &7Obrigado por jogar!
-  &8━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    &8
+     &a&lEVENTO ATIVO: &eDobro de Coins habilitado até às 22h!
+    &8
+      &f🛸 Site: &ainova.net&r      &f🛒 Loja: &aloja.inova.net
+      &f💬 Discord: &ddiscord.gg/inova&r  &f🛠️ Suporte: &aticket
+    &8
+            &7Obrigado por jogar conosco hoje, &d%player_name%&7!
+    &8
 
 # ============================================================
 # NOMES DOS JOGADORES
-# ============================================================
-# Define como o nome de cada jogador aparece na lista.
-#
-# O processamento visual é o mesmo usado no header/footer:
-#   <small>...</small>     = Small Caps somente neste trecho
-#   <gradient:...>...</gradient> = gradiente
-#   <carregamento>...</carregamento> = efeito animado
-#   <brilho>...</brilho>   = efeito animado
-#   <pulso>...</pulso>     = efeito animado
-#   <piscar:3>...</piscar> = efeito animado
-#   <onda>...</onda>       = efeito animado
-#   <fade>...</fade>       = efeito animado
-#
-# Placeholders:
-# %prefix%       = prefixo do cargo
-# %name_color%   = cor do nome
-# %player_name%  = nome do jogador
-# %clan_tag%     = tag do jogador
-# %group%        = grupo/cargo
-#
-# Para deixar somente o nome do jogador em Small Caps:
-# %prefix%%name_color%<small>%player_name%</small>%clan_tag%
-#
-# Para aplicar Small Caps em todo o nome, incluindo o clan:
-# <small>%prefix%%name_color%%player_name%%clan_tag%</small>
-#
 # ============================================================
 
 jogadores:
@@ -138,53 +52,25 @@ tag:
   ativada: true
   mostrar-no-tab: true
 
-  # ==========================================================
-  # TAG ACIMA DA CABEÇA
-  # ==========================================================
-  # Tudo nesta seção é editável.
-  #
-  # %prefix%          = prefixo/cargo vindo do CargoPlus
-  # %name_color%      = cor do nome definida pelo CargoPlus
-  # %player_name%     = nome do jogador
-  # %clan_tag%        = tag completa do ClanPlus
-  # %vanish_suffix%   = texto de invisibilidade
-  #
-  # Você pode alterar a ordem, os espaços, cores, efeitos e
-  # Small Caps diretamente no formato.
   cabeca:
     ativada: true
-
-    # Formato FINAL da tag acima da cabeça.
     formato: "%prefixo%%name_color%%player_name%%clan%%invisivel%"
 
-    # Como o prefixo/cargo aparece.
     prefixo:
       formato: "%prefix%"
 
-    # Como o nome aparece.
     nome:
       formato: "%name_color%%player_name%"
 
-    # Como o clan aparece.
     clan:
       formato: " &r%clan_tag%"
 
-    # Como o estado de invisibilidade aparece.
     invisivel:
       ativado: true
-
-      # Quando ativado, [INVISIVEL] fica em uma segunda linha,
-      # centralizado abaixo do nickname.
       abaixo-do-nome: true
       centralizar-automaticamente: true
-
-      # Ajuste fino do centro automático.
-      # Valores positivos movem a tag para a direita.
       espacos-extra: 0
-
-      # Usado somente se a centralização automática for desativada.
       espacos-centralizacao: "       "
-
       formato: " &r%vanish_suffix%"
       texto: "[INVISIVEL]"
       cor: "&c"
@@ -208,8 +94,6 @@ sorting:
 
 # ============================================================
 # ENDEREÇO DO SERVIDOR
-# ============================================================
-# Usado pelo placeholder %ip%.
 # ============================================================
 
 endereco-servidor: ""
