@@ -14,12 +14,9 @@ header-ativado: true
 
 header: |
   &8
-  &d&k!&r &5&lREDE INOVA&r &d&k!&r
-  &7Bem-vindo à Rede Inova, &f%player_name%&7!
+  &b❄&e&k!&r &e&lREDE GLOW&r &e&k!&r&b❄
   &8
   &fJogadores Online: &b%online%&7/&3500 &8| &fPing: &a%player_ping%ms
-  &fMeta Global VIP: &d%donationgoal_progress%% &7(&e%donationgoal_current%&7/&6%donationgoal_target%&7)
-  &8
 
 # ============================================================
 # FOOTER
@@ -31,14 +28,10 @@ footer: |
   &8
   &a&lEVENTO ATIVO: &eDobro de Coins habilitado até às 22h!
   &8
-  &f🛸 Site: &ainova.net&r &8| &f🛒 Loja: &aloja.inova.net
-  &f💬 Discord: &ddiscord.gg/inova&r &8| &f🛠️ Suporte: &aticket
-  &8
-  &6👑 Seja VIP: &fhttps://aethel.com &7(Adquira Ranks e Cosméticos)
-  &6🛡️ Comunidade: &ediscord.gg/aethel &7(Suporte & Avisos)
+     &f🛸 Site: &aredeglow.com&r &8| &f🛒 Loja: &aloja.redeglow.com &7(Adquira VIPs e Cosméticos)   
+  &f💬 Discord: &ddiscord.gg/redeglow&r &7(Suporte & Avisos)
   &8
   &7Obrigado por jogar conosco hoje, &d%player_name%&7!
-  &8
 
 # ============================================================
 # NOMES DOS JOGADORES
