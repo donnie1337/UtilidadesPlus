@@ -280,8 +280,16 @@ public final class ServerTabManager {
             Team team = scoreboard.getTeam(teamName);
             if (team == null) team = scoreboard.registerNewTeam(teamName);
 
-            // A Team prefix is prepended to the real entry. The entry itself is
-            // the player's actual name, so the nickname is rendered exactly once.
+            // A player can only have one scoreboard Team on a scoreboard.
+            // Remove stale/foreign memberships first. Otherwise another Team
+            // can keep its old prefix/color on the same name and the client
+            // can visibly alternate between two nametags.
+            for (Team other : scoreboard.getTeams()) {
+                if (other != team && other.hasEntry(player.getName())) {
+                    other.removeEntry(player.getName());
+                }
+            }
+
             if (!team.hasEntry(player.getName())) {
                 team.addEntry(player.getName());
             }
