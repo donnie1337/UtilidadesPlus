@@ -251,7 +251,7 @@ public final class ServerTabManager {
                 .replace("%vanish_suffix%", vanishColor + vanishText)
                 + (invisPart.isBlank() ? "" : "§r");
 
-        ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, prefixPart, nameColor, clanPart);
+        ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, prefixPart, nameColor, clanPart, invisPart, namePart);
     }
 
     private String centerVanishUnderName(String invisPart, String namePart) {
@@ -284,7 +284,7 @@ public final class ServerTabManager {
 
     private static final class ScoreboardManagerPlaceholder {
         private static void apply(SistemaUtil plugin, Player player, Map<UUID, String> headTeams,
-                                  String prefixPart, String nameColor, String clanPart) {
+                                  String prefixPart, String nameColor, String clanPart, String invisPart, String namePart) {
             if (Bukkit.getScoreboardManager() == null) return;
 
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
