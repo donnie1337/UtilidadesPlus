@@ -166,20 +166,63 @@ public final class ServerTabManager {
         applyAboveHead(player, prefix, cargoColor, player.getName(), clanTag, vanish.getSuffix(player));
     }
 
-    private void applyAboveHead(Player player, String prefix, String nameColor, String playerName, String clanTag, String vanishSuffix) { ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, prefix, nameColor, playerName, clanTag, vanishSuffix); }
+    private void applyAboveHead(Player player, String prefix, String nameColor, String playerName, String clanTag, String vanishSuffix) {
+        if (!plugin.getTabConfig().getBoolean("tag.cabeca.ativada", true)) return;
+
+        String configuredPrefix = plugin.getTabConfig().getString("tag.cabeca.prefixo.formato", "%prefix%");
+        String configuredName = plugin.getTabConfig().getString("tag.cabeca.nome.formato", "%name_color%%player_name%");
+        String configuredClan = plugin.getTabConfig().getString("tag.cabeca.clan.formato", " &r%clan_tag%");
+        String configuredVanish = plugin.getTabConfig().getString("tag.cabeca.invisivel.formato", " &r%vanish_suffix%");
+
+        String vanishText = plugin.getTabConfig().getString("tag.cabeca.invisivel.texto", "[INVISIVEL]");
+        String vanishColor = plugin.getTabConfig().getString("tag.cabeca.invisivel.cor", "&c");
+        boolean vanishEnabled = plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.ativado", true);
+
+        String prefixPart = replaceHeadPlaceholders(configuredPrefix, prefix, nameColor, playerName, clanTag, vanishText);
+        String namePart = replaceHeadPlaceholders(configuredName, prefix, nameColor, playerName, clanTag, vanishText);
+        String clanPart = clanTag == null || clanTag.isBlank() ? "" : replaceHeadPlaceholders(configuredClan, prefix, nameColor, playerName, clanTag, vanishText);
+        String invisPart = vanishEnabled && vanishSuffix != null && !vanishSuffix.isBlank()
+                ? replaceHeadPlaceholders(configuredVanish, prefix, nameColor, playerName, clanTag, vanishText).replace("%vanish_suffix%", vanishColor + vanishText)
+                : "";
+
+        String format = plugin.getTabConfig().getString("tag.cabeca.formato", "%prefixo%%name_color%%player_name%%clan%%invisivel%");
+        String result = format
+                .replace("%prefixo%", prefixPart)
+                .replace("%nome%", namePart)
+                .replace("%name%", namePart)
+                .replace("%clan%", clanPart)
+                .replace("%invisivel%", invisPart)
+                .replace("%prefix%", prefix == null ? "" : prefix)
+                .replace("%name_color%", nameColor == null ? "§f" : nameColor)
+                .replace("%player_name%", playerName == null ? player.getName() : playerName)
+                .replace("%clan_tag%", clanTag == null ? "" : clanTag)
+                .replace("%vanish_suffix%", vanishColor + vanishText);
+
+        ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, result);
+    }
+
+    private String replaceHeadPlaceholders(String text, String prefix, String nameColor, String playerName, String clanTag, String vanishText) {
+        return (text == null ? "" : text)
+                .replace("%prefix%", prefix == null ? "" : prefix)
+                .replace("%name_color%", nameColor == null ? "§f" : nameColor)
+                .replace("%player_name%", playerName == null ? "" : playerName)
+                .replace("%clan_tag%", clanTag == null ? "" : clanTag)
+                .replace("%vanish_suffix%", vanishText == null ? "" : vanishText);
+    }
 
     private static final class ScoreboardManagerPlaceholder {
-        private static void apply(SistemaUtil plugin, Player player, Map<UUID, String> headTeams, String prefix, String nameColor, String playerName, String clanTag) {
+        private static void apply(SistemaUtil plugin, Player player, Map<UUID, String> headTeams, String result) {
             if (Bukkit.getScoreboardManager() == null) return;
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
             String teamName = headTeams.computeIfAbsent(player.getUniqueId(), uuid -> "util_" + uuid.toString().replace("-", "").substring(0, 11));
             Team team = scoreboard.getTeam(teamName);
             if (team == null) team = scoreboard.registerNewTeam(teamName);
             if (!team.hasEntry(player.getName())) team.addEntry(player.getName());
-            String headPrefix = plugin.getVisualText().format((prefix == null ? "" : prefix) + (nameColor == null ? "§f" : nameColor) + (playerName == null ? player.getName() : playerName));
-            String headSuffix = (clanTag == null || clanTag.isBlank() ? "" : plugin.getVisualText().format(" §r" + clanTag))\n                    + (vanishSuffix == null || vanishSuffix.isBlank() ? "" : plugin.getVisualText().format(" §r" + vanishSuffix));
-            team.setPrefix(headPrefix.length() <= 64 ? headPrefix : headPrefix.substring(0, 64));
-            team.setSuffix(headSuffix.length() <= 64 ? headSuffix : headSuffix.substring(0, 64));
+
+            String formatted = plugin.getVisualText().format(result);
+            String headPrefix = formatted.length() <= 64 ? formatted : formatted.substring(0, 64);
+            team.setPrefix(headPrefix);
+            team.setSuffix("");
         }
     }
 
