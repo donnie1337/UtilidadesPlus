@@ -29,9 +29,9 @@ public final class ServerTabManager {
     private final Map<UUID, String> headTeams = new HashMap<>();
 
     public ServerTabManager(SistemaUtil plugin) { this.plugin = plugin; }
-    public void start() { stop(); updateAll(); taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::updateAll, 2L, 2L); }
+    public void start() { stop(); clearStaleHeadTeams(); updateAll(); taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::updateAll, 2L, 2L); }
     public void stop() { if (taskId != -1) { Bukkit.getScheduler().cancelTask(taskId); taskId = -1; } clearHeadTeams(); }
-    private void clearHeadTeams() { Scoreboard scoreboard = Bukkit.getScoreboardManager() == null ? null : Bukkit.getScoreboardManager().getMainScoreboard(); if (scoreboard == null) { headTeams.clear(); return; } for (String teamName : new ArrayList<>(headTeams.values())) { Team team = scoreboard.getTeam(teamName); if (team != null) team.unregister(); } headTeams.clear(); }
+    private void clearHeadTeams() { Scoreboard scoreboard = Bukkit.getScoreboardManager() == null ? null : Bukkit.getScoreboardManager().getMainScoreboard(); if (scoreboard == null) { headTeams.clear(); return; } for (String teamName : new ArrayList<>(headTeams.values())) { Team team = scoreboard.getTeam(teamName); if (team != null) team.unregister(); } headTeams.clear(); }\n\n    private void clearStaleHeadTeams() {\n        Scoreboard scoreboard = Bukkit.getScoreboardManager() == null ? null : Bukkit.getScoreboardManager().getMainScoreboard();\n        if (scoreboard == null) return;\n        for (Team team : new ArrayList<>(scoreboard.getTeams())) {\n            if (team.getName().startsWith("util_")) {\n                team.unregister();\n            }\n        }\n    }
 
     private String formatFooter(int online, int max, int ping, String address, Player player) {
         String fallback = plugin.getTabConfig().getString("footer", "");
@@ -280,16 +280,10 @@ public final class ServerTabManager {
             Team team = scoreboard.getTeam(teamName);
             if (team == null) team = scoreboard.registerNewTeam(teamName);
 
-            // A player can only have one scoreboard Team on a scoreboard.
-            // Remove stale/foreign memberships first. Otherwise another Team
-            // can keep its old prefix/color on the same name and the client
-            // can visibly alternate between two nametags.
-            for (Team other : scoreboard.getTeams()) {
-                if (other != team && other.hasEntry(player.getName())) {
-                    other.removeEntry(player.getName());
-                }
-            }
-
+            // Do not remove memberships owned by other plugins here.
+            // Other scoreboard managers may legitimately own the same entry.
+            // Forcing a remove every 2 ticks causes alternating team packets,
+            // which is perceived by the client as two overlapping nametags.
             if (!team.hasEntry(player.getName())) {
                 team.addEntry(player.getName());
             }
