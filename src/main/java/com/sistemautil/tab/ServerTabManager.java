@@ -182,7 +182,7 @@ public final class ServerTabManager {
         String namePart = replaceHeadPlaceholders(configuredName, prefix, nameColor, playerName, clanTag, vanishText);
         String clanPart = clanTag == null || clanTag.isBlank() ? "" : replaceHeadPlaceholders(configuredClan, prefix, nameColor, playerName, clanTag, vanishText);
         String invisPart = vanishEnabled && vanishSuffix != null && !vanishSuffix.isBlank()
-                ? replaceHeadPlaceholders(configuredVanish, prefix, nameColor, playerName, clanTag, vanishText).replace("%vanish_suffix%", vanishColor + vanishText)
+                ? replaceHeadPlaceholders(configuredVanish, prefix, nameColor, playerName, clanTag, vanishColor + vanishText)
                 : "";
 
         String format = plugin.getTabConfig().getString("tag.cabeca.formato", "%prefixo%%name_color%%player_name%%clan%%invisivel%");
