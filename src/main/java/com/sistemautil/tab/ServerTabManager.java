@@ -242,7 +242,7 @@ public final class ServerTabManager {
                 : "";
 
         if (plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.abaixo-do-nome", true) && !invisPart.isBlank()) {
-            invisPart = "\\n" + centerVanishUnderName(invisPart, namePart, prefixPart, clanPart);
+            invisPart = "\n" + centerVanishUnderName(invisPart, namePart, prefixPart, clanPart);
         }
 
         ScoreboardManagerPlaceholder.apply(
