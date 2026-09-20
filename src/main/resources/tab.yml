@@ -1,53 +1,80 @@
 # ============================================================
 # UtilidadesPlus - TAB
 # ============================================================
-# Configuração visual completa do TAB.
-# Você pode alterar o cabeçalho e o rodapé diretamente neste arquivo.
+# Toda a identidade visual do TAB pode ser alterada aqui.
+# Não é necessário editar o código Java para trocar textos,
+# cores, linhas, placeholders ou o efeito do footer.
+#
 # Cores: &a, &b, &c...
 # Gradiente: <gradient:#7C3AED:#22D3EE>texto</gradient>
 # Ícones: {icon:nome}
-# Placeholders suportados dependem dos sistemas instalados.
 # ============================================================
 
+# Liga/desliga o sistema completo do TAB.
 ativado: true
 
 # ============================================================
-# CABEÇALHO
+# HEADER
 # ============================================================
+# O header aparece na parte superior da lista de jogadores.
+#
+# header-ativado:
+#   true  = mostra o header
+#   false = esconde o header
+#
+# Tudo dentro de "header" é editável.
 header-ativado: true
 
 header: |
   <gradient:#7C3AED:#22D3EE>SEU SERVIDOR</gradient> {icon:estrela}
   &7ᴛᴇᴍᴘᴏʀᴀᴅᴀ: &f1
+  &8
+  &fBem-vindo(a) ao servidor!
 
 # ============================================================
-# RODAPÉ
+# FOOTER
 # ============================================================
+# O footer aparece na parte inferior da lista de jogadores.
+#
+# footer-ativado:
+#   true  = mostra o footer
+#   false = esconde o footer
+#
+# O footer normal é usado quando a animação estiver desligada.
 footer-ativado: true
 
-# Rodapé normal.
-# Usado quando o rodapé animado estiver desativado.
 footer: |
-  {icon:online} &fJogadores: &a%online% &8• &fPing: &a%ping%ms
-
-  <gradient:#22D3EE:#7C3AED>JUNTE-SE À NOSSA COMUNIDADE</gradient>
-  &bEntre e divirta-se!
+  &8━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  &7Jogadores online: &a%online%&7/&f%max%
+  &7Seu ping: &a%ping%ms
+  &8
+  <gradient:#22D3EE:#7C3AED>SEU SERVIDOR</gradient>
+  &8━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # ============================================================
-# RODAPÉ ANIMADO
+# FOOTER ANIMADO
 # ============================================================
-# Deixe "ativado: false" para usar somente o footer acima.
+# Ative para substituir o footer normal por um efeito.
 #
-# "efeito" define a predefinição utilizada:
-# alternancia, pulso, arco-iris, deslizante ou personalizado.
+# efeitos disponíveis:
+#   alternancia
+#   pulso
+#   arco-iris
+#   deslizante
+#   personalizado
 footer-animado:
   ativado: true
   efeito: "alternancia"
   intervalo-segundos: 3
 
+  # ----------------------------------------------------------
+  # PREDEFINIÇÕES
+  # ----------------------------------------------------------
+  # Você pode alterar livremente os textos, cores e tamanhos.
+
   predefinicoes:
 
-    # Alterna entre as cores configuradas.
+    # Troca a cor da barra e da mensagem.
     alternancia:
       espacos-centralizacao: "                    "
       texto: "Servidor online!"
@@ -63,7 +90,7 @@ footer-animado:
       cor-inicial: "&c"
       cor-final: "&f"
 
-    # Percorre as cores em sequência.
+    # Percorre as cores configuradas.
     arco-iris:
       espacos-centralizacao: "                    "
       texto: "Servidor online!"
@@ -83,35 +110,50 @@ footer-animado:
       cor: "&b"
       largura: 24
 
-  # Usado quando efeito: "personalizado".
+  # ----------------------------------------------------------
+  # EFEITO PERSONALIZADO
+  # ----------------------------------------------------------
+  # Use efeito: "personalizado" para controlar cada frame.
+  #
+  # Cada estado pode ter:
+  #   espacos-centralizacao
+  #   riscos
+  #   mensagem
+  #
+  # Exemplo:
+  #   barra vermelha + mensagem vermelha
+  #   depois barra azul + mensagem azul
+  #   depois barra verde + mensagem verde
   estados:
+
     - espacos-centralizacao: "                    "
       riscos: "&c━━━━━━━━━━━━━━━━━━━━━━━━"
-      mensagem: "&cMensagem vermelha do servidor."
+      mensagem: "&cServidor online!"
 
     - espacos-centralizacao: "                    "
       riscos: "&9━━━━━━━━━━━━━━━━━━━━━━━━"
-      mensagem: "&9Mensagem azul do servidor."
+      mensagem: "&9Servidor online!"
 
     - espacos-centralizacao: "                    "
       riscos: "&a━━━━━━━━━━━━━━━━━━━━━━━━"
-      mensagem: "&aMensagem verde do servidor."
+      mensagem: "&aServidor online!"
 
 # ============================================================
-# JOGADORES
+# NOMES DOS JOGADORES
 # ============================================================
-# Formato do nome de cada jogador no TAB.
+# Formato usado para o nome de cada jogador no TAB.
+#
+# Placeholders:
+# %prefix%
+# %name_color%
+# %player_name%
+# %clan_tag%
+# %group%
 jogadores:
   formato: "%prefix%%name_color%%player_name%%clan_tag%"
-  # Placeholders:
-  # %prefix%
-  # %name_color%
-  # %player_name%
-  # %clan_tag%
-  # %group%
 
 # ============================================================
-# TAG
+# TAG / CLAN
 # ============================================================
 tag:
   ativada: true
@@ -119,12 +161,12 @@ tag:
   mostrar-na-cabeca: false
 
 # ============================================================
-# ORDENAÇÃO
+# ORDENAÇÃO DOS JOGADORES
 # ============================================================
-# Os valores técnicos abaixo não devem ser traduzidos.
 sorting:
   enabled: true
   case-sensitive: false
+
   rules:
     - type: primary-group
       order: ascending
@@ -137,5 +179,6 @@ sorting:
 # ============================================================
 # ENDEREÇO DO SERVIDOR
 # ============================================================
-# Deixe vazio para não exibir endereço adicional.
+# Usado pelo placeholder %ip%.
+# Deixe vazio se não quiser informar endereço.
 endereco-servidor: ""
