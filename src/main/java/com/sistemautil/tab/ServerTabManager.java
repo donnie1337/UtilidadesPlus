@@ -205,9 +205,12 @@ public final class ServerTabManager {
         String vanishColor = plugin.getTabConfig().getString("tag.cabeca.invisivel.cor", "&c");
         boolean vanishEnabled = plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.ativado", true);
 
-        String prefixPart = replaceHeadPlaceholders(configuredPrefix, prefix, nameColor, playerName, clanTag, vanishText);
-        String namePart = replaceHeadPlaceholders(configuredName, prefix, nameColor, playerName, clanTag, vanishText);
-        String clanPart = clanTag == null || clanTag.isBlank() ? "" : replaceHeadPlaceholders(configuredClan, prefix, nameColor, playerName, clanTag, vanishText);
+        // Cada bloco visual mantém sua própria cor. O clan é encerrado antes da tag de invisibilidade.
+        String prefixPart = replaceHeadPlaceholders(configuredPrefix, prefix, nameColor, playerName, clanTag, "");
+        String namePart = replaceHeadPlaceholders(configuredName, prefix, nameColor, playerName, clanTag, "");
+        String clanPart = clanTag == null || clanTag.isBlank()
+                ? ""
+                : replaceHeadPlaceholders(configuredClan, prefix, nameColor, playerName, clanTag, "");
         String invisPart = vanishEnabled && vanishSuffix != null && !vanishSuffix.isBlank()
                 ? replaceHeadPlaceholders(configuredVanish, prefix, nameColor, playerName, clanTag, vanishColor + vanishText)
                 : "";
@@ -223,7 +226,8 @@ public final class ServerTabManager {
                 .replace("%name_color%", nameColor == null ? "§f" : nameColor)
                 .replace("%player_name%", playerName == null ? player.getName() : playerName)
                 .replace("%clan_tag%", clanTag == null ? "" : clanTag)
-                .replace("%vanish_suffix%", vanishColor + vanishText);
+                .replace("%vanish_suffix%", vanishColor + vanishText)
+                + (invisPart.isBlank() ? "" : "§r");
 
         ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, result);
     }
