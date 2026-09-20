@@ -151,9 +151,9 @@ public final class ServerTabManager {
         String prefix = cargo.getAnimatedPrefix(player); if (prefix == null || prefix.isBlank()) prefix = data.prefix() == null ? "" : data.prefix();
         String cargoColor = data.nicknameColor();
         if (cargoColor == null || cargoColor.isBlank()) cargoColor = "§f";
-        String clanTag = clan.getTag(player);
+        String clanTag = ensureClanColor(clan.getTag(player));
         // O nome recebe a cor do cargo, mas a tag do clan não deve herdar essa cor.
-        // Se o ClanPlus fornecer uma cor própria na tag, ela continua valendo após o reset.
+        // Quando o ClanPlus não fornece nenhuma cor, a tag usa cinza claro (&7).
         String tagPart = clanTag.isBlank() ? "" : " §r" + clanTag;
         String configured = plugin.getTabConfig().getString("jogadores.formato", "%prefix%%name_color%%player_name%%clan_tag%");
         String name = configured.replace("%prefix%", colorize(prefix))
@@ -164,6 +164,33 @@ public final class ServerTabManager {
         if (!plugin.getTabConfig().getBoolean("tag.mostrar-no-tab", true)) name = name.replace(tagPart, "");
         player.setPlayerListName(colorize(name));
         applyAboveHead(player, prefix, cargoColor, player.getName(), clanTag, vanish.getSuffix(player));
+    }
+
+    private String ensureClanColor(String clanTag) {
+        if (clanTag == null || clanTag.isBlank()) return "";
+        if (hasExplicitClanColor(clanTag)) return clanTag;
+        return "§7" + clanTag;
+    }
+
+    private boolean hasExplicitClanColor(String text) {
+        if (text == null || text.isBlank()) return false;
+        for (int i = 0; i + 1 < text.length(); i++) {
+            char marker = text.charAt(i);
+            char code = text.charAt(i + 1);
+            if ((marker == '&' || marker == '§') && ((code >= '0' && code <= '9')
+                    || (code >= 'a' && code <= 'f')
+                    || (code >= 'A' && code <= 'F'))) {
+                return true;
+            }
+            if ((marker == '&' || marker == '§') && (code == 'x' || code == 'X')) {
+                return true;
+            }
+            if (marker == '<' && code == '#') {
+                int end = text.indexOf('>', i + 2);
+                if (end > i + 2) return true;
+            }
+        }
+        return false;
     }
 
     private void applyAboveHead(Player player, String prefix, String nameColor, String playerName, String clanTag, String vanishSuffix) {
