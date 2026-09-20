@@ -251,7 +251,7 @@ public final class ServerTabManager {
                 .replace("%vanish_suffix%", vanishColor + vanishText)
                 + (invisPart.isBlank() ? "" : "§r");
 
-        applyCargoNametagSuffix(player, clanPart);
+        applyCargoNametagSuffix(player, clanPart + invisPart);
     }
 
     private void applyCargoNametagSuffix(Player player, String clanPart) {
