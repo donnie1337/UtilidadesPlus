@@ -162,20 +162,20 @@ public final class ServerTabManager {
                 .replace("%group%", cargo.getGroup(player));
         if (!plugin.getTabConfig().getBoolean("tag.mostrar-no-tab", true)) name = name.replace(tagPart, "");
         player.setPlayerListName(colorize(name));
-        applyAboveHead(player, prefix, clanTag);
+        applyAboveHead(player, prefix, cargoColor, player.getName(), clanTag);
     }
 
-    private void applyAboveHead(Player player, String prefix, String clanTag) { ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, prefix, clanTag); }
+    private void applyAboveHead(Player player, String prefix, String nameColor, String playerName, String clanTag) { ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, prefix, nameColor, playerName, clanTag); }
 
     private static final class ScoreboardManagerPlaceholder {
-        private static void apply(SistemaUtil plugin, Player player, Map<UUID, String> headTeams, String prefix, String clanTag) {
+        private static void apply(SistemaUtil plugin, Player player, Map<UUID, String> headTeams, String prefix, String nameColor, String playerName, String clanTag) {
             if (Bukkit.getScoreboardManager() == null) return;
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
             String teamName = headTeams.computeIfAbsent(player.getUniqueId(), uuid -> "util_" + uuid.toString().replace("-", "").substring(0, 11));
             Team team = scoreboard.getTeam(teamName);
             if (team == null) team = scoreboard.registerNewTeam(teamName);
             if (!team.hasEntry(player.getName())) team.addEntry(player.getName());
-            String headPrefix = plugin.getVisualText().format(prefix == null ? "" : prefix);
+            String headPrefix = plugin.getVisualText().format((prefix == null ? "" : prefix) + (nameColor == null ? "§f" : nameColor) + (playerName == null ? player.getName() : playerName));
             String headSuffix = clanTag == null || clanTag.isBlank() ? "" : plugin.getVisualText().format(" §r" + clanTag);
             team.setPrefix(headPrefix.length() <= 64 ? headPrefix : headPrefix.substring(0, 64));
             team.setSuffix(headSuffix.length() <= 64 ? headSuffix : headSuffix.substring(0, 64));
