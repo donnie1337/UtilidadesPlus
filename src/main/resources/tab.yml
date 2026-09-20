@@ -5,7 +5,8 @@
 #
 # Small Caps é opcional e só é aplicado dentro de <small>...</small>.
 # Você pode misturar texto normal e Small Caps na mesma linha.
-# Você pode alterar textos, cores, linhas e placeholders sem precisar editar o código Java.
+# Você pode usar <small> no header, footer e no formato dos jogadores.
+# Os efeitos e <small> seguem o mesmo processamento em todas essas áreas.
 #
 # Cores: &a, &b, &c...
 # Gradiente: <gradient:#7C3AED:#22D3EE>texto</gradient>
@@ -63,22 +64,12 @@
 #
 # Vários trechos podem usar efeitos diferentes na mesma linha.
 # ============================================================
-# ============================================================
 
 # Ativa ou desativa o TAB inteiro.
 ativado: true
 
 # ============================================================
 # HEADER
-# ============================================================
-# O header aparece acima da lista de jogadores.
-#
-# header-ativado:
-#   true  = mostra o header
-#   false = não mostra o header
-#
-# Tudo dentro de "header" é configurável.
-# Você pode adicionar, remover ou reorganizar quantas linhas quiser.
 # ============================================================
 
 header-ativado: true
@@ -93,22 +84,6 @@ header: |
 
 # ============================================================
 # FOOTER
-# ============================================================
-# O footer aparece abaixo da lista de jogadores.
-#
-# footer-ativado:
-#   true  = mostra o footer
-#   false = não mostra o footer
-#
-# Tudo dentro de "footer" é configurável.
-# Você pode alterar completamente o conteúdo do footer.
-#
-# Placeholders disponíveis:
-# %online%       = jogadores online
-# %max%          = limite máximo de jogadores
-# %ping%         = ping do jogador
-# %ip%           = endereço configurado abaixo
-# %player_name%  = nome do jogador
 # ============================================================
 
 footer-ativado: true
@@ -127,16 +102,33 @@ footer: |
 # ============================================================
 # Define como o nome de cada jogador aparece na lista.
 #
+# O processamento visual é o mesmo usado no header/footer:
+#   <small>...</small>     = Small Caps somente neste trecho
+#   <gradient:...>...</gradient> = gradiente
+#   <carregamento>...</carregamento> = efeito animado
+#   <brilho>...</brilho>   = efeito animado
+#   <pulso>...</pulso>     = efeito animado
+#   <piscar:3>...</piscar> = efeito animado
+#   <onda>...</onda>       = efeito animado
+#   <fade>...</fade>       = efeito animado
+#
 # Placeholders:
 # %prefix%       = prefixo do cargo
 # %name_color%   = cor do nome
 # %player_name%  = nome do jogador
-# %clan_tag%     = tag do clan
+# %clan_tag%     = tag do jogador
 # %group%        = grupo/cargo
+#
+# Para deixar somente o nome do jogador em Small Caps:
+# %prefix%%name_color%<small>%player_name%</small>%clan_tag%
+#
+# Para aplicar Small Caps em todo o nome, incluindo o clan:
+# <small>%prefix%%name_color%%player_name%%clan_tag%</small>
+#
 # ============================================================
 
 jogadores:
-  formato: "%prefix%%name_color%%player_name%%clan_tag%"
+  formato: "%prefix%%name_color%<small>%player_name%</small>%clan_tag%"
 
 # ============================================================
 # TAG / CLAN
