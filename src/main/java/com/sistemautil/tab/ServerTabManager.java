@@ -251,7 +251,7 @@ public final class ServerTabManager {
                 .replace("%vanish_suffix%", vanishColor + vanishText)
                 + (invisPart.isBlank() ? "" : "§r");
 
-        ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, result);
+        ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, prefixPart, nameColor, clanPart);
     }
 
     private String centerVanishUnderName(String invisPart, String namePart) {
@@ -283,18 +283,47 @@ public final class ServerTabManager {
     }
 
     private static final class ScoreboardManagerPlaceholder {
-        private static void apply(SistemaUtil plugin, Player player, Map<UUID, String> headTeams, String result) {
+        private static void apply(SistemaUtil plugin, Player player, Map<UUID, String> headTeams,
+                                  String prefixPart, String nameColor, String clanPart) {
             if (Bukkit.getScoreboardManager() == null) return;
+
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-            String teamName = headTeams.computeIfAbsent(player.getUniqueId(), uuid -> "util_" + uuid.toString().replace("-", "").substring(0, 11));
+            String teamName = headTeams.computeIfAbsent(player.getUniqueId(),
+                    uuid -> "util_" + uuid.toString().replace("-", "").substring(0, 11));
+
             Team team = scoreboard.getTeam(teamName);
             if (team == null) team = scoreboard.registerNewTeam(teamName);
-            if (!team.hasEntry(player.getName())) team.addEntry(player.getName());
 
-            String formatted = plugin.getVisualText().format(result);
-            String headPrefix = formatted.length() <= 64 ? formatted : formatted.substring(0, 64);
-            team.setPrefix(headPrefix);
-            team.setSuffix("");
+            if (!team.hasEntry(player.getName())) {
+                team.addEntry(player.getName());
+            }
+
+            /*
+             * A Team prefix is prepended to the real player-name entry.
+             * The previous implementation put the complete nickname inside
+             * the prefix, which made Minecraft render the nickname twice.
+             *
+             * Keep the real player name as the entry and put only the cargo
+             * visual + nickname color in the prefix. This makes the nametag
+             * use exactly the same CargoPlus prefix/effect and nickname color
+             * as TAB without creating a second nickname.
+             */
+            String formattedPrefix = plugin.getVisualText().format(
+                    (prefixPart == null ? "" : prefixPart)
+                            + (nameColor == null || nameColor.isBlank() ? "§f" : nameColor)
+            );
+
+            String formattedSuffix = plugin.getVisualText().format(
+                    clanPart == null ? "" : clanPart
+            );
+
+            // Do not rewrite the scoreboard packet every 2 ticks when nothing changed.
+            if (!formattedPrefix.equals(team.getPrefix())) {
+                team.setPrefix(formattedPrefix);
+            }
+            if (!formattedSuffix.equals(team.getSuffix())) {
+                team.setSuffix(formattedSuffix);
+            }
         }
     }
 
