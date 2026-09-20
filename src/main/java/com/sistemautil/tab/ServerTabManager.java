@@ -391,14 +391,18 @@ public final class ServerTabManager {
             }
         }
 
-        String getSuffix(Player player) {
-            if (method == null || plugin == null) return "";
+        boolean isVanished(Player player) {
+            if (method == null || plugin == null) return false;
             try {
                 Object value = method.invoke(plugin, player);
-                return Boolean.TRUE.equals(value) ? "[INVISIVEL]" : "";
+                return Boolean.TRUE.equals(value);
             } catch (ReflectiveOperationException | LinkageError ex) {
-                return "";
+                return false;
             }
+        }
+
+        String getSuffix(Player player) {
+            return isVanished(player) ? "[INVISIVEL]" : "";
         }
     }
 
