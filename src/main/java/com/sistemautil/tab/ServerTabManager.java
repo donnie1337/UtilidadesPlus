@@ -21,6 +21,7 @@ public final class ServerTabManager {
     private final SistemaUtil plugin;
     private final CargoBridge cargo = new CargoBridge();
     private final ClanBridge clan = new ClanBridge();
+    private final VanishBridge vanish = new VanishBridge();
     private final PlaceholderBridge placeholders = new PlaceholderBridge();
     private int taskId = -1;
     private long lastFooterFrame = Long.MIN_VALUE;
@@ -98,7 +99,7 @@ public final class ServerTabManager {
 
     public void updateAll() {
         if (!plugin.getTabConfig().getBoolean("ativado", true)) return;
-        cargo.refresh(); clan.refresh(); placeholders.refresh();
+        cargo.refresh(); clan.refresh(); vanish.refresh(); placeholders.refresh();
         int online = Bukkit.getOnlinePlayers().size(); int max = Bukkit.getMaxPlayers();
         String address = plugin.getTabConfig().getString("endereco-servidor", "play.seuservidor.com:25565");
         String header = formatTabText(plugin.getTabConfig().getString("header", "&6&lMEU SERVIDOR\n&7Seja bem-vindo!"), online, max, 0, address, null);
@@ -162,10 +163,10 @@ public final class ServerTabManager {
                 .replace("%group%", cargo.getGroup(player));
         if (!plugin.getTabConfig().getBoolean("tag.mostrar-no-tab", true)) name = name.replace(tagPart, "");
         player.setPlayerListName(colorize(name));
-        applyAboveHead(player, prefix, cargoColor, player.getName(), clanTag);
+        applyAboveHead(player, prefix, cargoColor, player.getName(), clanTag, vanish.getSuffix(player));
     }
 
-    private void applyAboveHead(Player player, String prefix, String nameColor, String playerName, String clanTag) { ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, prefix, nameColor, playerName, clanTag); }
+    private void applyAboveHead(Player player, String prefix, String nameColor, String playerName, String clanTag, String vanishSuffix) { ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, prefix, nameColor, playerName, clanTag, vanishSuffix); }
 
     private static final class ScoreboardManagerPlaceholder {
         private static void apply(SistemaUtil plugin, Player player, Map<UUID, String> headTeams, String prefix, String nameColor, String playerName, String clanTag) {
@@ -176,7 +177,7 @@ public final class ServerTabManager {
             if (team == null) team = scoreboard.registerNewTeam(teamName);
             if (!team.hasEntry(player.getName())) team.addEntry(player.getName());
             String headPrefix = plugin.getVisualText().format((prefix == null ? "" : prefix) + (nameColor == null ? "§f" : nameColor) + (playerName == null ? player.getName() : playerName));
-            String headSuffix = clanTag == null || clanTag.isBlank() ? "" : plugin.getVisualText().format(" §r" + clanTag);
+            String headSuffix = (clanTag == null || clanTag.isBlank() ? "" : plugin.getVisualText().format(" §r" + clanTag))\n                    + (vanishSuffix == null || vanishSuffix.isBlank() ? "" : plugin.getVisualText().format(" §r" + vanishSuffix));
             team.setPrefix(headPrefix.length() <= 64 ? headPrefix : headPrefix.substring(0, 64));
             team.setSuffix(headSuffix.length() <= 64 ? headSuffix : headSuffix.substring(0, 64));
         }
@@ -256,6 +257,34 @@ public final class ServerTabManager {
         void refresh() { Plugin current = Bukkit.getPluginManager().getPlugin("ClanPlus"); if (current == null || !current.isEnabled()) { clear(); return; } try { plugin = current; apiMethod = current.getClass().getMethod("clans"); manager = apiMethod.invoke(current); if (manager == null) { clear(); return; } clansMethod = apiMethod; byPlayerMethod = manager.getClass().getMethod("byPlayer", UUID.class); Object sampleClan = null; for (Object ignored : (Iterable<?>) manager.getClass().getMethod("all").invoke(manager)) { sampleClan = ignored; break; } if (sampleClan != null) tagMethod = sampleClan.getClass().getMethod("tag"); else tagMethod = null; } catch (ReflectiveOperationException | LinkageError ex) { clear(); } }
         String getTag(Player player) { if (manager == null || byPlayerMethod == null) return ""; try { Object clan = byPlayerMethod.invoke(manager, player.getUniqueId()); if (clan == null) return ""; Method method = tagMethod; if (method == null) method = clan.getClass().getMethod("tag"); Object value = method.invoke(clan); return value == null ? "" : String.valueOf(value); } catch (ReflectiveOperationException | LinkageError ex) { return ""; } }
         private void clear() { plugin = null; api = null; manager = null; apiMethod = null; clansMethod = null; byPlayerMethod = null; tagMethod = null; }
+    }
+
+    private static final class VanishBridge {
+        private Plugin plugin;
+        private Method method;
+
+        void refresh() {
+            Plugin current = Bukkit.getPluginManager().getPlugin("EssentialsPlus");
+            if (current == plugin) return;
+            plugin = current;
+            method = null;
+            if (current == null || !current.isEnabled()) return;
+            try {
+                method = current.getClass().getMethod("isVanished", Player.class);
+            } catch (ReflectiveOperationException | LinkageError ignored) {
+                method = null;
+            }
+        }
+
+        String getSuffix(Player player) {
+            if (method == null || plugin == null) return "";
+            try {
+                Object value = method.invoke(plugin, player);
+                return Boolean.TRUE.equals(value) ? "[INVISIVEL]" : "";
+            } catch (ReflectiveOperationException | LinkageError ex) {
+                return "";
+            }
+        }
     }
 
     private static final class PlaceholderBridge {
