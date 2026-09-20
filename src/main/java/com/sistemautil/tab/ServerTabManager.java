@@ -251,7 +251,24 @@ public final class ServerTabManager {
                 .replace("%vanish_suffix%", vanishColor + vanishText)
                 + (invisPart.isBlank() ? "" : "§r");
 
-        ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, prefixPart, nameColor, clanPart);
+        applyCargoNametagSuffix(player, clanPart);
+    }
+
+    private void applyCargoNametagSuffix(Player player, String clanPart) {
+        if (player == null || !player.isOnline()) return;
+        try {
+            Class<?> apiClass = Class.forName("com.cargoplus.api.CargoPlusAPI");
+            Object api = Bukkit.getServicesManager().load(apiClass);
+            if (api == null) return;
+
+            Method method = apiClass.getMethod("setNametagSuffix", UUID.class, String.class);
+            String suffix = plugin.getVisualText().format(clanPart == null ? "" : clanPart);
+            method.invoke(api, player.getUniqueId(), suffix);
+        } catch (ClassNotFoundException ignored) {
+            // CargoPlus não está instalado; a nametag padrão continua intacta.
+        } catch (ReflectiveOperationException | LinkageError ignored) {
+            // Integração opcional: falhas do CargoPlus não podem quebrar o TAB.
+        }
     }
 
     private String centerVanishUnderName(String invisPart, String namePart) {
