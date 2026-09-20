@@ -10,6 +10,59 @@
 # Cores: &a, &b, &c...
 # Gradiente: <gradient:#7C3AED:#22D3EE>texto</gradient>
 # Ícones: {icon:nome}
+#
+# ============================================================
+# EFEITOS ANIMADOS
+# ============================================================
+# Os efeitos funcionam separadamente ou junto com <small>.
+#
+# <small>UTILIDADESPLUS</small>
+#   Converte somente este trecho para Small Caps.
+#
+# <carregamento:3>UTILIDADESPLUS</carregamento>
+#   Uma cor branca percorre o texto do começo ao fim.
+#   Depois o texto pisca 3 vezes e volta à cor original.
+#   O número define a quantidade de piscadas.
+#   Se omitido, usa 3: <carregamento>texto</carregamento>
+#
+# <brilho>texto</brilho>
+#   Um brilho branco passa continuamente pelo texto.
+#
+# <pulso>texto</pulso>
+#   O texto pulsa entre a cor original e branco.
+#
+# <piscar:3>texto</piscar>
+#   Faz o texto piscar a quantidade de vezes informada.
+#
+# <onda>texto</onda>
+#   Uma onda de brilho percorre o texto da esquerda para a direita.
+#
+# <onda-reversa>texto</onda-reversa>
+#   Uma onda de brilho percorre o texto da direita para a esquerda.
+#
+# <arcoiris>texto</arcoiris>
+#   Aplica um arco-íris animado que percorre o texto.
+#
+# <arcoiris-pulso>texto</arcoiris-pulso>
+#   Arco-íris animado com uma variação de pulso.
+#
+# <fade>texto</fade>
+#   Faz o texto aparecer e desaparecer suavemente.
+#
+# <shake>texto</shake>
+#   Move horizontalmente o texto em pequenos passos.
+#
+# ============================================================
+# COMBINAÇÕES
+# ============================================================
+# Small Caps + efeito:
+# <small><carregamento:3>UTILIDADESPLUS</carregamento></small>
+#
+# Efeito + Small Caps:
+# <carregamento:3><small>UTILIDADESPLUS</small></carregamento>
+#
+# Vários trechos podem usar efeitos diferentes na mesma linha.
+# ============================================================
 # ============================================================
 
 # Ativa ou desativa o TAB inteiro.
