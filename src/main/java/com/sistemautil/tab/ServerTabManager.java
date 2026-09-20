@@ -262,7 +262,7 @@ public final class ServerTabManager {
             return configuredSpaces + invisPart;
         }
 
-        String cleanName = plugin.getVisualText().format(namePart)
+        String cleanName = plugin.getVisualText().format((prefixPart == null ? "" : prefixPart) + (namePart == null ? "" : namePart))
                 .replaceAll("§[0-9A-FK-ORXx]", "")
                 .replaceAll("<[^>]+>", "");
         String cleanInvis = plugin.getVisualText().format(invisPart)
