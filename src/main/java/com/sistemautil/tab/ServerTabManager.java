@@ -289,6 +289,15 @@ public final class ServerTabManager {
 
             Team team = scoreboard.getTeam(teamName);
             if (team == null) team = scoreboard.registerNewTeam(teamName);
+
+            // O jogador precisa pertencer somente à Team que controla o nametag.
+            // Se outra integração (CargoPlus/ClanPlus/outro plugin) deixou o
+            // jogador em uma Team diferente, o cliente pode ignorar o suffix
+            // desta Team e a tag do clan não aparece acima da cabeça.
+            Team currentTeam = scoreboard.getEntryTeam(player.getName());
+            if (currentTeam != null && currentTeam != team) {
+                currentTeam.removeEntry(player.getName());
+            }
             if (!team.hasEntry(player.getName())) team.addEntry(player.getName());
 
             // A Team prefix is prepended to the real player-name entry.
