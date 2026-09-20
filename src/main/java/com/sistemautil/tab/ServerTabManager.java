@@ -102,7 +102,7 @@ public final class ServerTabManager {
         cargo.refresh(); clan.refresh(); vanish.refresh(); placeholders.refresh();
         int online = Bukkit.getOnlinePlayers().size(); int max = Bukkit.getMaxPlayers();
         String address = plugin.getTabConfig().getString("endereco-servidor", "play.seuservidor.com:25565");
-        String header = formatTabText(plugin.getTabConfig().getString("header", "&6&lMEU SERVIDOR\n&7Seja bem-vindo!"), online, max, 0, address, null);
+        String headerTemplate = plugin.getTabConfig().getString("header", "&6&lMEU SERVIDOR\\n&7Seja bem-vindo!");
         List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers()); Map<UUID, TabState> states = new HashMap<>(); 
         for (Player player : players) states.put(player.getUniqueId(), new TabState(cargo.getGroup(player), cargo.getPriority(cargo.getGroup(player))));
         players.sort(buildComparator(states));
@@ -111,7 +111,7 @@ public final class ServerTabManager {
         for (int index = 0; index < players.size(); index++) {
             Player player = players.get(index); player.setPlayerListOrder(index); int ping = Math.max(0, player.getPing());
             String footer = formatFooter(online, max, ping, address, player);
-            String configuredHeader = plugin.getTabConfig().getBoolean("header-ativado", true) ? header : "";
+            String configuredHeader = plugin.getTabConfig().getBoolean("header-ativado", true)\n                    ? formatTabText(headerTemplate, online, max, ping, address, player)\n                    : "";
             String configuredFooter = plugin.getTabConfig().getBoolean("footer-ativado", true) ? footer : "";
             player.setPlayerListHeaderFooter(configuredHeader, configuredFooter);
         }
