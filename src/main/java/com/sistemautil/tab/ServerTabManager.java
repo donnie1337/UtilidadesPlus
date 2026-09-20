@@ -283,40 +283,29 @@ public final class ServerTabManager {
                                   String prefixPart, String nameColor, String clanPart, String invisPart) {
             if (Bukkit.getScoreboardManager() == null) return;
 
+            /*
+             * CargoPlus is the single owner of the player's scoreboard Team.
+             * It already controls the real nickname entry, nickname color and
+             * animated cargo prefix. UtilidadesPlus must never create a second
+             * Team for the same player, otherwise the client receives competing
+             * team packets and renders two names on top of each other.
+             */
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-            String teamName = headTeams.computeIfAbsent(player.getUniqueId(),
-                    uuid -> "util_" + uuid.toString().replace("-", "").substring(0, 11));
+            Team team = scoreboard.getEntryTeam(player.getName());
 
-            Team team = scoreboard.getTeam(teamName);
-            if (team == null) team = scoreboard.registerNewTeam(teamName);
-
-            // Do not remove memberships owned by other plugins here.
-            // Other scoreboard managers may legitimately own the same entry.
-            // Forcing a remove every 2 ticks causes alternating team packets,
-            // which is perceived by the client as two overlapping nametags.
-            if (!team.hasEntry(player.getName())) {
-                team.addEntry(player.getName());
+            if (team == null) {
+                headTeams.remove(player.getUniqueId());
+                return;
             }
 
-            String formattedPrefix = plugin.getVisualText().format(
-                    (prefixPart == null ? "" : prefixPart)
-                            + (nameColor == null || nameColor.isBlank() ? "§f" : nameColor)
-            );
-
-            // Always terminate the nickname/clan formatting before the suffix.
             String formattedSuffix = plugin.getVisualText().format(
                     clanPart == null ? "" : clanPart
             );
 
-            // The vanish line is part of the same suffix so there is only one
-            // scoreboard Team responsible for this player's nametag.
             if (invisPart != null && !invisPart.isBlank()) {
                 formattedSuffix += "§r" + plugin.getVisualText().format(invisPart);
             }
 
-            if (!formattedPrefix.equals(team.getPrefix())) {
-                team.setPrefix(formattedPrefix);
-            }
             if (!formattedSuffix.equals(team.getSuffix())) {
                 team.setSuffix(formattedSuffix);
             }
