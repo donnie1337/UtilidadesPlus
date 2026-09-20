@@ -208,7 +208,7 @@ public final class ServerTabManager {
         }
         return result.toString();
     }
-    private String formatTabText(String text, int online, int max, int ping, String address, Player player) { String result = (text == null ? "" : text).replace("%online%", String.valueOf(online)).replace("%max%", String.valueOf(max)).replace("%ping%", String.valueOf(ping)).replace("%ip%", address == null ? "" : address); if (player != null) result = placeholders.resolve(player, result.replace("%player_name%", player.getName()).replace("%player_group%", cargo.getGroup(player)).replace("%player_world%", player.getWorld().getName())); return colorize(result); }
+    private String formatTabText(String text, int online, int max, int ping, String address, Player player) { String result = (text == null ? "" : text).replace("%online%", String.valueOf(online)).replace("%max%", String.valueOf(max)).replace("%ping%", String.valueOf(ping)).replace("%ip%", address == null ? "" : address); if (player != null) result = placeholders.resolve(player, result.replace("%player_name%", player.getName()).replace("%player_group%", cargo.getGroup(player)).replace("%player_world%", player.getWorld().getName())); return plugin.getVisualText().formatAnimated(result, System.currentTimeMillis() / 50L); }
     private String colorize(String text) { return plugin.getVisualText().format(text == null ? "" : text); }
     private record TabState(String group, int priority) { }
 
