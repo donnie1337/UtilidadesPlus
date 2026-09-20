@@ -111,7 +111,9 @@ public final class ServerTabManager {
         for (int index = 0; index < players.size(); index++) {
             Player player = players.get(index); player.setPlayerListOrder(index); int ping = Math.max(0, player.getPing());
             String footer = formatFooter(online, max, ping, address, player);
-            String configuredHeader = plugin.getTabConfig().getBoolean("header-ativado", true)\n                    ? formatTabText(headerTemplate, online, max, ping, address, player)\n                    : "";
+            String configuredHeader = plugin.getTabConfig().getBoolean("header-ativado", true)
+                    ? formatTabText(headerTemplate, online, max, ping, address, player)
+                    : "";
             String configuredFooter = plugin.getTabConfig().getBoolean("footer-ativado", true) ? footer : "";
             player.setPlayerListHeaderFooter(configuredHeader, configuredFooter);
         }
