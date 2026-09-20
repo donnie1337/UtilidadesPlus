@@ -107,6 +107,7 @@ public final class ServerTabManager {
         for (Player player : players) states.put(player.getUniqueId(), new TabState(cargo.getGroup(player), cargo.getPriority(cargo.getGroup(player))));
         players.sort(buildComparator(states));
         for (Player player : players) applyPlayer(player, states.get(player.getUniqueId()));
+        updateVanishVisibility(players);
         for (int index = 0; index < players.size(); index++) {
             Player player = players.get(index); player.setPlayerListOrder(index); int ping = Math.max(0, player.getPing());
             String footer = formatFooter(online, max, ping, address, player);
@@ -115,6 +116,22 @@ public final class ServerTabManager {
             player.setPlayerListHeaderFooter(configuredHeader, configuredFooter);
         }
     }
+    private void updateVanishVisibility(List<Player> players) {
+        for (Player viewer : players) {
+            if (viewer == null || !viewer.isOnline()) continue;
+            boolean canSeeVanish = viewer.hasPermission("essentialsplus.vanish");
+            for (Player target : players) {
+                if (target == null || !target.isOnline() || viewer.equals(target)) continue;
+                boolean targetVanished = vanish.isVanished(target);
+                if (targetVanished && !canSeeVanish) {
+                    viewer.hidePlayer(plugin, target);
+                } else {
+                    viewer.showPlayer(plugin, target);
+                }
+            }
+        }
+    }
+
     public void updatePlayer(Player player) { if (player == null || !player.isOnline()) return; updateAll(); player.updateCommands(); }
 
     private Comparator<Player> buildComparator(Map<UUID, TabState> states) {
