@@ -98,7 +98,7 @@ public final class ServerTabManager {
         int online = Bukkit.getOnlinePlayers().size(); int max = Bukkit.getMaxPlayers();
         String address = plugin.getTabConfig().getString("endereco-servidor", "play.seuservidor.com:25565");
         String header = formatTabText(plugin.getTabConfig().getString("header", "&6&lMEU SERVIDOR\n&7Seja bem-vindo!"), online, max, 0, address, null);
-        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers()); Map<UUID, TabState> states = new HashMap<>();
+        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers()); Map<UUID, TabState> states = new HashMap<>(); 
         for (Player player : players) states.put(player.getUniqueId(), new TabState(cargo.getGroup(player), cargo.getPriority(cargo.getGroup(player))));
         players.sort(buildComparator(states));
         for (Player player : players) applyPlayer(player, states.get(player.getUniqueId()));
@@ -147,7 +147,9 @@ public final class ServerTabManager {
         String cargoColor = data.nicknameColor();
         if (cargoColor == null || cargoColor.isBlank()) cargoColor = "§f";
         String clanTag = clan.getTag(player);
-        String tagPart = clanTag.isBlank() ? "" : " " + clanTag;
+        // O nome recebe a cor do cargo, mas a tag do clan não deve herdar essa cor.
+        // Se o ClanPlus fornecer uma cor própria na tag, ela continua valendo após o reset.
+        String tagPart = clanTag.isBlank() ? "" : " §r" + clanTag;
         String configured = plugin.getTabConfig().getString("jogadores.formato", "%prefix%%name_color%%player_name%%clan_tag%");
         String name = configured.replace("%prefix%", colorize(prefix))
                 .replace("%name_color%", cargoColor)
