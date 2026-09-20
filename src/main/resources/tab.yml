@@ -172,6 +172,19 @@ tag:
     # Como o estado de invisibilidade aparece.
     invisivel:
       ativado: true
+
+      # Quando ativado, [INVISIVEL] fica em uma segunda linha,
+      # centralizado abaixo do nickname.
+      abaixo-do-nome: true
+      centralizar-automaticamente: true
+
+      # Ajuste fino do centro automático.
+      # Valores positivos movem a tag para a direita.
+      espacos-extra: 0
+
+      # Usado somente se a centralização automática for desativada.
+      espacos-centralizacao: "       "
+
       formato: " &r%vanish_suffix%"
       texto: "[INVISIVEL]"
       cor: "&c"
