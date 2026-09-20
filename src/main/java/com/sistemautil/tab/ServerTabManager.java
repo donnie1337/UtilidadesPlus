@@ -217,7 +217,7 @@ public final class ServerTabManager {
 
         boolean vanishBelowName = plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.abaixo-do-nome", true);
         if (vanishBelowName && !invisPart.isBlank()) {
-            invisPart = "\\n" + centerVanishUnderName(invisPart, namePart);
+            invisPart = "\n" + centerVanishUnderName(invisPart, namePart);
         }
 
         String format = plugin.getTabConfig().getString("tag.cabeca.formato", "%prefixo%%name_color%%player_name%%clan%%invisivel%");
