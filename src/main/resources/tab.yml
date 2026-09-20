@@ -137,7 +137,44 @@ jogadores:
 tag:
   ativada: true
   mostrar-no-tab: true
-  mostrar-na-cabeca: false
+
+  # ==========================================================
+  # TAG ACIMA DA CABEÇA
+  # ==========================================================
+  # Tudo nesta seção é editável.
+  #
+  # %prefix%          = prefixo/cargo vindo do CargoPlus
+  # %name_color%      = cor do nome definida pelo CargoPlus
+  # %player_name%     = nome do jogador
+  # %clan_tag%        = tag completa do ClanPlus
+  # %vanish_suffix%   = texto de invisibilidade
+  #
+  # Você pode alterar a ordem, os espaços, cores, efeitos e
+  # Small Caps diretamente no formato.
+  cabeca:
+    ativada: true
+
+    # Formato FINAL da tag acima da cabeça.
+    formato: "%prefixo%%name_color%%player_name%%clan%%invisivel%"
+
+    # Como o prefixo/cargo aparece.
+    prefixo:
+      formato: "%prefix%"
+
+    # Como o nome aparece.
+    nome:
+      formato: "%name_color%%player_name%"
+
+    # Como o clan aparece.
+    clan:
+      formato: " &r%clan_tag%"
+
+    # Como o estado de invisibilidade aparece.
+    invisivel:
+      ativado: true
+      formato: " &r%vanish_suffix%"
+      texto: "[INVISIVEL]"
+      cor: "&c"
 
 # ============================================================
 # ORDENAÇÃO DOS JOGADORES
