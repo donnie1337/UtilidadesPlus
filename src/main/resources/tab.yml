@@ -3,9 +3,9 @@
 # ============================================================
 # Toda a aparência do TAB pode ser alterada neste arquivo.
 #
-# O TAB utiliza small caps na identidade visual.
-# Você pode alterar textos, cores, linhas e placeholders sem
-# precisar editar o código Java.
+# Small Caps é opcional e só é aplicado dentro de <small>...</small>.
+# Você pode misturar texto normal e Small Caps na mesma linha.
+# Você pode alterar textos, cores, linhas e placeholders sem precisar editar o código Java.
 #
 # Cores: &a, &b, &c...
 # Gradiente: <gradient:#7C3AED:#22D3EE>texto</gradient>
@@ -32,10 +32,10 @@ header-ativado: true
 
 header: |
   &8━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  <gradient:#7C3AED:#22D3EE>ᴜᴛɪʟɪᴅᴀᴅᴇsᴘʟᴜs</gradient>
-  &7ʙᴇᴍ-ᴠɪɴᴅᴏ, &f%player_name%&7!
+  <gradient:#7C3AED:#22D3EE><small>UTILIDADESPLUS</small></gradient>
+  &7Bem-vindo, &f%player_name%&7!
   &8
-  &7ᴛᴇᴍᴘᴏʀᴀᴅᴀ: &f1
+  &7Temporada: &f1
   &8━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # ============================================================
@@ -62,11 +62,11 @@ footer-ativado: true
 
 footer: |
   &8━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  &7ᴊᴏɢᴀᴅᴏʀᴇs ᴏɴʟɪɴᴇ: &a%online%&7/&f%max%
-  &7sᴇᴜ ᴘɪɴɢ: &a%ping%ms
+  &7Jogadores online: &a%online%&7/&f%max%
+  &7Seu ping: &a%ping%ms
   &8
-  <gradient:#22D3EE:#7C3AED>ᴜᴛɪʟɪᴅᴀᴅᴇsᴘʟᴜs</gradient>
-  &7ᴏʙʀɪɢᴀᴅᴏ ᴘᴏʀ ᴊᴏɢᴀʀ!
+  <gradient:#22D3EE:#7C3AED><small>UTILIDADESPLUS</small></gradient>
+  &7Obrigado por jogar!
   &8━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # ============================================================
