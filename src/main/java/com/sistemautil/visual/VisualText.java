@@ -17,6 +17,7 @@ public final class VisualText {
     private static final Pattern GRADIENT = Pattern.compile("<gradient:([^>]+)>(.*?)</gradient>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern HEX_TAG = Pattern.compile("<#([0-9a-fA-F]{6})>");
     private static final Pattern ICON = Pattern.compile("\\{icon:([a-zA-Z0-9_.-]+)}");
+    private static final Pattern SMALL = Pattern.compile("<small>(.*?)</small>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     private final FileConfiguration config;
     private final Map<String, String> icons = new HashMap<>();
@@ -52,8 +53,16 @@ public final class VisualText {
         String result = replaceIcons(text);
         result = replaceGradients(result);
         result = replaceHexTags(result);
-        result = smallCapsEnabled ? smallCaps(result) : result;
+        result = smallCapsEnabled ? replaceSmallCapsTags(result) : result.replaceAll("(?i)</?small>", "");
         return ChatColor.translateAlternateColorCodes('&', result);
+    }
+
+    private String replaceSmallCapsTags(String text) {
+        Matcher matcher = SMALL.matcher(text);
+        StringBuffer result = new StringBuffer();
+        while (matcher.find()) matcher.appendReplacement(result, Matcher.quoteReplacement(smallCaps(matcher.group(1))));
+        matcher.appendTail(result);
+        return result.toString();
     }
 
     public String smallCaps(String text) {
