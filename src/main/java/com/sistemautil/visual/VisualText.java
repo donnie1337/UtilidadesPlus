@@ -56,9 +56,11 @@ public final class VisualText {
         if (text == null) return "";
         if (!enabled) return ChatColor.translateAlternateColorCodes('&', text);
         String result = replaceIcons(text);
+        // Small Caps precisa ser processado antes de gradientes/efeitos,
+        // para que as tags <small> não sejam interpretadas como texto pelo gradiente.
+        result = smallCapsEnabled ? replaceSmallCapsTags(result) : result.replaceAll("(?i)</?small>", "");
         result = replaceGradients(result);
         result = replaceHexTags(result);
-        result = smallCapsEnabled ? replaceSmallCapsTags(result) : result.replaceAll("(?i)</?small>", "");
         result = replaceEffects(result, tick);
         return ChatColor.translateAlternateColorCodes('&', result);
     }
