@@ -215,6 +215,11 @@ public final class ServerTabManager {
                 ? replaceHeadPlaceholders(configuredVanish, prefix, nameColor, playerName, clanTag, vanishColor + vanishText)
                 : "";
 
+        boolean vanishBelowName = plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.abaixo-do-nome", true);
+        if (vanishBelowName && !invisPart.isBlank()) {
+            invisPart = "\\n" + centerVanishUnderName(invisPart, namePart);
+        }
+
         String format = plugin.getTabConfig().getString("tag.cabeca.formato", "%prefixo%%name_color%%player_name%%clan%%invisivel%");
         String result = format
                 .replace("%prefixo%", prefixPart)
@@ -230,6 +235,25 @@ public final class ServerTabManager {
                 + (invisPart.isBlank() ? "" : "§r");
 
         ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, result);
+    }
+
+    private String centerVanishUnderName(String invisPart, String namePart) {
+        boolean automatic = plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.centralizar-automaticamente", true);
+        int extraSpaces = Math.max(0, plugin.getTabConfig().getInt("tag.cabeca.invisivel.espacos-extra", 0));
+        if (!automatic) {
+            String configuredSpaces = plugin.getTabConfig().getString("tag.cabeca.invisivel.espacos-centralizacao", "       ");
+            return configuredSpaces + invisPart;
+        }
+
+        String cleanName = plugin.getVisualText().format(namePart)
+                .replaceAll("§[0-9A-FK-ORXx]", "")
+                .replaceAll("<[^>]+>", "");
+        String cleanInvis = plugin.getVisualText().format(invisPart)
+                .replaceAll("§[0-9A-FK-ORXx]", "")
+                .replaceAll("<[^>]+>", "");
+
+        int padding = Math.max(0, (cleanName.length() - cleanInvis.length()) / 2) + extraSpaces;
+        return " ".repeat(padding) + invisPart;
     }
 
     private String replaceHeadPlaceholders(String text, String prefix, String nameColor, String playerName, String clanTag, String vanishText) {
