@@ -234,7 +234,7 @@ public final class ServerTabManager {
 
         boolean vanishBelowName = plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.abaixo-do-nome", true);
         if (vanishBelowName && !invisPart.isBlank()) {
-            invisPart = "\n" + centerVanishUnderName(invisPart, namePart);
+            invisPart = "\n" + centerVanishUnderName(invisPart, namePart, prefixPart, clanPart);
         }
 
         String format = plugin.getTabConfig().getString("tag.cabeca.formato", "%prefixo%%name_color%%player_name%%clan%%invisivel%");
@@ -254,7 +254,7 @@ public final class ServerTabManager {
         ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, prefixPart, nameColor, clanPart, invisPart, namePart);
     }
 
-    private String centerVanishUnderName(String invisPart, String namePart) {
+    private String centerVanishUnderName(String invisPart, String namePart, String prefixPart, String clanPart) {
         boolean automatic = plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.centralizar-automaticamente", true);
         int extraSpaces = Math.max(0, plugin.getTabConfig().getInt("tag.cabeca.invisivel.espacos-extra", 0));
         if (!automatic) {
