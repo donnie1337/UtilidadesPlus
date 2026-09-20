@@ -4,6 +4,8 @@ import com.sistemautil.SistemaUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -23,10 +25,12 @@ public final class ServerTabManager {
     private int taskId = -1;
     private long lastFooterFrame = Long.MIN_VALUE;
     private String lastFooterText = null;
+    private final Map<UUID, String> headTeams = new HashMap<>();
 
     public ServerTabManager(SistemaUtil plugin) { this.plugin = plugin; }
     public void start() { stop(); updateAll(); taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::updateAll, 2L, 2L); }
-    public void stop() { if (taskId != -1) { Bukkit.getScheduler().cancelTask(taskId); taskId = -1; } }
+    public void stop() { if (taskId != -1) { Bukkit.getScheduler().cancelTask(taskId); taskId = -1; } clearHeadTeams(); }
+    private void clearHeadTeams() { Scoreboard scoreboard = Bukkit.getScoreboardManager() == null ? null : Bukkit.getScoreboardManager().getMainScoreboard(); if (scoreboard == null) { headTeams.clear(); return; } for (String teamName : new ArrayList<>(headTeams.values())) { Team team = scoreboard.getTeam(teamName); if (team != null) team.unregister(); } headTeams.clear(); }
 
     private String formatFooter(int online, int max, int ping, String address, Player player) {
         String fallback = plugin.getTabConfig().getString("footer", "");
@@ -158,6 +162,24 @@ public final class ServerTabManager {
                 .replace("%group%", cargo.getGroup(player));
         if (!plugin.getTabConfig().getBoolean("tag.mostrar-no-tab", true)) name = name.replace(tagPart, "");
         player.setPlayerListName(colorize(name));
+        applyAboveHead(player, prefix, clanTag);
+    }
+
+    private void applyAboveHead(Player player, String prefix, String clanTag) { ScoreboardManagerPlaceholder.apply(plugin, player, headTeams, prefix, clanTag); }
+
+    private static final class ScoreboardManagerPlaceholder {
+        private static void apply(SistemaUtil plugin, Player player, Map<UUID, String> headTeams, String prefix, String clanTag) {
+            if (Bukkit.getScoreboardManager() == null) return;
+            Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+            String teamName = headTeams.computeIfAbsent(player.getUniqueId(), uuid -> "util_" + uuid.toString().replace("-", "").substring(0, 11));
+            Team team = scoreboard.getTeam(teamName);
+            if (team == null) team = scoreboard.registerNewTeam(teamName);
+            if (!team.hasEntry(player.getName())) team.addEntry(player.getName());
+            String headPrefix = plugin.getVisualText().format(prefix == null ? "" : prefix);
+            String headSuffix = clanTag == null || clanTag.isBlank() ? "" : plugin.getVisualText().format(" §r" + clanTag);
+            team.setPrefix(headPrefix.length() <= 64 ? headPrefix : headPrefix.substring(0, 64));
+            team.setSuffix(headSuffix.length() <= 64 ? headSuffix : headSuffix.substring(0, 64));
+        }
     }
 
     private String formatConfiguredPlayerName(Player player, String prefix, String clanTag) {
