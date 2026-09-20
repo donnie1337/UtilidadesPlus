@@ -31,7 +31,17 @@ public final class ServerTabManager {
     public ServerTabManager(SistemaUtil plugin) { this.plugin = plugin; }
     public void start() { stop(); clearStaleHeadTeams(); updateAll(); taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::updateAll, 2L, 2L); }
     public void stop() { if (taskId != -1) { Bukkit.getScheduler().cancelTask(taskId); taskId = -1; } clearHeadTeams(); }
-    private void clearHeadTeams() { Scoreboard scoreboard = Bukkit.getScoreboardManager() == null ? null : Bukkit.getScoreboardManager().getMainScoreboard(); if (scoreboard == null) { headTeams.clear(); return; } for (String teamName : new ArrayList<>(headTeams.values())) { Team team = scoreboard.getTeam(teamName); if (team != null) team.unregister(); } headTeams.clear(); }\n\n    private void clearStaleHeadTeams() {\n        Scoreboard scoreboard = Bukkit.getScoreboardManager() == null ? null : Bukkit.getScoreboardManager().getMainScoreboard();\n        if (scoreboard == null) return;\n        for (Team team : new ArrayList<>(scoreboard.getTeams())) {\n            if (team.getName().startsWith("util_")) {\n                team.unregister();\n            }\n        }\n    }
+    private void clearHeadTeams() { Scoreboard scoreboard = Bukkit.getScoreboardManager() == null ? null : Bukkit.getScoreboardManager().getMainScoreboard(); if (scoreboard == null) { headTeams.clear(); return; } for (String teamName : new ArrayList<>(headTeams.values())) { Team team = scoreboard.getTeam(teamName); if (team != null) team.unregister(); } headTeams.clear(); }
+
+    private void clearStaleHeadTeams() {
+        Scoreboard scoreboard = Bukkit.getScoreboardManager() == null ? null : Bukkit.getScoreboardManager().getMainScoreboard();
+        if (scoreboard == null) return;
+        for (Team team : new ArrayList<>(scoreboard.getTeams())) {
+            if (team.getName().startsWith("util_")) {
+                team.unregister();
+            }
+        }
+    }
 
     private String formatFooter(int online, int max, int ping, String address, Player player) {
         String fallback = plugin.getTabConfig().getString("footer", "");
