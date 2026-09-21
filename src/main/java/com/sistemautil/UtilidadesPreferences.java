@@ -59,7 +59,9 @@ public final class UtilidadesPreferences {
     public void setBroadcastsJoin(Player player, boolean value) { set(player, "mostrar-entrada", value); }
     public void setBroadcastsQuit(Player player, boolean value) { set(player, "mostrar-saida", value); }
 
-    public boolean broadcastsJoinQuit(Player player) { return broadcastsJoin(player) && broadcastsQuit(player); }
+    public boolean broadcastsJoinQuit(Player player) {
+        return broadcastsJoin(player) && broadcastsQuit(player);
+    }
 
     public void setBroadcastsJoinQuit(Player player, boolean value) {
         set(player, "mostrar-entrada", value);
@@ -68,16 +70,21 @@ public final class UtilidadesPreferences {
 
     public void save() {
         final String snapshot;
-        synchronized (this) { snapshot = config.saveToString(); }
+        synchronized (this) {
+            snapshot = config.saveToString();
+        }
         saveSnapshot(snapshot);
     }
 
     private void scheduleAsyncSave() {
         if (!saveScheduled.compareAndSet(false, true)) return;
+
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
             try {
                 final String snapshot;
-                synchronized (this) { snapshot = config.saveToString(); }
+                synchronized (this) {
+                    snapshot = config.saveToString();
+                }
                 saveSnapshot(snapshot);
             } finally {
                 saveScheduled.set(false);
@@ -85,24 +92,52 @@ public final class UtilidadesPreferences {
         }, 1L);
     }
 
+    /*
+     * utilidades.yml também contém configurações editáveis pelo administrador.
+     * As preferências dos jogadores devem atualizar SOMENTE a seção "jogadores".
+     *
+     * Antes, este método gravava config.saveToString() diretamente no arquivo.
+     * Isso fazia a configuração inteira voltar para a versão carregada em memória
+     * no início do servidor, apagando alterações feitas manualmente no YAML.
+     */
     private void saveSnapshot(String snapshot) {
         try {
             file.getParentFile().mkdirs();
-            java.nio.file.Files.writeString(file.toPath(), snapshot, java.nio.charset.StandardCharsets.UTF_8);
-        } catch (IOException ex) {
-            plugin.getLogger().warning("Não foi possível salvar as preferências de utilidades: " + ex.getMessage());
+
+            FileConfiguration current = YamlConfiguration.loadConfiguration(file);
+            FileConfiguration preferences = new YamlConfiguration();
+            preferences.loadFromString(snapshot);
+
+            current.set("jogadores", preferences.get("jogadores"));
+
+            current.save(file);
+
+            synchronized (this) {
+                config = current;
+            }
+        } catch (IOException | org.bukkit.configuration.InvalidConfigurationException ex) {
+            plugin.getLogger().warning(
+                    "Não foi possível salvar as preferências de utilidades: " + ex.getMessage()
+            );
         }
     }
 
     private boolean get(Player player, String path, boolean defaultValue) {
         if (player == null) return defaultValue;
+
         UUID uuid = player.getUniqueId();
-        synchronized (this) { return config.getBoolean("jogadores." + uuid + "." + path, defaultValue); }
+        synchronized (this) {
+            return config.getBoolean("jogadores." + uuid + "." + path, defaultValue);
+        }
     }
 
     private void set(Player player, String path, boolean value) {
         if (player == null) return;
-        synchronized (this) { config.set("jogadores." + player.getUniqueId() + "." + path, value); }
+
+        synchronized (this) {
+            config.set("jogadores." + player.getUniqueId() + "." + path, value);
+        }
+
         scheduleAsyncSave();
     }
 }
