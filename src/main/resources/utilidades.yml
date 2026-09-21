@@ -60,12 +60,6 @@ receber:
 gui:
   ativado: true
 
-  # Desativado por padrão: os slots vazios ficam realmente vazios.
-  preenchimento:
-    ativado: false
-    material: "GRAY_STAINED_GLASS_PANE"
-    nome: " "
-
   textos:
     status-ativado: "&a● ATIVADO"
     status-desativado: "&c● DESATIVADO"
