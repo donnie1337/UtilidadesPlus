@@ -23,11 +23,10 @@ placeholders:
 
 # Use | para separar a linha 1 da linha 2.
 linhas:
-  - "<gradient:#7C3AED:#22D3EE>SEU SERVIDOR</gradient> &8• &fBem-vindo(a)!|{icon:online} &aOnline: %online%/%max% jogadores"
-  - "<gradient:#00C6FF:#0072FF>VERSÃO %versao%</gradient> &8• &fVenha se divertir!|{icon:estrela} &eHorário do servidor: %hora%"
-  - "{icon:espada} <gradient:#FF4D6D:#C850C0>COMUNIDADE</gradient> &8• &fBem-vindo à comunidade!|{icon:raio} &7TPS atual: %tps% &8• &fVagas: %vagas%"
-
-# =========================================
+  - "&e&lREDE GLOW &8• &f&://redeglow.com &7• &7&l[1.18 - 26.2]|&d&lPROTEJA SEU TERRENO &f&l& &eJogue com seus amigos sem preocupações!"
+  - "&e&lREDE GLOW &8• &f&://redeglow.com &7• &7&l[1.18 - 26.2]|&c&lA {icon:espada} LUA SANGRENTA CHEGOU! &eVocê consegue sobreviver à noite? &4&l[NOVO]"
+  - "&e&lREDE GLOW &8• &f&://redeglow.com &7• &7&l[1.18 - 26.2]|&e&lMERCADO DOS JOGADORES: &dCrie sua loja e domine a economia!s"
+  - "&e&lREDE GLOW &8• &f&://redeglow.com &7• &7&l[1.18 - 26.2]|&e&l{icon:online} FAZENDAS E PETS: &fAdote um companheiro e crie sua vila pacífica."
 # Ícone 64x64 dentro da pasta do plugin.
 # Desativado por padrão porque nenhum icon.png acompanha o JAR.
 icone:
