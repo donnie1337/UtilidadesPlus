@@ -23,9 +23,9 @@ placeholders:
 
 # Use | para separar a linha 1 da linha 2.
 linhas:
-  - "&e&lREDE GLOW &8• &fredeglow.com &8• &7[1.18 - 26.2]|&aPROTEJA SEU TERRENO &f&l& &eJogue com seus amigos!"
-  - "&e&lREDE GLOW &8• &fredeglow.com &8• &7[1.18 - 26.2]|&4{icon:espada} &cA LUA SANGRENTA CHEGOU! &4[NOVO]"
-  - "&e&lREDE GLOW &8• &fredeglow.com &8• &7[1.18 - 26.2]|&eMERCADO DOS JOGADORES: &dDomine a economia!"
+  - "<gradient:#FFD54F:#FF8F00>&lREDE GLOW</gradient> &8• &fredeglow.com &8• &7[1.18 - 26.2]|&aPROTEJA SEU TERRENO &f&l& &eJogue com seus amigos!"
+  - "<gradient:#FFD54F:#FF8F00>&lREDE GLOW</gradient> &8• &fredeglow.com &8• &7[1.18 - 26.2]|&4{icon:espada} &cA LUA SANGRENTA CHEGOU! &4[NOVO]"
+  - "<gradient:#FFD54F:#FF8F00>&lREDE GLOW</gradient> &8• &fredeglow.com &8• &7[1.18 - 26.2]|&eMERCADO DOS JOGADORES: &dDomine a economia!"
 # Ícone 64x64 dentro da pasta do plugin.
 # Desativado por padrão porque nenhum icon.png acompanha o JAR.
 icone:
