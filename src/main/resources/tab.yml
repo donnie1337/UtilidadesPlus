@@ -14,7 +14,7 @@ header-ativado: true
 
 header: |
   &8
-  &b❄&e&k!&r &e&lREDE GLOW&r &e&k!&r&b❄
+  &b❄&e&k!&r <gradient:#FFD54F:#FF8F00>&lREDE GLOW</gradient>&r &e&k!&r&b❄
   &8
   &fJogadores Online: &b%online%&7/&3500 &8| &fPing: &a%player_ping%ms
 
