@@ -67,7 +67,6 @@ public final class UtilidadesGui implements Listener {
                 TELEPORT_PATH + ".itens.voltar", Material.ARROW,
                 "&fVoltar", "&7Voltar para configurações."
         ));
-        fill(inventory);
         player.openInventory(inventory);
     }
 
@@ -92,7 +91,6 @@ public final class UtilidadesGui implements Listener {
                 PREFERENCES_PATH + ".itens.voltar", Material.ARROW,
                 "&fVoltar", "&7Voltar para configurações."
         ));
-        fill(inventory);
         player.openInventory(inventory);
     }
 
