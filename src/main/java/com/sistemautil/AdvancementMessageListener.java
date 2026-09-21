@@ -1,6 +1,6 @@
 package com.sistemautil;
 
-import org.bukkit.GameRule;
+import org.bukkit.GameRules;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,7 +9,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 public final class AdvancementMessageListener implements Listener {
 
     public void disableFor(World world) {
-        world.setGameRule(GameRule.SHOW_ADVANCEMENT_MESSAGES, false);
+        world.setGameRule(GameRules.SHOW_ADVANCEMENT_MESSAGES, false);
     }
 
     @EventHandler
