@@ -16,7 +16,7 @@ public final class MotdListener implements Listener {
 
     @EventHandler
     public void onServerListPing(ServerListPingEvent event) {
-        aplicarMaxFicticio(event);
+        aplicarMaxDinamico(event);
         aplicarMotd(event);
         if (plugin.getMotd().getIconeAtual() != null
                 && plugin.getMotdConfig().getBoolean("icone.ativado", true)) {
@@ -58,9 +58,9 @@ public final class MotdListener implements Listener {
         event.setMotd(motd.toString());
     }
 
-    private void aplicarMaxFicticio(ServerListPingEvent event) {
-        if (!plugin.getMotdConfig().getBoolean("jogadores-ficticios.ativado", false)) return;
-        event.setMaxPlayers(Math.max(0,
-                plugin.getMotdConfig().getInt("jogadores-ficticios.max", 9999)));
+    private void aplicarMaxDinamico(ServerListPingEvent event) {
+        // O MOTD sempre exibe o total de jogadores online + 1 como limite.
+        // Ex.: 1/2, 10/11, 100/101.
+        event.setMaxPlayers(event.getNumPlayers() + 1);
     }
 }
