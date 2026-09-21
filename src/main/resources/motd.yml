@@ -23,10 +23,9 @@ placeholders:
 
 # Use | para separar a linha 1 da linha 2.
 linhas:
-  - "&e&lREDE GLOW &8• &f&://redeglow.com &7• &7&l[1.18 - 26.2]|&d&lPROTEJA SEU TERRENO &f&l& &eJogue com seus amigos sem preocupações!"
-  - "&e&lREDE GLOW &8• &f&://redeglow.com &7• &7&l[1.18 - 26.2]|&c&lA {icon:espada} LUA SANGRENTA CHEGOU! &eVocê consegue sobreviver à noite? &4&l[NOVO]"
-  - "&e&lREDE GLOW &8• &f&://redeglow.com &7• &7&l[1.18 - 26.2]|&e&lMERCADO DOS JOGADORES: &dCrie sua loja e domine a economia!s"
-  - "&e&lREDE GLOW &8• &f&://redeglow.com &7• &7&l[1.18 - 26.2]|&e&l{icon:online} FAZENDAS E PETS: &fAdote um companheiro e crie sua vila pacífica."
+  - "&e&lREDE GLOW &8• &fredeglow.com &8• &7[1.18 - 26.2]|&aPROTEJA SEU TERRENO &f&l& &eJogue com seus amigos!"
+  - "&e&lREDE GLOW &8• &fredeglow.com &8• &7[1.18 - 26.2]|&4{icon:espada} &cA LUA SANGRENTA CHEGOU! &4[NOVO]"
+  - "&e&lREDE GLOW &8• &fredeglow.com &8• &7[1.18 - 26.2]|&eMERCADO DOS JOGADORES: &dDomine a economia!"
 # Ícone 64x64 dentro da pasta do plugin.
 # Desativado por padrão porque nenhum icon.png acompanha o JAR.
 icone:
