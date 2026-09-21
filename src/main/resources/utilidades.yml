@@ -11,17 +11,14 @@
 # ------------------------------------------------------------
 identidade-visual:
   ativado: true
-  # Conversão para small caps usada nos elementos visuais.
   small-caps:
     ativado: true
     mapa-maiusculas: "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ"
     mapa-minusculas: "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ"
-  # Gradiente usado na identidade visual.
   gradient:
     ativado: true
     inicio: "#7C3AED"
     fim: "#22D3EE"
-  # Ícones disponíveis para os formatos do plugin.
   icones:
     ativado: true
     lista:
@@ -60,19 +57,12 @@ receber:
 # - preenchimento dos slots vazios
 # - textos de status e ação dos botões
 # - mensagens enviadas ao clicar nas opções
-#
-# Placeholders dos botões de alternância:
-# {status} = texto configurado de ativado/desativado
-# {acao} = texto configurado da ação disponível
-#
-# Placeholders do botão de cor:
-# {cor} = código da cor atual
-# {nome-cor} = nome da cor atual
 gui:
   ativado: true
 
+  # Desativado por padrão: os slots vazios ficam realmente vazios.
   preenchimento:
-    ativado: true
+    ativado: false
     material: "GRAY_STAINED_GLASS_PANE"
     nome: " "
 
@@ -200,8 +190,6 @@ gui:
 # ------------------------------------------------------------
 # MENSAGENS DE ENTRADA
 # ------------------------------------------------------------
-# O CargoPlus fornece o cargo. O UtilidadesPlus apenas o exibe.
-# Placeholders: %player% = jogador | %cargo% = cargo do CargoPlus.
 mensagens-entrada:
   ativado: true
   mensagens:
@@ -218,5 +206,4 @@ mensagens-saida:
   ativado: false
   mensagem: "%cargo%%player% saiu do servidor!"
 
-# Preferências individuais dos jogadores.
 jogadores: {}
