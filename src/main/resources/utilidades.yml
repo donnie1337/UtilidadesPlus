@@ -54,7 +54,6 @@ receber:
 # Toda a aparência dos menus pode ser alterada aqui:
 # - título e tamanho de cada tela
 # - slot, material, nome e lore de cada item
-# - preenchimento dos slots vazios
 # - textos de status e ação dos botões
 # - mensagens enviadas ao clicar nas opções
 gui:
@@ -89,6 +88,16 @@ gui:
             - ""
             - "&7Controle solicitações de TPA"
             - "&7e mensagens privadas."
+            - ""
+            - "&eClique para abrir."
+        limites:
+          slot: 13
+          material: "HOPPER"
+          nome: "&6&lLimites"
+          lore:
+            - ""
+            - "&7Veja os limites de desempenho"
+            - "&7do servidor."
             - ""
             - "&eClique para abrir."
         mensagens:
