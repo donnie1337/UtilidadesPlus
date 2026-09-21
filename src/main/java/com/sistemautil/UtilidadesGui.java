@@ -43,6 +43,11 @@ public final class UtilidadesGui implements Listener {
                 "&b&lTeletransporte", "", "&7Controle solicitações de TPA",
                 "&7e mensagens privadas.", "", "&eClique para abrir."
         ));
+        inventory.setItem(slot(MAIN_PATH, "limites", 13), configuredItem(
+                MAIN_PATH + ".itens.limites", Material.HOPPER,
+                "&6&lLimites", "", "&7Veja os limites de desempenho",
+                "&7do servidor.", "", "&eClique para abrir."
+        ));
         inventory.setItem(slot(MAIN_PATH, "mensagens", 15), configuredItem(
                 MAIN_PATH + ".itens.mensagens", Material.COMPASS,
                 "&e&lMensagens de entrada", "", "&7Configure suas mensagens,",
@@ -110,7 +115,14 @@ public final class UtilidadesGui implements Listener {
 
         if (mainTitle.equals(title)) {
             if (rawSlot == slot(MAIN_PATH, "teletransporte", 11)) openTeleport(player);
-            else if (rawSlot == slot(MAIN_PATH, "mensagens", 15)) openPreferences(player);
+            else if (rawSlot == slot(MAIN_PATH, "limites", 13)) {
+                player.closeInventory();
+                if (Bukkit.getPluginManager().getPlugin("PerformancePlus") == null) {
+                    player.sendMessage("§cO PerformancePlus não está disponível no servidor.");
+                    return;
+                }
+                player.performCommand("limites");
+            } else if (rawSlot == slot(MAIN_PATH, "mensagens", 15)) openPreferences(player);
             return;
         }
 
