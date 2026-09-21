@@ -48,7 +48,6 @@ public final class UtilidadesGui implements Listener {
                 "&e&lMensagens de entrada", "", "&7Configure suas mensagens,",
                 "&7notificações e cor do chat.", "", "&eClique para abrir."
         ));
-        fill(inventory);
         player.openInventory(inventory);
     }
 
@@ -185,15 +184,6 @@ public final class UtilidadesGui implements Listener {
 
     private String title(String path, String fallback) {
         return color(plugin.getUtilidadesConfig().getString(path + ".titulo", fallback));
-    }
-
-    private void fill(Inventory inventory) {
-        if (!plugin.getUtilidadesConfig().getBoolean("gui.preenchimento.ativado", true)) return;
-        Material material = material("gui.preenchimento.material", Material.GRAY_STAINED_GLASS_PANE);
-        ItemStack filler = item(material, plugin.getUtilidadesConfig().getString("gui.preenchimento.nome", " "), List.of());
-        for (int slot = 0; slot < inventory.getSize(); slot++) {
-            if (inventory.getItem(slot) == null) inventory.setItem(slot, filler.clone());
-        }
     }
 
     private ItemStack configuredItem(String path, Material fallbackMaterial, String fallbackName, String... fallbackLore) {
