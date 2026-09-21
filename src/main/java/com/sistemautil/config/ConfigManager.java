@@ -5,9 +5,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 
 public final class ConfigManager {
@@ -36,27 +39,34 @@ public final class ConfigManager {
         utilidades = load("utilidades.yml", utilidadesFile);
     }
 
-    public void reloadAll() { loadAll(); }
-    public FileConfiguration motd() { return motd; }
-    public FileConfiguration tab() { return tab; }
-    public FileConfiguration utilidades() { return utilidades; }
+    public void reloadAll() {
+        loadAll();
+    }
+
+    public FileConfiguration motd() {
+        return motd;
+    }
+
+    public FileConfiguration tab() {
+        return tab;
+    }
+
+    public FileConfiguration utilidades() {
+        return utilidades;
+    }
 
     private void ensureDataFolder() {
         if (dataFolder.exists()) return;
+
         if (!dataFolder.mkdirs() && !dataFolder.exists()) {
-            plugin.getLogger().warning("Não foi possível criar a pasta de configurações: " + dataFolder.getAbsolutePath());
+            plugin.getLogger().warning(
+                    "Não foi possível criar a pasta de configurações: "
+                            + dataFolder.getAbsolutePath()
+            );
         }
     }
 
     private FileConfiguration load(String resource, File file) {
-        /*
-         * O arquivo da pasta plugins/UtilidadesPlus é a configuração do servidor.
-         * Se ele já existir, ele é carregado diretamente e NUNCA é substituído
-         * pelo arquivo padrão que está dentro do JAR.
-         *
-         * O recurso interno só é copiado na primeira instalação, quando o arquivo
-         * ainda não existe.
-         */
         if (file.exists()) {
             return YamlConfiguration.loadConfiguration(file);
         }
@@ -64,8 +74,11 @@ public final class ConfigManager {
         try {
             plugin.saveResource(resource, false);
         } catch (IllegalArgumentException exception) {
-            plugin.getLogger().log(Level.SEVERE,
-                    "O recurso padrão " + resource + " não está presente no JAR do UtilidadesPlus.", exception);
+            plugin.getLogger().log(
+                    Level.SEVERE,
+                    "O recurso padrão " + resource + " não está presente no JAR do UtilidadesPlus.",
+                    exception
+            );
         }
 
         return YamlConfiguration.loadConfiguration(file);
