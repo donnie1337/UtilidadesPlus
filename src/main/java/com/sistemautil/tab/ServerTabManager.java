@@ -191,7 +191,7 @@ public final class ServerTabManager {
         if (!plugin.getTabConfig().getBoolean("tag.mostrar-no-tab", true)) name = name.replace(tagPart, "");
         name = placeholders.resolve(player, name);
         player.setPlayerListName(colorize(name));
-        applyAboveHead(player, prefix, cargoColor, player.getName(), clanTag, vanish.getSuffix(player));
+        applyAboveHead(player, prefix, cargoColor, player.getName(), clanTag, pvp.getTag(player), vanish.getSuffix(player));
     }
 
     private String ensureClanColor(String clanTag) {
@@ -254,11 +254,12 @@ public final class ServerTabManager {
         return false;
     }
 
-    private void applyAboveHead(Player player, String prefix, String nameColor, String playerName, String clanTag, String vanishSuffix) {
+    private void applyAboveHead(Player player, String prefix, String nameColor, String playerName, String clanTag, String pvpTag, String vanishSuffix) {
         if (!plugin.getTabConfig().getBoolean("tag.cabeca.ativada", true)) return;
 
         String configuredPrefix = plugin.getTabConfig().getString("tag.cabeca.prefixo.formato", "%prefix%");
         String configuredName = plugin.getTabConfig().getString("tag.cabeca.nome.formato", "%name_color%%player_name%");
+        String configuredPvp = " &r%pvp_tag%";
         String configuredClan = plugin.getTabConfig().getString("tag.cabeca.clan.formato", " &r%clan_tag%");
         String configuredVanish = plugin.getTabConfig().getString("tag.cabeca.invisivel.formato", " &r%vanish_suffix%");
 
@@ -269,6 +270,7 @@ public final class ServerTabManager {
         // Cada bloco visual mantém sua própria cor. O clan é encerrado antes da tag de invisibilidade.
         String prefixPart = replaceHeadPlaceholders(configuredPrefix, prefix, nameColor, playerName, clanTag, "");
         String namePart = replaceHeadPlaceholders(configuredName, prefix, nameColor, playerName, clanTag, "");
+        String pvpPart = pvpTag == null || pvpTag.isBlank() ? "" : configuredPvp.replace("%pvp_tag%", pvpTag);
         String clanPart = clanTag == null || clanTag.isBlank()
                 ? ""
                 : replaceHeadPlaceholders(configuredClan, prefix, nameColor, playerName, clanTag, "");
@@ -281,11 +283,12 @@ public final class ServerTabManager {
             invisPart = "\n" + centerVanishUnderName(invisPart, namePart);
         }
 
-        String format = plugin.getTabConfig().getString("tag.cabeca.formato", "%prefixo%%name_color%%player_name%%clan%%invisivel%");
+        String format = plugin.getTabConfig().getString("tag.cabeca.formato", "%prefixo%%name_color%%player_name%%pvp%%clan%%invisivel%");
         String result = format
                 .replace("%prefixo%", prefixPart)
                 .replace("%nome%", namePart)
                 .replace("%name%", namePart)
+                .replace("%pvp%", pvpPart)
                 .replace("%clan%", clanPart)
                 .replace("%invisivel%", invisPart)
                 .replace("%prefix%", prefix == null ? "" : prefix)
@@ -295,7 +298,7 @@ public final class ServerTabManager {
                 .replace("%vanish_suffix%", vanishColor + vanishText)
                 + (invisPart.isBlank() ? "" : "§r");
 
-        applyCargoNametagSuffix(player, clanPart + invisPart);
+        applyCargoNametagSuffix(player, pvpPart + clanPart + invisPart);
     }
 
     private void applyCargoNametagSuffix(Player player, String clanPart) {
