@@ -181,6 +181,7 @@ public final class ServerTabManager {
                 .replace("%clan_tag%", tagPart)
                 .replace("%group%", cargo.getGroup(player));
         if (!plugin.getTabConfig().getBoolean("tag.mostrar-no-tab", true)) name = name.replace(tagPart, "");
+        name = placeholders.resolve(player, name);
         player.setPlayerListName(colorize(name));
         applyAboveHead(player, prefix, cargoColor, player.getName(), clanTag, vanish.getSuffix(player));
     }
