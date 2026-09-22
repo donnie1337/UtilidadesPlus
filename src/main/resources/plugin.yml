@@ -10,6 +10,7 @@ softdepend:
   - ClanPlus
   - EssentialsPlus
   - PlaceholderAPI
+  - HabilidadesPlus
 commands:
   motdplus:
     description: Recarrega a configuração do MOTD.
