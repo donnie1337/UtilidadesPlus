@@ -227,11 +227,22 @@ public final class ServerTabManager {
             Scoreboard scoreboard = viewer.getScoreboard();
             for (Player target : players) {
                 if (viewer.equals(target)) continue;
-                String teamName = "util_nt_" + target.getUniqueId().toString().replace("-", "").substring(0, 12);
-                Team team = scoreboard.getTeam(teamName);
-                if (team == null) team = scoreboard.registerNewTeam(teamName);
-                if (!team.hasEntry(target.getName())) team.addEntry(target.getName());
-                team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+
+                boolean foundTeam = false;
+                for (Team team : scoreboard.getTeams()) {
+                    if (team.hasEntry(target.getName())) {
+                        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+                        foundTeam = true;
+                    }
+                }
+
+                if (!foundTeam) {
+                    String teamName = "util_nt_" + target.getUniqueId().toString().replace("-", "").substring(0, 12);
+                    Team team = scoreboard.getTeam(teamName);
+                    if (team == null) team = scoreboard.registerNewTeam(teamName);
+                    if (!team.hasEntry(target.getName())) team.addEntry(target.getName());
+                    team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+                }
             }
         }
     }
