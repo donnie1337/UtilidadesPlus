@@ -31,14 +31,8 @@ public final class ServerTabManager {
 
     public ServerTabManager(SistemaUtil plugin) { this.plugin = plugin; }
     public void start() { stop(); updateAll(); taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::updateAll, 2L, 2L); }
-    public void stop() { if (taskId != -1) { Bukkit.getScheduler().cancelTask(taskId); taskId = -1; } clearHeadTeams(); clearThroughWallTags(); }
+    public void stop() { if (taskId != -1) { Bukkit.getScheduler().cancelTask(taskId); taskId = -1; } clearHeadTeams(); }
 
-    private void clearThroughWallTags() {
-        for (TextDisplay display : new ArrayList<>(throughWallTags.values())) {
-            if (display != null && !display.isDead()) display.remove();
-        }
-        throughWallTags.clear();
-    }
     private void clearHeadTeams() { Scoreboard scoreboard = Bukkit.getScoreboardManager() == null ? null : Bukkit.getScoreboardManager().getMainScoreboard(); if (scoreboard == null) { headTeams.clear(); return; } for (String teamName : new ArrayList<>(headTeams.values())) { Team team = scoreboard.getTeam(teamName); if (team != null) team.unregister(); } headTeams.clear(); }
 
     private String formatFooter(int online, int max, int ping, String address, Player player) {
@@ -116,7 +110,6 @@ public final class ServerTabManager {
         players.sort(buildComparator(states));
         for (Player player : players) applyPlayer(player, states.get(player.getUniqueId()));
         updateVanishVisibility(players);
-        suppressVanillaNameTags(players);
         for (int index = 0; index < players.size(); index++) {
             Player player = players.get(index); player.setPlayerListOrder(index); int ping = Math.max(0, player.getPing());
             String footer = formatFooter(online, max, ping, address, player);
