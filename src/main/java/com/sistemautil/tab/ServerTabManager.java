@@ -183,7 +183,7 @@ public final class ServerTabManager {
         }
         String name = configured.replace("%prefix%", colorize(prefix))
                 .replace("%name_color%", cargoColor)
-                .replace("%habilidade_tag%", bracketHabilidadeTag(placeholders.resolve(player, "%habilidade_tag%")))
+                .replace("%habilidade_tag%", placeholders.resolve(player, "%habilidade_tag%"))
                 .replace("%player_name%", player.getName())
                 .replace("%clan_tag%", tagPart)
                 .replace("%group%", cargo.getGroup(player));
