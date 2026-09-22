@@ -223,14 +223,16 @@ public final class ServerTabManager {
     }
 
     private void suppressVanillaNameTags(List<Player> players) {
-        if (Bukkit.getScoreboardManager() == null) return;
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-        for (Player player : players) {
-            String teamName = "util_nt_" + player.getUniqueId().toString().replace("-", "").substring(0, 12);
-            Team team = scoreboard.getTeam(teamName);
-            if (team == null) team = scoreboard.registerNewTeam(teamName);
-            if (!team.hasEntry(player.getName())) team.addEntry(player.getName());
-            team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        for (Player viewer : players) {
+            Scoreboard scoreboard = viewer.getScoreboard();
+            for (Player target : players) {
+                if (viewer.equals(target)) continue;
+                String teamName = "util_nt_" + target.getUniqueId().toString().replace("-", "").substring(0, 12);
+                Team team = scoreboard.getTeam(teamName);
+                if (team == null) team = scoreboard.registerNewTeam(teamName);
+                if (!team.hasEntry(target.getName())) team.addEntry(target.getName());
+                team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+            }
         }
     }
 
