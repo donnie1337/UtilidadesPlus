@@ -455,9 +455,62 @@ public final class ServerTabManager {
     }
 
     private static final class PlaceholderBridge {
-        private Plugin plugin; private Method method;
-        void refresh() { Plugin current = Bukkit.getPluginManager().getPlugin("PlaceholderAPI"); if (current == plugin) return; plugin = current; method = null; if (current != null && current.isEnabled()) try { Class<?> type = Class.forName("me.clip.placeholderapi.PlaceholderAPI", true, current.getClass().getClassLoader()); method = type.getMethod("setPlaceholders", Player.class, String.class); } catch (ReflectiveOperationException | LinkageError ignored) { method = null; } }
-        String resolve(Player player, String value) { if (method == null || plugin == null) return value; try { Object result = method.invoke(null, player, value); return result instanceof String s ? s : value; } catch (ReflectiveOperationException | LinkageError ex) { return value; } }
+        private Plugin plugin;
+        private Method method;
+        private Plugin habilidadesPlus;
+        private Method top1TagMethod;
+
+        void refresh() {
+            Plugin current = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
+            if (current != plugin) {
+                plugin = current;
+                method = null;
+                if (current != null && current.isEnabled()) {
+                    try {
+                        Class<?> type = Class.forName("me.clip.placeholderapi.PlaceholderAPI", true, current.getClass().getClassLoader());
+                        method = type.getMethod("setPlaceholders", Player.class, String.class);
+                    } catch (ReflectiveOperationException | LinkageError ignored) {
+                        method = null;
+                    }
+                }
+            }
+
+            Plugin habilidades = Bukkit.getPluginManager().getPlugin("HabilidadesPlus");
+            if (habilidades != habilidadesPlus) {
+                habilidadesPlus = habilidades;
+                top1TagMethod = null;
+                if (habilidades != null && habilidades.isEnabled()) {
+                    try {
+                        top1TagMethod = habilidades.getClass().getMethod("getTop1Tag", UUID.class);
+                    } catch (ReflectiveOperationException | LinkageError ignored) {
+                        top1TagMethod = null;
+                    }
+                }
+            }
+        }
+
+        String resolve(Player player, String value) {
+            String result = value == null ? "" : value;
+
+            if (top1TagMethod != null && habilidadesPlus != null && player != null) {
+                try {
+                    Object tag = top1TagMethod.invoke(habilidadesPlus, player.getUniqueId());
+                    result = result.replace("%habilidade_tag%", tag == null ? "" : String.valueOf(tag));
+                } catch (ReflectiveOperationException | LinkageError ignored) {
+                    result = result.replace("%habilidade_tag%", "");
+                }
+            } else {
+                result = result.replace("%habilidade_tag%", "");
+            }
+
+            if (method == null || plugin == null) return result;
+            try {
+                Object parsed = method.invoke(null, player, result);
+                return parsed instanceof String s ? s : result;
+            } catch (ReflectiveOperationException | LinkageError ex) {
+                return result;
+            }
+        }
     }
     private record CargoData(boolean available, String prefix, String nicknameColor) { static CargoData empty() { return new CargoData(false, "", "&f"); } }
 }
