@@ -2,7 +2,11 @@ package com.sistemautil.tab;
 
 import com.sistemautil.SistemaUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
+import org.bukkit.Color;
+import net.kyori.adventure.text.Component;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -24,6 +28,7 @@ public final class ServerTabManager {
     private final VanishBridge vanish = new VanishBridge();
     private final PlaceholderBridge placeholders = new PlaceholderBridge();
     private final PvpBridge pvp = new PvpBridge();
+    private final Map<UUID, TextDisplay> throughWallTags = new HashMap<>();
     private int taskId = -1;
     private long lastFooterFrame = Long.MIN_VALUE;
     private String lastFooterText = null;
@@ -31,7 +36,14 @@ public final class ServerTabManager {
 
     public ServerTabManager(SistemaUtil plugin) { this.plugin = plugin; }
     public void start() { stop(); updateAll(); taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::updateAll, 2L, 2L); }
-    public void stop() { if (taskId != -1) { Bukkit.getScheduler().cancelTask(taskId); taskId = -1; } clearHeadTeams(); }
+    public void stop() { if (taskId != -1) { Bukkit.getScheduler().cancelTask(taskId); taskId = -1; } clearHeadTeams(); clearThroughWallTags(); }
+
+    private void clearThroughWallTags() {
+        for (TextDisplay display : new ArrayList<>(throughWallTags.values())) {
+            if (display != null && !display.isDead()) display.remove();
+        }
+        throughWallTags.clear();
+    }
     private void clearHeadTeams() { Scoreboard scoreboard = Bukkit.getScoreboardManager() == null ? null : Bukkit.getScoreboardManager().getMainScoreboard(); if (scoreboard == null) { headTeams.clear(); return; } for (String teamName : new ArrayList<>(headTeams.values())) { Team team = scoreboard.getTeam(teamName); if (team != null) team.unregister(); } headTeams.clear(); }
 
     private String formatFooter(int online, int max, int ping, String address, Player player) {
@@ -109,6 +121,7 @@ public final class ServerTabManager {
         players.sort(buildComparator(states));
         for (Player player : players) applyPlayer(player, states.get(player.getUniqueId()));
         updateVanishVisibility(players);
+        updateThroughWallTags(players);
         for (int index = 0; index < players.size(); index++) {
             Player player = players.get(index); player.setPlayerListOrder(index); int ping = Math.max(0, player.getPing());
             String footer = formatFooter(online, max, ping, address, player);
@@ -119,6 +132,95 @@ public final class ServerTabManager {
             player.setPlayerListHeaderFooter(configuredHeader, configuredFooter);
         }
     }
+    private void updateThroughWallTags(List<Player> players) {
+        if (!plugin.getTabConfig().getBoolean("tag.cabeca.ativada", true)) {
+            clearThroughWallTags();
+            return;
+        }
+
+        for (Player target : players) {
+            TextDisplay display = throughWallTags.get(target.getUniqueId());
+            if (display == null || display.isDead() || !display.getWorld().equals(target.getWorld())) {
+                if (display != null && !display.isDead()) display.remove();
+                display = target.getWorld().spawn(target.getLocation().clone().add(0, 2.35, 0), TextDisplay.class, entity -> {
+                    entity.setBillboard(Display.Billboard.CENTER);
+                    entity.setSeeThrough(true);
+                    entity.setShadowed(false);
+                    entity.setDefaultBackground(false);
+                    entity.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
+                    entity.setLineWidth(512);
+                    entity.setPersistent(false);
+                    entity.setInvulnerable(true);
+                });
+                throughWallTags.put(target.getUniqueId(), display);
+            }
+
+            display.teleport(target.getLocation().clone().add(0, 2.35, 0));
+            display.text(Component.text(plugin.getVisualText().format(buildThroughWallText(target))));
+            display.setTextOpacity((byte) (target.isSneaking() ? 100 : 255));
+            display.setSeeThrough(true);
+
+            for (Player viewer : players) {
+                if (viewer.equals(target)) continue;
+                boolean canSeeVanish = viewer.hasPermission("essentialsplus.vanish");
+                if (vanish.isVanished(target) && !canSeeVanish) viewer.hideEntity(plugin, display);
+                else viewer.showEntity(plugin, display);
+            }
+        }
+
+        throughWallTags.entrySet().removeIf(entry -> {
+            Player player = Bukkit.getPlayer(entry.getKey());
+            if (player != null && player.isOnline()) return false;
+            TextDisplay display = entry.getValue();
+            if (display != null && !display.isDead()) display.remove();
+            return true;
+        });
+    }
+
+    private String buildThroughWallText(Player player) {
+        CargoData data = cargo.getData(player);
+        String prefix = cargo.getAnimatedPrefix(player);
+        if (prefix == null || prefix.isBlank()) prefix = data.prefix() == null ? "" : data.prefix();
+        String nameColor = data.nicknameColor();
+        if (nameColor == null || nameColor.isBlank()) nameColor = "§f";
+        String clanTag = ensureClanColor(clan.getTag(player));
+        String pvpTag = pvp.getTag(player);
+        String vanishSuffix = vanish.getSuffix(player);
+
+        String configuredPrefix = plugin.getTabConfig().getString("tag.cabeca.prefixo.formato", "%prefix%");
+        String configuredName = plugin.getTabConfig().getString("tag.cabeca.nome.formato", "%name_color%%player_name%");
+        String configuredPvp = " &r%pvp_tag%";
+        String configuredClan = plugin.getTabConfig().getString("tag.cabeca.clan.formato", " &r%clan_tag%");
+        String configuredVanish = plugin.getTabConfig().getString("tag.cabeca.invisivel.formato", " &r%vanish_suffix%");
+        String vanishText = plugin.getTabConfig().getString("tag.cabeca.invisivel.texto", "[INVISIVEL]");
+        String vanishColor = plugin.getTabConfig().getString("tag.cabeca.invisivel.cor", "&c");
+        boolean vanishEnabled = plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.ativado", true);
+
+        String prefixPart = replaceHeadPlaceholders(configuredPrefix, prefix, nameColor, player.getName(), clanTag, "");
+        String namePart = replaceHeadPlaceholders(configuredName, prefix, nameColor, player.getName(), clanTag, "");
+        String pvpPart = pvpTag == null || pvpTag.isBlank() ? "" : configuredPvp.replace("%pvp_tag%", pvpTag);
+        String clanPart = clanTag == null || clanTag.isBlank() ? "" : replaceHeadPlaceholders(configuredClan, prefix, nameColor, player.getName(), clanTag, "");
+        String invisPart = vanishEnabled && vanishSuffix != null && !vanishSuffix.isBlank()
+                ? replaceHeadPlaceholders(configuredVanish, prefix, nameColor, player.getName(), clanTag, vanishColor + vanishText) : "";
+
+        boolean vanishBelowName = plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.abaixo-do-nome", true);
+        if (vanishBelowName && !invisPart.isBlank()) invisPart = "\\n" + centerVanishUnderName(invisPart, namePart);
+
+        String format = plugin.getTabConfig().getString("tag.cabeca.formato", "%prefixo%%name_color%%player_name%%pvp%%clan%%invisivel%");
+        return format
+                .replace("%prefixo%", prefixPart)
+                .replace("%nome%", namePart)
+                .replace("%name%", namePart)
+                .replace("%pvp%", pvpPart)
+                .replace("%clan%", clanPart)
+                .replace("%invisivel%", invisPart)
+                .replace("%prefix%", prefix == null ? "" : prefix)
+                .replace("%name_color%", nameColor == null ? "§f" : nameColor)
+                .replace("%player_name%", player.getName())
+                .replace("%clan_tag%", clanTag)
+                .replace("%vanish_suffix%", vanishColor + vanishText);
+    }
+
     private void updateVanishVisibility(List<Player> players) {
         for (Player viewer : players) {
             if (viewer == null || !viewer.isOnline()) continue;
