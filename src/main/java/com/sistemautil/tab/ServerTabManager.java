@@ -122,6 +122,7 @@ public final class ServerTabManager {
         for (Player player : players) applyPlayer(player, states.get(player.getUniqueId()));
         updateVanishVisibility(players);
         updateThroughWallTags(players);
+        suppressVanillaNameTags(players);
         for (int index = 0; index < players.size(); index++) {
             Player player = players.get(index); player.setPlayerListOrder(index); int ping = Math.max(0, player.getPing());
             String footer = formatFooter(online, max, ping, address, player);
@@ -219,6 +220,18 @@ public final class ServerTabManager {
                 .replace("%player_name%", player.getName())
                 .replace("%clan_tag%", clanTag)
                 .replace("%vanish_suffix%", vanishColor + vanishText);
+    }
+
+    private void suppressVanillaNameTags(List<Player> players) {
+        if (Bukkit.getScoreboardManager() == null) return;
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        for (Player player : players) {
+            String teamName = "util_nt_" + player.getUniqueId().toString().replace("-", "").substring(0, 12);
+            Team team = scoreboard.getTeam(teamName);
+            if (team == null) team = scoreboard.registerNewTeam(teamName);
+            if (!team.hasEntry(player.getName())) team.addEntry(player.getName());
+            team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        }
     }
 
     private void updateVanishVisibility(List<Player> players) {
