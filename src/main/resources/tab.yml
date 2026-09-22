@@ -38,7 +38,7 @@ footer: |
 # ============================================================
 
 jogadores:
-  formato: "%prefix%%name_color%<small>%player_name%</small>%clan_tag%"
+  formato: "%prefix%%name_color%<small>%player_name%</small>%habilidade_tag%%clan_tag%"
 
 # ============================================================
 # TAG / CLAN
