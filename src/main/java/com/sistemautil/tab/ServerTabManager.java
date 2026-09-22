@@ -177,7 +177,7 @@ public final class ServerTabManager {
         String configured = plugin.getTabConfig().getString("jogadores.formato", "%prefix%%name_color%%habilidade_tag%%player_name%%clan_tag%");
         // A tag Top 1 deve aparecer imediatamente antes do nickname, mesmo
         // em configurações antigas que ainda não possuem %habilidade_tag%.
-        if (plugin.getPluginManager().isPluginEnabled("HabilidadesPlus")
+        if (Bukkit.getPluginManager().isPluginEnabled("HabilidadesPlus")
                 && !configured.contains("%habilidade_tag%")
                 && configured.contains("%player_name%")) {
             configured = configured.replace("%player_name%", "%habilidade_tag%%player_name%");
