@@ -166,7 +166,7 @@ public final class ServerTabManager {
             player.setPlayerListName(formatConfiguredPlayerName(player, "", ""));
             return;
         }
-        CargoData data = cargo.getData(player); if (!data.available()) return;
+        CargoData data = cargo.getData(player);
         String prefix = cargo.getAnimatedPrefix(player); if (prefix == null || prefix.isBlank()) prefix = data.prefix() == null ? "" : data.prefix();
         String cargoColor = data.nicknameColor();
         if (cargoColor == null || cargoColor.isBlank()) cargoColor = "§f";
