@@ -23,6 +23,7 @@ public final class ServerTabManager {
     private final ClanBridge clan = new ClanBridge();
     private final VanishBridge vanish = new VanishBridge();
     private final PlaceholderBridge placeholders = new PlaceholderBridge();
+    private final PvpBridge pvp = new PvpBridge();
     private int taskId = -1;
     private long lastFooterFrame = Long.MIN_VALUE;
     private String lastFooterText = null;
@@ -99,7 +100,7 @@ public final class ServerTabManager {
 
     public void updateAll() {
         if (!plugin.getTabConfig().getBoolean("ativado", true)) return;
-        cargo.refresh(); clan.refresh(); vanish.refresh(); placeholders.refresh();
+        cargo.refresh(); clan.refresh(); vanish.refresh(); placeholders.refresh(); pvp.refresh();
         int online = Bukkit.getOnlinePlayers().size(); int max = Bukkit.getMaxPlayers();
         String address = plugin.getTabConfig().getString("endereco-servidor", "play.seuservidor.com:25565");
         String headerTemplate = plugin.getTabConfig().getString("header", "&6&lMEU SERVIDOR\\n&7Seja bem-vindo!");
@@ -492,6 +493,28 @@ public final class ServerTabManager {
 
         String getSuffix(Player player) {
             return isVanished(player) ? "[INVISIVEL]" : "";
+        }
+    }
+
+    private static final class PvpBridge {
+        private Plugin plugin;
+        private Method method;
+        void refresh() {
+            Plugin current = Bukkit.getPluginManager().getPlugin("CombatePlus");
+            if (current == plugin) return;
+            plugin = current; method = null;
+            if (current == null || !current.isEnabled()) return;
+            try { method = current.getClass().getMethod("getPvpListener"); }
+            catch (ReflectiveOperationException | LinkageError ignored) { method = null; }
+        }
+        String getTag(Player player) {
+            if (method == null || plugin == null || player == null) return "";
+            try {
+                Object listener = method.invoke(plugin);
+                if (listener == null) return "";
+                Method enabled = listener.getClass().getMethod("isPvpEnabled", Player.class);
+                return Boolean.TRUE.equals(enabled.invoke(listener, player)) ? " §a⚔" : " §c⚔";
+            } catch (ReflectiveOperationException | LinkageError ignored) { return ""; }
         }
     }
 
