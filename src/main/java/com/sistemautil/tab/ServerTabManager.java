@@ -183,7 +183,7 @@ public final class ServerTabManager {
         }
         String name = configured.replace("%prefix%", colorize(prefix))
                 .replace("%name_color%", cargoColor)
-                .replace("%habilidade_tag%", placeholders.resolve(player, "%habilidade_tag%"))
+                .replace("%habilidade_tag%", bracketHabilidadeTag(placeholders.resolve(player, "%habilidade_tag%")))
                 .replace("%player_name%", player.getName())
                 .replace("%clan_tag%", tagPart)
                 .replace("%group%", cargo.getGroup(player));
@@ -197,6 +197,39 @@ public final class ServerTabManager {
         if (clanTag == null || clanTag.isBlank()) return "";
         if (hasExplicitClanColor(clanTag)) return clanTag;
         return "§7" + clanTag;
+    }
+
+    private String bracketHabilidadeTag(String tag) {
+        if (tag == null || tag.isBlank()) return "";
+        String value = tag.trim();
+        if (value.startsWith("[") && value.endsWith("]")) return value;
+
+        int index = 0;
+        while (index + 1 < value.length()) {
+            char marker = value.charAt(index);
+            if (marker != '&' && marker != '§') break;
+            char code = value.charAt(index + 1);
+            if (code == 'x' && index + 13 < value.length()) {
+                boolean validHex = true;
+                for (int i = 0; i < 6; i++) {
+                    if (value.charAt(index + 2 + i * 2) != '§'
+                            && value.charAt(index + 2 + i * 2) != '&') {
+                        validHex = false;
+                        break;
+                    }
+                }
+                if (validHex) {
+                    index += 14;
+                    continue;
+                }
+            }
+            index += 2;
+        }
+
+        String colors = value.substring(0, index);
+        String text = value.substring(index).trim();
+        if (text.startsWith("[") && text.endsWith("]")) return value;
+        return colors + "[" + text + "]";
     }
 
     private boolean hasExplicitClanColor(String text) {
