@@ -174,13 +174,12 @@ public final class ServerTabManager {
         // O nome recebe a cor do cargo, mas a tag do clan não deve herdar essa cor.
         // Quando o ClanPlus não fornece nenhuma cor, a tag usa cinza claro (&7).
         String tagPart = clanTag.isBlank() ? "" : " §r" + clanTag;
-        String configured = plugin.getTabConfig().getString("jogadores.formato", "%prefix%%name_color%%habilidade_tag%%player_name%%clan_tag%");
-        // A tag Top 1 deve aparecer imediatamente antes do nickname, mesmo
-        // em configurações antigas que ainda não possuem %habilidade_tag%.
+        String configured = plugin.getTabConfig().getString("jogadores.formato", "%prefix%%name_color%%player_name%%habilidade_tag%%clan_tag%");
+        // No TAB, a tag Top 1 fica depois do nickname e antes da tag do clan.
         if (Bukkit.getPluginManager().isPluginEnabled("HabilidadesPlus")
                 && !configured.contains("%habilidade_tag%")
                 && configured.contains("%player_name%")) {
-            configured = configured.replace("%player_name%", "%habilidade_tag%%player_name%");
+            configured = configured.replace("%player_name%", "%player_name%%habilidade_tag%");
         }
         String name = configured.replace("%prefix%", colorize(prefix))
                 .replace("%name_color%", cargoColor)
