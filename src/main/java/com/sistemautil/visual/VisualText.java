@@ -350,20 +350,53 @@ public final class VisualText {
         }
         if (visible == 0) return text;
 
-        StringBuilder out = new StringBuilder(text.length() * 8);
+        // Reaplica os estilos legacy a cada caractere do gradiente.
+        // Isso mantém &l, &k, &m, &n e &o ativos mesmo com uma nova cor hex
+        // sendo inserida antes de cada caractere.
+        StringBuilder out = new StringBuilder(text.length() * 12);
         int index = 0;
+        String formatting = "";
+
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
             if (c == '&' && i + 1 < text.length()) {
-                out.append('&').append(text.charAt(++i));
+                char code = text.charAt(++i);
+                out.append('&').append(code);
+
+                if (isFormattingCode(code)) {
+                    formatting += "&" + code;
+                } else if (isResetOrColorCode(code)) {
+                    formatting = "";
+                }
                 continue;
             }
-            if (c == '\n' || c == '\r') { out.append(c); continue; }
+            if (c == '\n' || c == '\r') {
+                out.append(c);
+                continue;
+            }
+
             double progress = visible == 1 ? 0D : (double) index / (visible - 1);
-            out.append(hexCode(interpolate(colors, progress))).append(c);
+            out.append(hexCode(interpolate(colors, progress)));
+            out.append(formatting);
+            out.append(c);
             index++;
         }
         return out.toString();
+    }
+
+    private boolean isFormattingCode(char code) {
+        return switch (code) {
+            case 'k', 'K', 'l', 'L', 'm', 'M', 'n', 'N', 'o', 'O' -> true;
+            default -> false;
+        };
+    }
+
+    private boolean isResetOrColorCode(char code) {
+        return (code >= '0' && code <= '9')
+                || (code >= 'a' && code <= 'f')
+                || (code >= 'A' && code <= 'F')
+                || code == 'r'
+                || code == 'R';
     }
 
     private String interpolate(List<String> colors, double progress) {
