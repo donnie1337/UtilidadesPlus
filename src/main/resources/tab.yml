@@ -14,9 +14,9 @@ header-ativado: true
 
 header: |
   &8
-  &b❄&e&k!&r <gradient:#FFD54F:#FF8F00>&lREDE GLOW</gradient>&r &e&k!&r&b❄
+   <gradient:#B19CD8:#BEA9DF>&lREDE EDGE</gradient>&r 
   &8
-  &fJogadores Online: &b%online%&7/&3500 &8| &fPing: &a%player_ping%ms
+  &fJogadores Online: &b%online%&7 &8| &fPing: &a%player_ping%ms
 
 # ============================================================
 # FOOTER
