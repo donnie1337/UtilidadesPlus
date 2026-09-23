@@ -8,6 +8,8 @@ import org.bukkit.event.server.ServerListPingEvent;
 import java.util.List;
 
 public final class MotdListener implements Listener {
+    private static final int LARGURA_CENTRALIZACAO = 60;
+
     private final SistemaUtil plugin;
 
     public MotdListener(SistemaUtil plugin) {
@@ -45,9 +47,10 @@ public final class MotdListener implements Listener {
         String separador = plugin.getMotdConfig().getString("formato.separador", "|");
         if (separador == null || separador.isEmpty()) separador = "|";
         String[] partes = textoFinal.split(java.util.regex.Pattern.quote(separador), 2);
-        String linha1 = plugin.getVisualText().format(partes[0].trim());
+
+        String linha1 = centralizar(plugin.getVisualText().format(partes[0].trim()));
         String linha2 = partes.length > 1
-                ? plugin.getVisualText().format(partes[1].trim())
+                ? centralizar(plugin.getVisualText().format(partes[1].trim()))
                 : "";
 
         StringBuilder motd = new StringBuilder(linha1);
@@ -56,6 +59,19 @@ public final class MotdListener implements Listener {
         }
 
         event.setMotd(motd.toString());
+    }
+
+    private String centralizar(String texto) {
+        if (texto == null || texto.isEmpty()) return texto;
+
+        String semFormatacao = texto
+                .replaceAll("§x(§[0-9a-fA-F]){6}", "")
+                .replaceAll("§[0-9a-fk-orK-OR]", "");
+
+        int tamanho = semFormatacao.codePointCount(0, semFormatacao.length());
+        int espacos = Math.max(0, (LARGURA_CENTRALIZACAO - tamanho) / 2);
+
+        return " ".repeat(espacos) + texto;
     }
 
     private void aplicarMaxDinamico(ServerListPingEvent event) {
