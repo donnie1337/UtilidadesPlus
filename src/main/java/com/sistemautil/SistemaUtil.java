@@ -30,6 +30,10 @@ public final class SistemaUtil extends JavaPlugin {
         for (World world : Bukkit.getWorlds()) advancementMessageListener.disableFor(world);
         getServer().getPluginManager().registerEvents(advancementMessageListener, this);
 
+        DeathMessageListener deathMessageListener = new DeathMessageListener();
+        for (World world : Bukkit.getWorlds()) deathMessageListener.disableFor(world);
+        getServer().getPluginManager().registerEvents(deathMessageListener, this);
+
         visualText = new VisualText(configManager.utilidades());
         utilidadesPreferences = new UtilidadesPreferences(this);
         utilidadesPreferences.load();
