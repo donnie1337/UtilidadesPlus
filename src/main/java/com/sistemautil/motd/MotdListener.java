@@ -8,7 +8,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 import java.util.List;
 
 public final class MotdListener implements Listener {
-    private static final int LARGURA_CENTRALIZACAO = 60;
+    private static final int LARGURA_CENTRALIZACAO = 50;
 
     private final SistemaUtil plugin;
 
