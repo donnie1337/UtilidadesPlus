@@ -517,7 +517,7 @@ public final class ServerTabManager {
                 Object listener = method.invoke(plugin);
                 if (listener == null) return "";
                 Method enabled = listener.getClass().getMethod("isPvpEnabled", Player.class);
-                return Boolean.TRUE.equals(enabled.invoke(listener, player)) ? "§a⚔" : "§c⚔";
+                return Boolean.TRUE.equals(enabled.invoke(listener, player)) ? "§c⚔" : "§a⛨";
             } catch (ReflectiveOperationException | LinkageError ignored) { return ""; }
         }
     }
