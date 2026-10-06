@@ -24,6 +24,7 @@ public final class ServerTabManager {
     private final VanishBridge vanish = new VanishBridge();
     private final PlaceholderBridge placeholders = new PlaceholderBridge();
     private final PvpBridge pvp = new PvpBridge();
+    private final MarriageBridge marriage = new MarriageBridge();
     private int taskId = -1;
     private long lastFooterFrame = Long.MIN_VALUE;
     private String lastFooterText = null;
@@ -101,7 +102,7 @@ public final class ServerTabManager {
 
     public void updateAll() {
         if (!plugin.getTabConfig().getBoolean("ativado", true)) return;
-        cargo.refresh(); clan.refresh(); vanish.refresh(); placeholders.refresh(); pvp.refresh();
+        cargo.refresh(); clan.refresh(); vanish.refresh(); placeholders.refresh(); pvp.refresh(); marriage.refresh();
         int online = Bukkit.getOnlinePlayers().size(); int max = Bukkit.getMaxPlayers();
         String address = plugin.getTabConfig().getString("endereco-servidor", "play.seuservidor.com:25565");
         String headerTemplate = plugin.getTabConfig().getString("header", "&6&lMEU SERVIDOR\\n&7Seja bem-vindo!");
@@ -176,14 +177,16 @@ public final class ServerTabManager {
         // O nome recebe a cor do cargo, mas a tag do clan não deve herdar essa cor.
         // Quando o ClanPlus não fornece nenhuma cor, a tag usa cinza claro (&7).
         String tagPart = clanTag.isBlank() ? "" : " §r" + clanTag;
-        String configured = plugin.getTabConfig().getString("jogadores.formato", "%prefix%%name_color%%player_name%%habilidade_tag%%clan_tag%");
+        String marriageTag = marriage.getTag(player);
+        String configured = plugin.getTabConfig().getString("jogadores.formato", "%marriage_tag%%prefix%%name_color%%player_name%%habilidade_tag%%clan_tag%");
         // No TAB, a tag Top 1 fica depois do nickname e antes da tag do clan.
         if (Bukkit.getPluginManager().isPluginEnabled("HabilidadesPlus")
                 && !configured.contains("%habilidade_tag%")
                 && configured.contains("%player_name%")) {
             configured = configured.replace("%player_name%", "%player_name%%habilidade_tag%");
         }
-        String name = configured.replace("%prefix%", colorize(prefix))
+        String name = configured.replace("%marriage_tag%", marriageTag.isBlank() ? "" : colorize(marriageTag + " "))
+                .replace("%prefix%", colorize(prefix))
                 .replace("%name_color%", cargoColor)
                 .replace("%habilidade_tag%", placeholders.resolve(player, "%habilidade_tag%"))
                 .replace("%player_name%", player.getName())
@@ -192,7 +195,7 @@ public final class ServerTabManager {
         if (!plugin.getTabConfig().getBoolean("tag.mostrar-no-tab", true)) name = name.replace(tagPart, "");
         name = placeholders.resolve(player, name);
         player.setPlayerListName(colorize(name));
-        applyAboveHead(player, prefix, cargoColor, player.getName(), clanTag, pvp.getTag(player), vanish.getSuffix(player));
+        applyAboveHead(player, marriageTag, prefix, cargoColor, player.getName(), clanTag, pvp.getTag(player), vanish.getSuffix(player));
     }
 
     private String ensureClanColor(String clanTag) {
@@ -255,9 +258,10 @@ public final class ServerTabManager {
         return false;
     }
 
-    private void applyAboveHead(Player player, String prefix, String nameColor, String playerName, String clanTag, String pvpTag, String vanishSuffix) {
+    private void applyAboveHead(Player player, String marriageTag, String prefix, String nameColor, String playerName, String clanTag, String pvpTag, String vanishSuffix) {
         if (!plugin.getTabConfig().getBoolean("tag.cabeca.ativada", true)) return;
 
+        String configuredMarriage = plugin.getTabConfig().getString("tag.cabeca.casamento.formato", "%marriage_tag% ");
         String configuredPrefix = plugin.getTabConfig().getString("tag.cabeca.prefixo.formato", "%prefix%");
         String configuredName = plugin.getTabConfig().getString("tag.cabeca.nome.formato", "%name_color%%player_name%");
         String configuredPvp = " &r%pvp_tag%";
@@ -269,6 +273,9 @@ public final class ServerTabManager {
         boolean vanishEnabled = plugin.getTabConfig().getBoolean("tag.cabeca.invisivel.ativado", true);
 
         // Cada bloco visual mantém sua própria cor. O clan é encerrado antes da tag de invisibilidade.
+        String marriagePart = marriageTag == null || marriageTag.isBlank()
+                ? ""
+                : configuredMarriage.replace("%marriage_tag%", marriageTag);
         String prefixPart = replaceHeadPlaceholders(configuredPrefix, prefix, nameColor, playerName, clanTag, "");
         String namePart = replaceHeadPlaceholders(configuredName, prefix, nameColor, playerName, clanTag, "");
         String pvpPart = pvpTag == null || pvpTag.isBlank() ? "" : configuredPvp.replace("%pvp_tag%", pvpTag);
@@ -284,8 +291,9 @@ public final class ServerTabManager {
             invisPart = "\n" + centerVanishUnderName(invisPart, namePart);
         }
 
-        String format = plugin.getTabConfig().getString("tag.cabeca.formato", "%prefixo%%name_color%%player_name%%pvp%%clan%%invisivel%");
+        String format = plugin.getTabConfig().getString("tag.cabeca.formato", "%casamento%%prefixo%%name_color%%player_name%%pvp%%clan%%invisivel%");
         String result = format
+                .replace("%casamento%", marriagePart)
                 .replace("%prefixo%", prefixPart)
                 .replace("%nome%", namePart)
                 .replace("%name%", namePart)
@@ -299,7 +307,25 @@ public final class ServerTabManager {
                 .replace("%vanish_suffix%", vanishColor + vanishText)
                 + (invisPart.isBlank() ? "" : "§r");
 
+        applyCargoNametagPrefix(player, marriagePart);
         applyCargoNametagSuffix(player, pvpPart + clanPart + invisPart);
+    }
+
+    private void applyCargoNametagPrefix(Player player, String marriagePart) {
+        if (player == null || !player.isOnline()) return;
+        try {
+            Class<?> apiClass = Class.forName("com.cargoplus.api.CargoPlusAPI");
+            Object api = Bukkit.getServicesManager().load(apiClass);
+            if (api == null) return;
+
+            Method method = apiClass.getMethod("setNametagExtraPrefix", UUID.class, String.class);
+            String value = plugin.getVisualText().format(marriagePart == null ? "" : marriagePart);
+            method.invoke(api, player.getUniqueId(), value);
+        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
+            // CargoPlus antigo: o TAB continua correto; nametag usa apenas recursos disponíveis.
+        } catch (ReflectiveOperationException | LinkageError ignored) {
+            // Integração opcional.
+        }
     }
 
     private void applyCargoNametagSuffix(Player player, String clanPart) {
@@ -519,6 +545,34 @@ public final class ServerTabManager {
                 Method enabled = listener.getClass().getMethod("isPvpEnabled", Player.class);
                 return Boolean.TRUE.equals(enabled.invoke(listener, player)) ? "§c⚔" : "§a⛨";
             } catch (ReflectiveOperationException | LinkageError ignored) { return ""; }
+        }
+    }
+
+    private static final class MarriageBridge {
+        private Plugin plugin;
+        private Method method;
+
+        void refresh() {
+            Plugin current = Bukkit.getPluginManager().getPlugin("EssentialsPlus");
+            if (current == plugin) return;
+            plugin = current;
+            method = null;
+            if (current == null || !current.isEnabled()) return;
+            try {
+                method = current.getClass().getMethod("getMarriageTag", UUID.class);
+            } catch (ReflectiveOperationException | LinkageError ignored) {
+                method = null;
+            }
+        }
+
+        String getTag(Player player) {
+            if (plugin == null || method == null || player == null) return "";
+            try {
+                Object value = method.invoke(plugin, player.getUniqueId());
+                return value == null ? "" : String.valueOf(value).trim();
+            } catch (ReflectiveOperationException | LinkageError ignored) {
+                return "";
+            }
         }
     }
 

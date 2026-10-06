@@ -38,7 +38,7 @@ footer: |
 # ============================================================
 
 jogadores:
-  formato: "%prefix%%name_color%<small>%player_name%</small>%habilidade_tag%%clan_tag%"
+  formato: "%marriage_tag%%prefix%%name_color%<small>%player_name%</small>%habilidade_tag%%clan_tag%"
 
 # ============================================================
 # TAG / CLAN
@@ -50,7 +50,10 @@ tag:
 
   cabeca:
     ativada: true
-    formato: "%prefixo%%name_color%%player_name%%clan%%invisivel%"
+    formato: "%casamento%%prefixo%%name_color%%player_name%%clan%%invisivel%"
+
+    casamento:
+      formato: "%marriage_tag% "
 
     prefixo:
       formato: "%prefix%"
