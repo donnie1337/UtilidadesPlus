@@ -179,6 +179,11 @@ public final class ServerTabManager {
         String tagPart = clanTag.isBlank() ? "" : " §r" + clanTag;
         String marriageTag = marriage.getTag(player);
         String configured = plugin.getTabConfig().getString("jogadores.formato", "%marriage_tag%%prefix%%name_color%%player_name%%habilidade_tag%%clan_tag%");
+        // Compatibilidade com tab.yml antigos: a tag de casamento sempre vem
+        // antes do prefixo/cargo, mesmo que o placeholder ainda não exista.
+        if (!configured.contains("%marriage_tag%")) {
+            configured = "%marriage_tag%" + configured;
+        }
         // No TAB, a tag Top 1 fica depois do nickname e antes da tag do clan.
         if (Bukkit.getPluginManager().isPluginEnabled("HabilidadesPlus")
                 && !configured.contains("%habilidade_tag%")
@@ -554,10 +559,19 @@ public final class ServerTabManager {
 
         void refresh() {
             Plugin current = Bukkit.getPluginManager().getPlugin("EssentialsPlus");
-            if (current == plugin) return;
+
+            if (current == null || !current.isEnabled()) {
+                plugin = current;
+                method = null;
+                return;
+            }
+
+            // Se a primeira tentativa ocorreu cedo demais no startup, method pode
+            // ter ficado nulo. Nesse caso precisamos tentar resolver novamente,
+            // mesmo que a instancia do plugin seja a mesma.
+            if (current == plugin && method != null) return;
+
             plugin = current;
-            method = null;
-            if (current == null || !current.isEnabled()) return;
             try {
                 method = current.getClass().getMethod("getMarriageTag", UUID.class);
             } catch (ReflectiveOperationException | LinkageError ignored) {
@@ -566,11 +580,17 @@ public final class ServerTabManager {
         }
 
         String getTag(Player player) {
-            if (plugin == null || method == null || player == null) return "";
+            if (player == null) return "";
+            if (plugin == null || method == null) refresh();
+            if (plugin == null || method == null) return "";
+
             try {
                 Object value = method.invoke(plugin, player.getUniqueId());
                 return value == null ? "" : String.valueOf(value).trim();
             } catch (ReflectiveOperationException | LinkageError ignored) {
+                // Permite recuperacao automatica caso o EssentialsPlus seja
+                // recarregado/trocado durante a execucao.
+                method = null;
                 return "";
             }
         }
