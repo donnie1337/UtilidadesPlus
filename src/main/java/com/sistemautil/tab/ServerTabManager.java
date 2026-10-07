@@ -112,7 +112,7 @@ public final class ServerTabManager {
         for (Player player : players) applyPlayer(player, states.get(player.getUniqueId()));
         updateVanishVisibility(players);
         for (int index = 0; index < players.size(); index++) {
-            Player player = players.get(index); player.setPlayerListOrder(index); int ping = Math.max(0, player.getPing());
+            Player player = players.get(index); player.setPlayerListOrder(index + 1); int ping = Math.max(0, player.getPing());
             String footer = formatFooter(online, max, ping, address, player);
             String configuredHeader = plugin.getTabConfig().getBoolean("header-ativado", true)
                     ? formatTabText(headerTemplate, online, max, ping, address, player)
