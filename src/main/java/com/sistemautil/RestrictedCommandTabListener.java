@@ -53,6 +53,7 @@ public final class RestrictedCommandTabListener implements Listener {
             "marry",
             "casar",
             "coins",
+            "banco",
             "pagar",
             "topcoins",
             "coinstop",
