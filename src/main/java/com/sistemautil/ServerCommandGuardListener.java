@@ -37,6 +37,13 @@ public final class ServerCommandGuardListener implements Listener {
 
         String label = command.split("\\s+", 2)[0].toLowerCase(Locale.ROOT);
 
+        // O ChatPlus é o único responsável por esconder e responder aos
+        // comandos internos do Bukkit/Spigot. Não interceptamos aqui para
+        // evitar duas mensagens para o mesmo comando.
+        if (isBukkitOrSpigotCommand(label)) {
+            return;
+        }
+
         if (isHelpDiscoveryCommand(label) && !hasCargoPermission(player, ADMIN_PERMISSION)) {
             deny(event, player);
             return;
@@ -47,9 +54,6 @@ public final class ServerCommandGuardListener implements Listener {
             return;
         }
 
-        if (isBukkitOrSpigotCommand(label) && !hasCargoPermission(player, ADMIN_PERMISSION)) {
-            deny(event, player);
-        }
     }
 
     private void deny(PlayerCommandPreprocessEvent event, Player player) {
