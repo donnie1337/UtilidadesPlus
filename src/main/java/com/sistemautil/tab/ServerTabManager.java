@@ -25,6 +25,7 @@ public final class ServerTabManager {
     private final PlaceholderBridge placeholders = new PlaceholderBridge();
     private final PvpBridge pvp = new PvpBridge();
     private final MarriageBridge marriage = new MarriageBridge();
+    private final EconomyBridge economy = new EconomyBridge();
     private int taskId = -1;
     private long lastFooterFrame = Long.MIN_VALUE;
     private String lastFooterText = null;
@@ -102,7 +103,7 @@ public final class ServerTabManager {
 
     public void updateAll() {
         if (!plugin.getTabConfig().getBoolean("ativado", true)) return;
-        cargo.refresh(); clan.refresh(); vanish.refresh(); placeholders.refresh(); pvp.refresh(); marriage.refresh();
+        cargo.refresh(); clan.refresh(); vanish.refresh(); placeholders.refresh(); pvp.refresh(); marriage.refresh(); economy.refresh();
         int online = Bukkit.getOnlinePlayers().size(); int max = Bukkit.getMaxPlayers();
         String address = plugin.getTabConfig().getString("endereco-servidor", "play.seuservidor.com:25565");
         String headerTemplate = plugin.getTabConfig().getString("header", "&6&lMEU SERVIDOR\\n&7Seja bem-vindo!");
@@ -184,16 +185,22 @@ public final class ServerTabManager {
         if (!configured.contains("%marriage_tag%")) {
             configured = "%marriage_tag%" + configured;
         }
-        // No TAB, a tag Top 1 fica depois do nickname e antes da tag do clan.
-        if (Bukkit.getPluginManager().isPluginEnabled("HabilidadesPlus")
+        // No TAB existe apenas uma tag de destaque: Magnata tem prioridade
+        // sobre a tag Top 1 de habilidade.
+        if ((Bukkit.getPluginManager().isPluginEnabled("HabilidadesPlus")
+                || Bukkit.getPluginManager().isPluginEnabled("EconomiaPlus"))
                 && !configured.contains("%habilidade_tag%")
                 && configured.contains("%player_name%")) {
             configured = configured.replace("%player_name%", "%player_name%%habilidade_tag%");
         }
+        String habilidadeTag = placeholders.resolve(player, "%habilidade_tag%");
+        String magnataTag = economy.getTag(player);
+        String destaqueTag = !magnataTag.isBlank() ? magnataTag : habilidadeTag;
+
         String name = configured.replace("%marriage_tag%", marriageTag.isBlank() ? "" : colorize(marriageTag + " "))
                 .replace("%prefix%", colorize(prefix))
                 .replace("%name_color%", cargoColor)
-                .replace("%habilidade_tag%", placeholders.resolve(player, "%habilidade_tag%"))
+                .replace("%habilidade_tag%", destaqueTag)
                 .replace("%player_name%", player.getName())
                 .replace("%clan_tag%", tagPart)
                 .replace("%group%", cargo.getGroup(player));
@@ -591,6 +598,43 @@ public final class ServerTabManager {
                 // Permite recuperacao automatica caso o EssentialsPlus seja
                 // recarregado/trocado durante a execucao.
                 method = null;
+                return "";
+            }
+        }
+    }
+
+    private static final class EconomyBridge {
+        private Plugin plugin;
+        private Method magnataTagMethod;
+
+        void refresh() {
+            Plugin current = Bukkit.getPluginManager().getPlugin("EconomiaPlus");
+            if (current == null || !current.isEnabled()) {
+                plugin = current;
+                magnataTagMethod = null;
+                return;
+            }
+
+            if (current == plugin && magnataTagMethod != null) return;
+
+            plugin = current;
+            try {
+                magnataTagMethod = current.getClass().getMethod("getMagnataTag", UUID.class);
+            } catch (ReflectiveOperationException | LinkageError ignored) {
+                magnataTagMethod = null;
+            }
+        }
+
+        String getTag(Player player) {
+            if (player == null) return "";
+            if (plugin == null || magnataTagMethod == null) refresh();
+            if (plugin == null || magnataTagMethod == null) return "";
+
+            try {
+                Object value = magnataTagMethod.invoke(plugin, player.getUniqueId());
+                return value == null ? "" : String.valueOf(value).trim();
+            } catch (ReflectiveOperationException | LinkageError ignored) {
+                magnataTagMethod = null;
                 return "";
             }
         }
