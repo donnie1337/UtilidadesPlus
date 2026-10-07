@@ -51,7 +51,12 @@ public final class RestrictedCommandTabListener implements Listener {
             "mcmmo",
             "habilidades",
             "marry",
-            "casar"
+            "casar",
+            "coins",
+            "pagar",
+            "topcoins",
+            "coinstop",
+            "baltop"
     );
 
     private static final Set<String> CARGO_COMMANDS = Set.of(
