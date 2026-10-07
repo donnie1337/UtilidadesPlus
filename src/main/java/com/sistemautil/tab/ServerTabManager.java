@@ -195,7 +195,7 @@ public final class ServerTabManager {
         }
         String habilidadeTag = placeholders.resolve(player, "%habilidade_tag%");
         String magnataTag = economy.getTag(player);
-        String destaqueTag = !magnataTag.isBlank() ? magnataTag : habilidadeTag;
+        String destaqueTag = !magnataTag.isBlank() ? " " + magnataTag : habilidadeTag;
 
         String name = configured.replace("%marriage_tag%", marriageTag.isBlank() ? "" : colorize(marriageTag + " "))
                 .replace("%prefix%", colorize(prefix))
