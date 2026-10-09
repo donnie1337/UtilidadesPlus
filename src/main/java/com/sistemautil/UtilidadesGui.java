@@ -131,8 +131,8 @@ public final class UtilidadesGui implements Listener {
                 boolean value = !preferences.receivesTpa(player);
                 preferences.setReceivesTpa(player, value);
                 sendConfiguredMessage(player, value ? "mensagem-tpa-ativado" : "mensagem-tpa-desativado",
-                        value ? "§b&lᴛᴘᴀ §8• §aVocê agora pode receber solicitações de TPA."
-                                : "§b&lᴛᴘᴀ §8• §cVocê não receberá mais solicitações de TPA.");
+                        value ? "§b[Tpa] §aVocê agora pode receber solicitações de TPA."
+                                : "§b[Tpa] §cVocê não receberá mais solicitações de TPA.");
                 openTeleport(player);
                 return;
             }
