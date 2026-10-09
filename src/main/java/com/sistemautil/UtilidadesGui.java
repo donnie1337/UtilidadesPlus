@@ -295,7 +295,7 @@ public final class UtilidadesGui implements Listener {
     }
 
     private int backSlot(String path) {
-        return slot(path, "voltar", 22);
+        return slot(path, "voltar", MAIN_PATH.equals(path) ? 22 : 31);
     }
 
     private String currentChatColor(Player player) {
