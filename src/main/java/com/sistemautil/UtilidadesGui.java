@@ -41,17 +41,17 @@ public final class UtilidadesGui implements Listener {
         inventory.setItem(slot(MAIN_PATH, "teletransporte", 11), configuredItem(
                 MAIN_PATH + ".itens.teletransporte", Material.OAK_BOAT,
                 "&bTeletransporte", "", "&7Controle solicitações de TPA",
-                "&7e mensagens privadas.", "", "&eClique para abrir."
+                "&7e mensagens privadas.", "", "&eClique para abrir"
         ));
         inventory.setItem(slot(MAIN_PATH, "limites", 13), configuredItem(
                 MAIN_PATH + ".itens.limites", Material.HOPPER,
-                "&6Limites", "", "&7Veja os limites de desempenho",
-                "&7do servidor.", "", "&eClique para abrir."
+                "&6Limites", "", "&7Consulte os limites de desempenho",
+                "&7e proteção do servidor.", "", "&eClique para visualizar"
         ));
         inventory.setItem(slot(MAIN_PATH, "mensagens", 15), configuredItem(
                 MAIN_PATH + ".itens.mensagens", Material.COMPASS,
-                "&eMensagens de entrada", "", "&7Configure suas mensagens,",
-                "&7notificações e cor do chat.", "", "&eClique para abrir."
+                "&eMensagens de entrada", "", "&7Configure mensagens de entrada,",
+                "&7notificações e cor do chat.", "", "&eClique para abrir"
         ));
         player.openInventory(inventory);
     }
@@ -61,16 +61,18 @@ public final class UtilidadesGui implements Listener {
         inventory.setItem(slot(TELEPORT_PATH, "receber-tpa", 11), toggleItem(
                 TELEPORT_PATH + ".itens.receber-tpa", Material.OAK_BOAT,
                 "&bReceber TPA", preferences.receivesTpa(player),
-                "&7Permite que outros jogadores", "&7enviem solicitações de TPA para você."
+                "", "&7Permite que outros jogadores", "&7enviem solicitações de TPA para você.",
+                "", "{status}", "", "{acao}"
         ));
         inventory.setItem(slot(TELEPORT_PATH, "receber-tell", 15), toggleItem(
                 TELEPORT_PATH + ".itens.receber-tell", Material.PAPER,
                 "&eReceber /tell", preferences.receivesTell(player),
-                "&7Permite que outros jogadores", "&7enviem mensagens privadas para você."
+                "", "&7Permite que outros jogadores", "&7enviem mensagens privadas para você.",
+                "", "{status}", "", "{acao}"
         ));
         inventory.setItem(backSlot(TELEPORT_PATH), configuredItem(
                 TELEPORT_PATH + ".itens.voltar", Material.ARROW,
-                "&cVoltar", "&7Voltar para configurações."
+                "&cVoltar", "", "&7Clique para voltar às configurações."
         ));
         player.openInventory(inventory);
     }
@@ -234,9 +236,15 @@ public final class UtilidadesGui implements Listener {
 
         List<String> lore = plugin.getUtilidadesConfig().getStringList(path + ".lore");
         if (lore.isEmpty()) {
-            lore = List.of("", "&7Sua cor atual:", "&f▸ {cor}{nome-cor}", "",
-                    "&7Escolha uma nova cor para", "&7as suas mensagens no chat.", "",
-                    "&eClique para abrir as cores.");
+            lore = List.of(
+                    "",
+                    "&7Cor atual: {cor}{nome-cor}",
+                    "",
+                    "&7Escolha a cor usada nas",
+                    "&7suas mensagens no chat.",
+                    "",
+                    "&eClique para abrir as cores"
+            );
         }
 
         List<String> parsed = new ArrayList<>();
@@ -287,7 +295,7 @@ public final class UtilidadesGui implements Listener {
     }
 
     private int backSlot(String path) {
-        return slot(path, "voltar", 22);
+        return slot(path, "voltar", 31);
     }
 
     private String currentChatColor(Player player) {
