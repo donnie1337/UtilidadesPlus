@@ -40,18 +40,18 @@ public final class UtilidadesGui implements Listener {
         Inventory inventory = createInventory(MAIN_PATH, "&8Utilidades do jogador");
         inventory.setItem(slot(MAIN_PATH, "teletransporte", 11), configuredItem(
                 MAIN_PATH + ".itens.teletransporte", Material.OAK_BOAT,
-                "&bTeletransporte", "", "&7Controle solicitações de TPA",
-                "&7e mensagens privadas.", "", "&eClique para abrir"
+                "&bTeletransporte", "", "&7Gerencie quem pode enviar",
+                "&7solicitações e mensagens privadas.", "", "&eClique para configurar"
         ));
         inventory.setItem(slot(MAIN_PATH, "limites", 13), configuredItem(
                 MAIN_PATH + ".itens.limites", Material.HOPPER,
-                "&6Limites", "", "&7Consulte os limites de desempenho",
-                "&7e proteção do servidor.", "", "&eClique para visualizar"
+                "&6Limites", "", "&7Consulte os limites que protegem",
+                "&7o desempenho do servidor.", "", "&eClique para visualizar"
         ));
         inventory.setItem(slot(MAIN_PATH, "mensagens", 15), configuredItem(
                 MAIN_PATH + ".itens.mensagens", Material.COMPASS,
-                "&eMensagens de entrada", "", "&7Configure mensagens de entrada,",
-                "&7notificações e cor do chat.", "", "&eClique para abrir"
+                "&eMensagens de entrada", "", "&7Personalize mensagens, notificações",
+                "&7e a cor usada no chat.", "", "&eClique para configurar"
         ));
         player.openInventory(inventory);
     }
@@ -61,13 +61,15 @@ public final class UtilidadesGui implements Listener {
         inventory.setItem(slot(TELEPORT_PATH, "receber-tpa", 11), toggleItem(
                 TELEPORT_PATH + ".itens.receber-tpa", Material.OAK_BOAT,
                 "&bReceber TPA", preferences.receivesTpa(player),
-                "", "&7Permite que outros jogadores", "&7enviem solicitações de TPA para você.",
+                "", "&7Escolha se outros jogadores podem",
+                "&7enviar solicitações de TPA para você.",
                 "", "{status}", "", "{acao}"
         ));
         inventory.setItem(slot(TELEPORT_PATH, "receber-tell", 15), toggleItem(
                 TELEPORT_PATH + ".itens.receber-tell", Material.PAPER,
                 "&eReceber /tell", preferences.receivesTell(player),
-                "", "&7Permite que outros jogadores", "&7enviem mensagens privadas para você.",
+                "", "&7Escolha se outros jogadores podem",
+                "&7enviar mensagens privadas para você.",
                 "", "{status}", "", "{acao}"
         ));
         inventory.setItem(backSlot(TELEPORT_PATH), configuredItem(
@@ -83,20 +85,22 @@ public final class UtilidadesGui implements Listener {
                 PREFERENCES_PATH + ".itens.entrada", Material.OAK_DOOR,
                 "&eMensagens de entrada/saída",
                 preferences.broadcastsJoinQuit(player),
-                "&7Controla se sua entrada e saída",
-                "&7podem ser exibidas para os jogadores."
+                "", "&7Escolha se sua entrada e saída",
+                "&7serão anunciadas aos jogadores.",
+                "", "{status}", "", "{acao}"
         ));
         inventory.setItem(slot(PREFERENCES_PATH, "cor", 13), colorItem(player));
         inventory.setItem(slot(PREFERENCES_PATH, "notificacoes", 15), toggleItem(
                 PREFERENCES_PATH + ".itens.notificacoes", Material.ENDER_EYE,
                 "&bNotificações de entrada/saída",
                 preferences.receivesJoin(player) && preferences.receivesQuit(player),
-                "&7Controla se você recebe as",
-                "&7mensagens de entrada e saída."
+                "", "&7Escolha se você deseja receber",
+                "&7avisos de entrada e saída.",
+                "", "{status}", "", "{acao}"
         ));
         inventory.setItem(backSlot(PREFERENCES_PATH), configuredItem(
                 PREFERENCES_PATH + ".itens.voltar", Material.ARROW,
-                "&cVoltar", "&7Voltar para configurações."
+                "&cVoltar", "", "&7Clique para voltar às configurações."
         ));
         player.openInventory(inventory);
     }
@@ -240,10 +244,10 @@ public final class UtilidadesGui implements Listener {
                     "",
                     "&7Cor atual: {cor}{nome-cor}",
                     "",
-                    "&7Escolha a cor usada nas",
-                    "&7suas mensagens no chat.",
+                    "&7Define a cor das suas mensagens",
+                    "&7enviadas pelo chat.",
                     "",
-                    "&eClique para abrir as cores"
+                    "&eClique para escolher uma cor"
             );
         }
 
