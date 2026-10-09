@@ -101,6 +101,11 @@ public final class SistemaUtil extends JavaPlugin {
         return utilidadesPreferences == null || utilidadesPreferences.receivesTell(player);
     }
 
+    public void openMessageSettings(Player player) {
+        if (player == null || utilidadesGui == null) return;
+        utilidadesGui.openPreferences(player);
+    }
+
     public void reloadConfigs() {
         configManager.reloadAll();
         if (visualText != null) visualText.reload();
