@@ -79,7 +79,7 @@ public final class UtilidadesGui implements Listener {
         player.openInventory(inventory);
     }
 
-    private void openPreferences(Player player) {
+    public void openPreferences(Player player) {
         Inventory inventory = createInventory(PREFERENCES_PATH, "&8Mensagens de entrada");
         inventory.setItem(slot(PREFERENCES_PATH, "entrada", 11), toggleItem(
                 PREFERENCES_PATH + ".itens.entrada", Material.OAK_DOOR,
