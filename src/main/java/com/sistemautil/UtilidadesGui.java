@@ -40,17 +40,17 @@ public final class UtilidadesGui implements Listener {
         Inventory inventory = createInventory(MAIN_PATH, "&8Utilidades do jogador");
         inventory.setItem(slot(MAIN_PATH, "teletransporte", 11), configuredItem(
                 MAIN_PATH + ".itens.teletransporte", Material.OAK_BOAT,
-                "&b&lTeletransporte", "", "&7Controle solicitações de TPA",
+                "&bTeletransporte", "", "&7Controle solicitações de TPA",
                 "&7e mensagens privadas.", "", "&eClique para abrir."
         ));
         inventory.setItem(slot(MAIN_PATH, "limites", 13), configuredItem(
                 MAIN_PATH + ".itens.limites", Material.HOPPER,
-                "&6&lLimites", "", "&7Veja os limites de desempenho",
+                "&6Limites", "", "&7Veja os limites de desempenho",
                 "&7do servidor.", "", "&eClique para abrir."
         ));
         inventory.setItem(slot(MAIN_PATH, "mensagens", 15), configuredItem(
                 MAIN_PATH + ".itens.mensagens", Material.COMPASS,
-                "&e&lMensagens de entrada", "", "&7Configure suas mensagens,",
+                "&eMensagens de entrada", "", "&7Configure suas mensagens,",
                 "&7notificações e cor do chat.", "", "&eClique para abrir."
         ));
         player.openInventory(inventory);
@@ -60,17 +60,17 @@ public final class UtilidadesGui implements Listener {
         Inventory inventory = createInventory(TELEPORT_PATH, "&8Teletransporte e comunicação");
         inventory.setItem(slot(TELEPORT_PATH, "receber-tpa", 11), toggleItem(
                 TELEPORT_PATH + ".itens.receber-tpa", Material.OAK_BOAT,
-                "&b&lReceber TPA", preferences.receivesTpa(player),
+                "&bReceber TPA", preferences.receivesTpa(player),
                 "&7Permite que outros jogadores", "&7enviem solicitações de TPA para você."
         ));
         inventory.setItem(slot(TELEPORT_PATH, "receber-tell", 15), toggleItem(
                 TELEPORT_PATH + ".itens.receber-tell", Material.PAPER,
-                "&e&lReceber /tell", preferences.receivesTell(player),
+                "&eReceber /tell", preferences.receivesTell(player),
                 "&7Permite que outros jogadores", "&7enviem mensagens privadas para você."
         ));
         inventory.setItem(backSlot(TELEPORT_PATH), configuredItem(
                 TELEPORT_PATH + ".itens.voltar", Material.ARROW,
-                "&fVoltar", "&7Voltar para configurações."
+                "&cVoltar", "&7Voltar para configurações."
         ));
         player.openInventory(inventory);
     }
@@ -79,7 +79,7 @@ public final class UtilidadesGui implements Listener {
         Inventory inventory = createInventory(PREFERENCES_PATH, "&8Mensagens de entrada");
         inventory.setItem(slot(PREFERENCES_PATH, "entrada", 11), toggleItem(
                 PREFERENCES_PATH + ".itens.entrada", Material.OAK_DOOR,
-                "&e&lMensagens de entrada/saída",
+                "&eMensagens de entrada/saída",
                 preferences.broadcastsJoinQuit(player),
                 "&7Controla se sua entrada e saída",
                 "&7podem ser exibidas para os jogadores."
@@ -87,14 +87,14 @@ public final class UtilidadesGui implements Listener {
         inventory.setItem(slot(PREFERENCES_PATH, "cor", 13), colorItem(player));
         inventory.setItem(slot(PREFERENCES_PATH, "notificacoes", 15), toggleItem(
                 PREFERENCES_PATH + ".itens.notificacoes", Material.ENDER_EYE,
-                "&b&lNotificações de entrada/saída",
+                "&bNotificações de entrada/saída",
                 preferences.receivesJoin(player) && preferences.receivesQuit(player),
                 "&7Controla se você recebe as",
                 "&7mensagens de entrada e saída."
         ));
         inventory.setItem(backSlot(PREFERENCES_PATH), configuredItem(
                 PREFERENCES_PATH + ".itens.voltar", Material.ARROW,
-                "&fVoltar", "&7Voltar para configurações."
+                "&cVoltar", "&7Voltar para configurações."
         ));
         player.openInventory(inventory);
     }
@@ -212,11 +212,11 @@ public final class UtilidadesGui implements Listener {
         if (lore.isEmpty()) lore = List.of(fallbackLore);
 
         String status = enabled
-                ? plugin.getUtilidadesConfig().getString("gui.textos.status-ativado", "&a● ATIVADO")
-                : plugin.getUtilidadesConfig().getString("gui.textos.status-desativado", "&c● DESATIVADO");
+                ? plugin.getUtilidadesConfig().getString("gui.textos.status-ativado", "&7Estado: &aAtivado")
+                : plugin.getUtilidadesConfig().getString("gui.textos.status-desativado", "&7Estado: &cDesativado");
         String action = enabled
-                ? plugin.getUtilidadesConfig().getString("gui.textos.acao-desativar", "&8Clique para desativar.")
-                : plugin.getUtilidadesConfig().getString("gui.textos.acao-ativar", "&8Clique para ativar.");
+                ? plugin.getUtilidadesConfig().getString("gui.textos.acao-desativar", "&eClique para desativar")
+                : plugin.getUtilidadesConfig().getString("gui.textos.acao-ativar", "&eClique para ativar");
 
         List<String> parsed = new ArrayList<>();
         for (String line : lore) parsed.add(apply(line, status, action, null, null));
