@@ -86,30 +86,30 @@ gui:
           nome: "&bTeletransporte"
           lore:
             - ""
-            - "&7Controle solicitações de TPA"
-            - "&7e mensagens privadas."
+            - "&7Gerencie quem pode enviar"
+            - "&7solicitações e mensagens privadas."
             - ""
-            - "&eClique para abrir"
+            - "&eClique para configurar"
         limites:
           slot: 13
           material: "HOPPER"
           nome: "&6Limites"
           lore:
             - ""
-            - "&7Veja os limites de desempenho"
-            - "&7do servidor."
+            - "&7Consulte os limites que protegem"
+            - "&7o desempenho do servidor."
             - ""
-            - "&eClique para abrir"
+            - "&eClique para visualizar"
         mensagens:
           slot: 15
           material: "COMPASS"
           nome: "&eMensagens de entrada"
           lore:
             - ""
-            - "&7Configure suas mensagens,"
-            - "&7notificações e cor do chat."
+            - "&7Personalize mensagens, notificações"
+            - "&7e a cor usada no chat."
             - ""
-            - "&eClique para abrir"
+            - "&eClique para configurar"
 
     teletransporte:
       titulo: "&8Teletransporte e comunicação"
@@ -121,8 +121,8 @@ gui:
           nome: "&bReceber TPA"
           lore:
             - ""
-            - "&7Permite que outros jogadores"
-            - "&7enviem solicitações de TPA para você."
+            - "&7Escolha se outros jogadores podem"
+            - "&7enviar solicitações de TPA para você."
             - ""
             - "{status}"
             - ""
@@ -133,8 +133,8 @@ gui:
           nome: "&eReceber /tell"
           lore:
             - ""
-            - "&7Permite que outros jogadores"
-            - "&7enviem mensagens privadas para você."
+            - "&7Escolha se outros jogadores podem"
+            - "&7enviar mensagens privadas para você."
             - ""
             - "{status}"
             - ""
@@ -157,8 +157,8 @@ gui:
           nome: "&eMensagens de entrada/saída"
           lore:
             - ""
-            - "&7Controla se sua entrada e saída"
-            - "&7podem ser exibidas para os jogadores."
+            - "&7Escolha se sua entrada e saída"
+            - "&7serão anunciadas aos jogadores."
             - ""
             - "{status}"
             - ""
@@ -169,21 +169,20 @@ gui:
           nome: "&fCor da mensagem"
           lore:
             - ""
-            - "&7Sua cor atual:"
-            - "&f▸ {cor}{nome-cor}"
+            - "&7Cor atual: {cor}{nome-cor}"
             - ""
-            - "&7Escolha uma nova cor para"
-            - "&7as suas mensagens no chat."
+            - "&7Define a cor das suas mensagens"
+            - "&7enviadas pelo chat."
             - ""
-            - "&eClique para abrir as cores"
+            - "&eClique para escolher uma cor"
         notificacoes:
           slot: 15
           material: "ENDER_EYE"
           nome: "&bNotificações de entrada/saída"
           lore:
             - ""
-            - "&7Controla se você recebe as"
-            - "&7mensagens de entrada e saída."
+            - "&7Escolha se você deseja receber"
+            - "&7avisos de entrada e saída."
             - ""
             - "{status}"
             - ""
