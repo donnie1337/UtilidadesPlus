@@ -78,7 +78,7 @@ gui:
   telas:
     principal:
       titulo: "&8Utilidades do jogador"
-      tamanho: 27
+      tamanho: 36
       itens:
         teletransporte:
           slot: 11
@@ -113,7 +113,7 @@ gui:
 
     teletransporte:
       titulo: "&8Teletransporte e comunicação"
-      tamanho: 27
+      tamanho: 36
       itens:
         receber-tpa:
           slot: 11
@@ -125,6 +125,7 @@ gui:
             - "&7enviem solicitações de TPA para você."
             - ""
             - "{status}"
+            - ""
             - "{acao}"
         receber-tell:
           slot: 15
@@ -136,9 +137,10 @@ gui:
             - "&7enviem mensagens privadas para você."
             - ""
             - "{status}"
+            - ""
             - "{acao}"
         voltar:
-          slot: 22
+          slot: 31
           material: "ARROW"
           nome: "&cVoltar"
           lore:
@@ -147,7 +149,7 @@ gui:
 
     mensagens:
       titulo: "&8Mensagens de entrada"
-      tamanho: 27
+      tamanho: 36
       itens:
         entrada:
           slot: 11
@@ -159,6 +161,7 @@ gui:
             - "&7podem ser exibidas para os jogadores."
             - ""
             - "{status}"
+            - ""
             - "{acao}"
         cor:
           slot: 13
@@ -183,9 +186,10 @@ gui:
             - "&7mensagens de entrada e saída."
             - ""
             - "{status}"
+            - ""
             - "{acao}"
         voltar:
-          slot: 22
+          slot: 31
           material: "ARROW"
           nome: "&cVoltar"
           lore:
