@@ -60,10 +60,10 @@ gui:
   ativado: true
 
   textos:
-    status-ativado: "&a● ATIVADO"
-    status-desativado: "&c● DESATIVADO"
-    acao-ativar: "&8Clique para ativar."
-    acao-desativar: "&8Clique para desativar."
+    status-ativado: "&7Estado: &aAtivado"
+    status-desativado: "&7Estado: &cDesativado"
+    acao-ativar: "&eClique para ativar"
+    acao-desativar: "&eClique para desativar"
 
   mensagens:
     mensagem-tpa-ativado: "&b&lᴛᴘᴀ &8• &aVocê agora pode receber solicitações de TPA."
@@ -83,33 +83,33 @@ gui:
         teletransporte:
           slot: 11
           material: "OAK_BOAT"
-          nome: "&b&lTeletransporte"
+          nome: "&bTeletransporte"
           lore:
             - ""
             - "&7Controle solicitações de TPA"
             - "&7e mensagens privadas."
             - ""
-            - "&eClique para abrir."
+            - "&eClique para abrir"
         limites:
           slot: 13
           material: "HOPPER"
-          nome: "&6&lLimites"
+          nome: "&6Limites"
           lore:
             - ""
             - "&7Veja os limites de desempenho"
             - "&7do servidor."
             - ""
-            - "&eClique para abrir."
+            - "&eClique para abrir"
         mensagens:
           slot: 15
           material: "COMPASS"
-          nome: "&e&lMensagens de entrada"
+          nome: "&eMensagens de entrada"
           lore:
             - ""
             - "&7Configure suas mensagens,"
             - "&7notificações e cor do chat."
             - ""
-            - "&eClique para abrir."
+            - "&eClique para abrir"
 
     teletransporte:
       titulo: "&8Teletransporte e comunicação"
@@ -118,7 +118,7 @@ gui:
         receber-tpa:
           slot: 11
           material: "OAK_BOAT"
-          nome: "&b&lReceber TPA"
+          nome: "&bReceber TPA"
           lore:
             - ""
             - "&7Permite que outros jogadores"
@@ -129,7 +129,7 @@ gui:
         receber-tell:
           slot: 15
           material: "PAPER"
-          nome: "&e&lReceber /tell"
+          nome: "&eReceber /tell"
           lore:
             - ""
             - "&7Permite que outros jogadores"
@@ -140,9 +140,10 @@ gui:
         voltar:
           slot: 22
           material: "ARROW"
-          nome: "&fVoltar"
+          nome: "&cVoltar"
           lore:
-            - "&7Voltar para configurações."
+            - ""
+            - "&7Clique para voltar às configurações."
 
     mensagens:
       titulo: "&8Mensagens de entrada"
@@ -151,7 +152,7 @@ gui:
         entrada:
           slot: 11
           material: "OAK_DOOR"
-          nome: "&e&lMensagens de entrada/saída"
+          nome: "&eMensagens de entrada/saída"
           lore:
             - ""
             - "&7Controla se sua entrada e saída"
@@ -171,11 +172,11 @@ gui:
             - "&7Escolha uma nova cor para"
             - "&7as suas mensagens no chat."
             - ""
-            - "&eClique para abrir as cores."
+            - "&eClique para abrir as cores"
         notificacoes:
           slot: 15
           material: "ENDER_EYE"
-          nome: "&b&lNotificações de entrada/saída"
+          nome: "&bNotificações de entrada/saída"
           lore:
             - ""
             - "&7Controla se você recebe as"
@@ -186,9 +187,10 @@ gui:
         voltar:
           slot: 22
           material: "ARROW"
-          nome: "&fVoltar"
+          nome: "&cVoltar"
           lore:
-            - "&7Voltar para configurações."
+            - ""
+            - "&7Clique para voltar às configurações."
 
 # ------------------------------------------------------------
 # MENSAGENS DE ENTRADA
