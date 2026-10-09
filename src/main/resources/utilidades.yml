@@ -66,8 +66,8 @@ gui:
     acao-desativar: "&eClique para desativar"
 
   mensagens:
-    mensagem-tpa-ativado: "&b&lᴛᴘᴀ &8• &aVocê agora pode receber solicitações de TPA."
-    mensagem-tpa-desativado: "&b&lᴛᴘᴀ &8• &cVocê não receberá mais solicitações de TPA."
+    mensagem-tpa-ativado: "&b[Tpa] &aVocê agora pode receber solicitações de TPA."
+    mensagem-tpa-desativado: "&b[Tpa] &cVocê não receberá mais solicitações de TPA."
     mensagem-tell-ativado: "&e&lᴄʜᴀᴛ &8• &aVocê agora pode receber mensagens privadas."
     mensagem-tell-desativado: "&e&lᴄʜᴀᴛ &8• &cVocê não receberá mais mensagens privadas."
     mensagem-entrada-ativada: "&aSuas mensagens de entrada/saída agora são visíveis para todos."
