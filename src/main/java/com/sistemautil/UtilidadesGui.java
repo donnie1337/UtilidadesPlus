@@ -22,6 +22,7 @@ public final class UtilidadesGui implements Listener {
     private static final String MAIN_PATH = "gui.telas.principal";
     private static final String TELEPORT_PATH = "gui.telas.teletransporte";
     private static final String PREFERENCES_PATH = "gui.telas.mensagens";
+    private static final String GAMEPLAY_PATH = "gui.telas.jogabilidade";
     private final SistemaUtil plugin;
     private final UtilidadesPreferences preferences;
 
@@ -53,6 +54,11 @@ public final class UtilidadesGui implements Listener {
                 "&eMensagens de entrada", "", "&7Personalize mensagens, notificações",
                 "&7e a cor usada no chat.", "", "&eClique para configurar"
         ));
+        inventory.setItem(slot(MAIN_PATH, "jogabilidade", 22), configuredItem(
+                MAIN_PATH + ".itens.jogabilidade", Material.COMPARATOR,
+                "&dJogabilidade", "", "&7Configure confirmações e",
+                "&7ordenação dos seus menus.", "", "&eClique para configurar"
+        ));
         player.openInventory(inventory);
     }
 
@@ -74,6 +80,45 @@ public final class UtilidadesGui implements Listener {
         ));
         inventory.setItem(backSlot(TELEPORT_PATH), configuredItem(
                 TELEPORT_PATH + ".itens.voltar", Material.ARROW,
+                "&cVoltar", "", "&7Clique para voltar às configurações."
+        ));
+        player.openInventory(inventory);
+    }
+
+    private void openGameplay(Player player) {
+        Inventory inventory = createInventory(GAMEPLAY_PATH, "&8Jogabilidade");
+        inventory.setItem(slot(GAMEPLAY_PATH, "confirmar-terreno", 10), toggleItem(
+                GAMEPLAY_PATH + ".itens.confirmar-terreno", Material.TNT,
+                "&cConfirmar remoção de terreno", preferences.confirmTerrainRemoval(player),
+                "", "&7Solicita confirmação antes de", "&7remover um terreno protegido.",
+                "", "{status}", "", "{acao}"
+        ));
+        inventory.setItem(slot(GAMEPLAY_PATH, "confirmar-divorcio", 12), toggleItem(
+                GAMEPLAY_PATH + ".itens.confirmar-divorcio", Material.BROKEN_HEART,
+                "&dConfirmar divórcio", preferences.confirmDivorce(player),
+                "", "&7Solicita confirmação antes de", "&7encerrar um casamento.",
+                "", "{status}", "", "{acao}"
+        ));
+        inventory.setItem(slot(GAMEPLAY_PATH, "confirmar-clan", 14), toggleItem(
+                GAMEPLAY_PATH + ".itens.confirmar-clan", Material.SHIELD,
+                "&cConfirmar exclusão de clan", preferences.confirmClanDelete(player),
+                "", "&7Solicita confirmação antes de", "&7excluir sua clan.",
+                "", "{status}", "", "{acao}"
+        ));
+        String terrainSort = preferences.terrainSort(player);
+        inventory.setItem(slot(GAMEPLAY_PATH, "ordenar-terrenos", 16), choiceItem(
+                GAMEPLAY_PATH + ".itens.ordenar-terrenos", Material.GRASS_BLOCK,
+                "&aOrdenação de terrenos",
+                "antigo".equalsIgnoreCase(terrainSort) ? "&fMais antigo" : "&fMais recente"
+        ));
+        String homeSort = preferences.homeSort(player);
+        inventory.setItem(slot(GAMEPLAY_PATH, "ordenar-homes", 22), choiceItem(
+                GAMEPLAY_PATH + ".itens.ordenar-homes", Material.COMPASS,
+                "&aOrdenação de homes",
+                "data".equalsIgnoreCase(homeSort) ? "&fData de criação" : "&fNome"
+        ));
+        inventory.setItem(backSlot(GAMEPLAY_PATH), configuredItem(
+                GAMEPLAY_PATH + ".itens.voltar", Material.ARROW,
                 "&cVoltar", "", "&7Clique para voltar às configurações."
         ));
         player.openInventory(inventory);
@@ -111,7 +156,9 @@ public final class UtilidadesGui implements Listener {
         String mainTitle = title(MAIN_PATH, "&8Utilidades do jogador");
         String teleportTitle = title(TELEPORT_PATH, "&8Teletransporte e comunicação");
         String preferencesTitle = title(PREFERENCES_PATH, "&8Mensagens de entrada");
-        if (!mainTitle.equals(title) && !teleportTitle.equals(title) && !preferencesTitle.equals(title)) return;
+        String gameplayTitle = title(GAMEPLAY_PATH, "&8Jogabilidade");
+        if (!mainTitle.equals(title) && !teleportTitle.equals(title)
+                && !preferencesTitle.equals(title) && !gameplayTitle.equals(title)) return;
 
         event.setCancelled(true);
         if (!(event.getWhoClicked() instanceof Player player)) return;
@@ -129,6 +176,7 @@ public final class UtilidadesGui implements Listener {
                 }
                 player.performCommand("limites");
             } else if (rawSlot == slot(MAIN_PATH, "mensagens", 15)) openPreferences(player);
+            else if (rawSlot == slot(MAIN_PATH, "jogabilidade", 22)) openGameplay(player);
             return;
         }
 
@@ -173,6 +221,38 @@ public final class UtilidadesGui implements Listener {
             return;
         }
 
+        if (gameplayTitle.equals(title)) {
+            if (rawSlot == slot(GAMEPLAY_PATH, "confirmar-terreno", 10)) {
+                preferences.setConfirmTerrainRemoval(player, !preferences.confirmTerrainRemoval(player));
+                openGameplay(player);
+                return;
+            }
+            if (rawSlot == slot(GAMEPLAY_PATH, "confirmar-divorcio", 12)) {
+                preferences.setConfirmDivorce(player, !preferences.confirmDivorce(player));
+                openGameplay(player);
+                return;
+            }
+            if (rawSlot == slot(GAMEPLAY_PATH, "confirmar-clan", 14)) {
+                preferences.setConfirmClanDelete(player, !preferences.confirmClanDelete(player));
+                openGameplay(player);
+                return;
+            }
+            if (rawSlot == slot(GAMEPLAY_PATH, "ordenar-terrenos", 16)) {
+                preferences.setTerrainSort(player,
+                        "recente".equalsIgnoreCase(preferences.terrainSort(player)) ? "antigo" : "recente");
+                openGameplay(player);
+                return;
+            }
+            if (rawSlot == slot(GAMEPLAY_PATH, "ordenar-homes", 22)) {
+                preferences.setHomeSort(player,
+                        "nome".equalsIgnoreCase(preferences.homeSort(player)) ? "data" : "nome");
+                openGameplay(player);
+                return;
+            }
+            if (rawSlot == backSlot(GAMEPLAY_PATH)) open(player);
+            return;
+        }
+
         if (rawSlot == slot(PREFERENCES_PATH, "entrada", 11)) {
             boolean value = !preferences.broadcastsJoinQuit(player);
             preferences.setBroadcastsJoinQuit(player, value);
@@ -205,7 +285,8 @@ public final class UtilidadesGui implements Listener {
         String title = event.getView().getTitle();
         if (title.equals(title(MAIN_PATH, "&8Utilidades do jogador"))
                 || title.equals(title(TELEPORT_PATH, "&8Teletransporte e comunicação"))
-                || title.equals(title(PREFERENCES_PATH, "&8Mensagens de entrada"))) {
+                || title.equals(title(PREFERENCES_PATH, "&8Mensagens de entrada"))
+                || title.equals(title(GAMEPLAY_PATH, "&8Jogabilidade"))) {
             event.setCancelled(true);
         }
     }
@@ -245,6 +326,18 @@ public final class UtilidadesGui implements Listener {
         List<String> parsed = new ArrayList<>();
         for (String line : lore) parsed.add(apply(line, status, action, null, null));
         return item(material, apply(name, status, action, null, null), parsed);
+    }
+
+    private ItemStack choiceItem(String path, Material fallbackMaterial, String fallbackName, String value) {
+        Material material = material(path + ".material", fallbackMaterial);
+        String name = plugin.getUtilidadesConfig().getString(path + ".nome", fallbackName);
+        List<String> lore = plugin.getUtilidadesConfig().getStringList(path + ".lore");
+        if (lore.isEmpty()) {
+            lore = List.of("", "&7Opção atual: {valor}", "", "&eClique para alterar");
+        }
+        List<String> parsed = new ArrayList<>();
+        for (String line : lore) parsed.add(color(line.replace("{valor}", value)));
+        return item(material, name, parsed);
     }
 
     private ItemStack colorItem(Player player) {
