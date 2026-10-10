@@ -86,7 +86,80 @@ gui:
       titulo: "&8Utilidades do jogador"
       tamanho: 27
       itens:
-        teletransporte:
+    
+    jogabilidade:
+      titulo: "&8Jogabilidade"
+      tamanho: 36
+      itens:
+        confirmar-terreno:
+          slot: 10
+          material: "TNT"
+          nome: "&cConfirmar remoção de terreno"
+          lore:
+            - ""
+            - "&7Solicita confirmação antes de"
+            - "&7remover um terreno protegido."
+            - ""
+            - "{status}"
+            - ""
+            - "{acao}"
+        confirmar-divorcio:
+          slot: 12
+          material: "RED_DYE"
+          nome: "&dConfirmar divórcio"
+          lore:
+            - ""
+            - "&7Solicita confirmação antes de"
+            - "&7encerrar um casamento."
+            - ""
+            - "{status}"
+            - ""
+            - "{acao}"
+        confirmar-clan:
+          slot: 14
+          material: "SHIELD"
+          nome: "&cConfirmar exclusão de clan"
+          lore:
+            - ""
+            - "&7Solicita confirmação antes de"
+            - "&7excluir sua clan."
+            - ""
+            - "{status}"
+            - ""
+            - "{acao}"
+        ordenar-terrenos:
+          slot: 16
+          material: "GRASS_BLOCK"
+          nome: "&aOrdenação de terrenos"
+          lore:
+            - ""
+            - "&7Opção atual: {valor}"
+            - ""
+            - "&7Define a ordem exibida na"
+            - "&7lista de terrenos."
+            - ""
+            - "&eClique para alterar"
+        ordenar-homes:
+          slot: 22
+          material: "COMPASS"
+          nome: "&aOrdenação de homes"
+          lore:
+            - ""
+            - "&7Opção atual: {valor}"
+            - ""
+            - "&7Define a ordem das homes"
+            - "&7exibidas no menu."
+            - ""
+            - "&eClique para alterar"
+        voltar:
+          slot: 31
+          material: "ARROW"
+          nome: "&cVoltar"
+          lore:
+            - ""
+            - "&7Clique para voltar às configurações."
+
+    teletransporte:
           slot: 11
           material: "OAK_BOAT"
           nome: "&bTeletransporte"
@@ -114,6 +187,16 @@ gui:
             - ""
             - "&7Personalize mensagens, notificações"
             - "&7e a cor usada no chat."
+            - ""
+            - "&eClique para configurar"
+        jogabilidade:
+          slot: 22
+          material: "COMPARATOR"
+          nome: "&dJogabilidade"
+          lore:
+            - ""
+            - "&7Configure confirmações e"
+            - "&7ordenação dos seus menus."
             - ""
             - "&eClique para configurar"
 
