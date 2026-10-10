@@ -47,6 +47,8 @@ receber:
   saida: true
   tpa: true
   tell: true
+  convites-clan: true
+  pedidos-casamento: true
 
 # ------------------------------------------------------------
 # INTERFACE DO /CONFIGURAR
@@ -68,8 +70,12 @@ gui:
   mensagens:
     mensagem-tpa-ativado: "&b[Tpa] &aVocê agora pode receber solicitações de TPA."
     mensagem-tpa-desativado: "&b[Tpa] &cVocê não receberá mais solicitações de TPA."
-    mensagem-tell-ativado: "&e&lᴄʜᴀᴛ &8• &aVocê agora pode receber mensagens privadas."
-    mensagem-tell-desativado: "&e&lᴄʜᴀᴛ &8• &cVocê não receberá mais mensagens privadas."
+    mensagem-tell-ativado: "&e[Chat] &aVocê agora pode receber mensagens privadas."
+    mensagem-tell-desativado: "&e[Chat] &cVocê não receberá mais mensagens privadas."
+    mensagem-clan-ativado: "&aVocê agora pode receber convites de clan."
+    mensagem-clan-desativado: "&cVocê não receberá mais convites de clan."
+    mensagem-casamento-ativado: "&aVocê agora pode receber pedidos de casamento."
+    mensagem-casamento-desativado: "&cVocê não receberá mais pedidos de casamento."
     mensagem-entrada-ativada: "&aSuas mensagens de entrada/saída agora são visíveis para todos."
     mensagem-entrada-desativada: "&cSuas mensagens de entrada/saída foram ocultadas dos outros jogadores."
     mensagem-notificacoes-ativadas: "&aNotificações de entrada/saída ativadas."
@@ -116,7 +122,7 @@ gui:
       tamanho: 36
       itens:
         receber-tpa:
-          slot: 11
+          slot: 10
           material: "OAK_BOAT"
           nome: "&bReceber TPA"
           lore:
@@ -128,13 +134,37 @@ gui:
             - ""
             - "{acao}"
         receber-tell:
-          slot: 15
+          slot: 12
           material: "PAPER"
           nome: "&eReceber /tell"
           lore:
             - ""
             - "&7Escolha se outros jogadores podem"
             - "&7enviar mensagens privadas para você."
+            - ""
+            - "{status}"
+            - ""
+            - "{acao}"
+        receber-clan:
+          slot: 14
+          material: "SHIELD"
+          nome: "&aReceber convites de clan"
+          lore:
+            - ""
+            - "&7Escolha se você deseja receber"
+            - "&7convites enviados por clans."
+            - ""
+            - "{status}"
+            - ""
+            - "{acao}"
+        receber-casamento:
+          slot: 16
+          material: "PINK_DYE"
+          nome: "&dReceber pedidos de casamento"
+          lore:
+            - ""
+            - "&7Escolha se você deseja receber"
+            - "&7pedidos de casamento de jogadores."
             - ""
             - "{status}"
             - ""
