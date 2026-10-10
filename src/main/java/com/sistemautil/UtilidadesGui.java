@@ -58,7 +58,7 @@ public final class UtilidadesGui implements Listener {
 
     private void openTeleport(Player player) {
         Inventory inventory = createInventory(TELEPORT_PATH, "&8Teletransporte e comunicação");
-        inventory.setItem(slot(TELEPORT_PATH, "receber-tpa", 11), toggleItem(
+        inventory.setItem(slot(TELEPORT_PATH, "receber-tpa", 10), toggleItem(
                 TELEPORT_PATH + ".itens.receber-tpa", Material.OAK_BOAT,
                 "&bReceber TPA", preferences.receivesTpa(player),
                 "", "&7Escolha se outros jogadores podem",
@@ -142,12 +142,30 @@ public final class UtilidadesGui implements Listener {
                 openTeleport(player);
                 return;
             }
-            if (rawSlot == slot(TELEPORT_PATH, "receber-tell", 15)) {
+            if (rawSlot == slot(TELEPORT_PATH, "receber-tell", 12)) {
                 boolean value = !preferences.receivesTell(player);
                 preferences.setReceivesTell(player, value);
                 sendConfiguredMessage(player, value ? "mensagem-tell-ativado" : "mensagem-tell-desativado",
-                        value ? "§e&lᴄʜᴀᴛ §8• §aVocê agora pode receber mensagens privadas."
-                                : "§e&lᴄʜᴀᴛ §8• §cVocê não receberá mais mensagens privadas.");
+                        value ? "§e[Chat] §aVocê agora pode receber mensagens privadas."
+                                : "§e[Chat] §cVocê não receberá mais mensagens privadas.");
+                openTeleport(player);
+                return;
+            }
+            if (rawSlot == slot(TELEPORT_PATH, "receber-clan", 14)) {
+                boolean value = !preferences.receivesClanInvites(player);
+                preferences.setReceivesClanInvites(player, value);
+                sendConfiguredMessage(player, value ? "mensagem-clan-ativado" : "mensagem-clan-desativado",
+                        value ? "§aVocê agora pode receber convites de clan."
+                                : "§cVocê não receberá mais convites de clan.");
+                openTeleport(player);
+                return;
+            }
+            if (rawSlot == slot(TELEPORT_PATH, "receber-casamento", 16)) {
+                boolean value = !preferences.receivesMarriageRequests(player);
+                preferences.setReceivesMarriageRequests(player, value);
+                sendConfiguredMessage(player, value ? "mensagem-casamento-ativado" : "mensagem-casamento-desativado",
+                        value ? "§aVocê agora pode receber pedidos de casamento."
+                                : "§cVocê não receberá mais pedidos de casamento.");
                 openTeleport(player);
                 return;
             }
