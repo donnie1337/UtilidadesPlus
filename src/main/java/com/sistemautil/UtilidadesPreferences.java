@@ -52,19 +52,6 @@ public final class UtilidadesPreferences {
         synchronized (this) { return config.getBoolean("receber.pedidos-casamento", true); }
     }
 
-    public boolean confirmTerrainRemoval(Player player) { return get(player, "confirmar.remover-terreno", true); }
-    public boolean confirmDivorce(Player player) { return get(player, "confirmar.divorcio", true); }
-    public boolean confirmClanDelete(Player player) { return get(player, "confirmar.excluir-clan", true); }
-
-    public void setConfirmTerrainRemoval(Player player, boolean value) { set(player, "confirmar.remover-terreno", value); }
-    public void setConfirmDivorce(Player player, boolean value) { set(player, "confirmar.divorcio", value); }
-    public void setConfirmClanDelete(Player player, boolean value) { set(player, "confirmar.excluir-clan", value); }
-
-    public String terrainSort(Player player) { return getString(player, "ordenacao.terrenos", "recente"); }
-    public String homeSort(Player player) { return getString(player, "ordenacao.homes", "nome"); }
-    public void setTerrainSort(Player player, String value) { setString(player, "ordenacao.terrenos", value); }
-    public void setHomeSort(Player player, String value) { setString(player, "ordenacao.homes", value); }
-
     public boolean receivesJoin(Player player) { return get(player, "entrada", globallyReceivesJoin()); }
     public boolean receivesQuit(Player player) { return get(player, "saida", globallyReceivesQuit()); }
     public boolean receivesTpa(Player player) { return get(player, "tpa", globallyReceivesTpa()); }
@@ -163,21 +150,6 @@ public final class UtilidadesPreferences {
             config.set("jogadores." + player.getUniqueId() + "." + path, value);
         }
 
-        scheduleAsyncSave();
-    }
-
-    private String getString(Player player, String path, String defaultValue) {
-        if (player == null) return defaultValue;
-        synchronized (this) {
-            return config.getString("jogadores." + player.getUniqueId() + "." + path, defaultValue);
-        }
-    }
-
-    private void setString(Player player, String path, String value) {
-        if (player == null || value == null || value.isBlank()) return;
-        synchronized (this) {
-            config.set("jogadores." + player.getUniqueId() + "." + path, value);
-        }
         scheduleAsyncSave();
     }
 }
