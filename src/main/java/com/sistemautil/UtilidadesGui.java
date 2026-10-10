@@ -65,11 +65,25 @@ public final class UtilidadesGui implements Listener {
                 "&7enviar solicitações de TPA para você.",
                 "", "{status}", "", "{acao}"
         ));
-        inventory.setItem(slot(TELEPORT_PATH, "receber-tell", 15), toggleItem(
+        inventory.setItem(slot(TELEPORT_PATH, "receber-tell", 12), toggleItem(
                 TELEPORT_PATH + ".itens.receber-tell", Material.PAPER,
                 "&eReceber /tell", preferences.receivesTell(player),
                 "", "&7Escolha se outros jogadores podem",
                 "&7enviar mensagens privadas para você.",
+                "", "{status}", "", "{acao}"
+        ));
+        inventory.setItem(slot(TELEPORT_PATH, "receber-clan", 14), toggleItem(
+                TELEPORT_PATH + ".itens.receber-clan", Material.SHIELD,
+                "&aReceber convites de clan", preferences.receivesClanInvites(player),
+                "", "&7Escolha se você deseja receber",
+                "&7convites enviados por clans.",
+                "", "{status}", "", "{acao}"
+        ));
+        inventory.setItem(slot(TELEPORT_PATH, "receber-casamento", 16), toggleItem(
+                TELEPORT_PATH + ".itens.receber-casamento", Material.PINK_DYE,
+                "&dReceber pedidos de casamento", preferences.receivesMarriageRequests(player),
+                "", "&7Escolha se você deseja receber",
+                "&7pedidos de casamento de jogadores.",
                 "", "{status}", "", "{acao}"
         ));
         inventory.setItem(backSlot(TELEPORT_PATH), configuredItem(
@@ -133,7 +147,7 @@ public final class UtilidadesGui implements Listener {
         }
 
         if (teleportTitle.equals(title)) {
-            if (rawSlot == slot(TELEPORT_PATH, "receber-tpa", 11)) {
+            if (rawSlot == slot(TELEPORT_PATH, "receber-tpa", 10)) {
                 boolean value = !preferences.receivesTpa(player);
                 preferences.setReceivesTpa(player, value);
                 sendConfiguredMessage(player, value ? "mensagem-tpa-ativado" : "mensagem-tpa-desativado",
