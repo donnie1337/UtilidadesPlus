@@ -94,7 +94,7 @@ public final class UtilidadesGui implements Listener {
                 "", "{status}", "", "{acao}"
         ));
         inventory.setItem(slot(GAMEPLAY_PATH, "confirmar-divorcio", 12), toggleItem(
-                GAMEPLAY_PATH + ".itens.confirmar-divorcio", Material.BROKEN_HEART,
+                GAMEPLAY_PATH + ".itens.confirmar-divorcio", Material.RED_DYE,
                 "&dConfirmar divórcio", preferences.confirmDivorce(player),
                 "", "&7Solicita confirmação antes de", "&7encerrar um casamento.",
                 "", "{status}", "", "{acao}"
