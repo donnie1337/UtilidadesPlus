@@ -44,15 +44,27 @@ public final class UtilidadesPreferences {
         synchronized (this) { return config.getBoolean("receber.tell", true); }
     }
 
+    public boolean globallyReceivesClanInvites() {
+        synchronized (this) { return config.getBoolean("receber.convites-clan", true); }
+    }
+
+    public boolean globallyReceivesMarriageRequests() {
+        synchronized (this) { return config.getBoolean("receber.pedidos-casamento", true); }
+    }
+
     public boolean receivesJoin(Player player) { return get(player, "entrada", globallyReceivesJoin()); }
     public boolean receivesQuit(Player player) { return get(player, "saida", globallyReceivesQuit()); }
     public boolean receivesTpa(Player player) { return get(player, "tpa", globallyReceivesTpa()); }
     public boolean receivesTell(Player player) { return get(player, "tell", globallyReceivesTell()); }
+    public boolean receivesClanInvites(Player player) { return get(player, "convites-clan", globallyReceivesClanInvites()); }
+    public boolean receivesMarriageRequests(Player player) { return get(player, "pedidos-casamento", globallyReceivesMarriageRequests()); }
 
     public void setReceivesJoin(Player player, boolean value) { set(player, "entrada", value); }
     public void setReceivesQuit(Player player, boolean value) { set(player, "saida", value); }
     public void setReceivesTpa(Player player, boolean value) { set(player, "tpa", value); }
     public void setReceivesTell(Player player, boolean value) { set(player, "tell", value); }
+    public void setReceivesClanInvites(Player player, boolean value) { set(player, "convites-clan", value); }
+    public void setReceivesMarriageRequests(Player player, boolean value) { set(player, "pedidos-casamento", value); }
 
     public boolean broadcastsJoin(Player player) { return get(player, "mostrar-entrada", true); }
     public boolean broadcastsQuit(Player player) { return get(player, "mostrar-saida", true); }
