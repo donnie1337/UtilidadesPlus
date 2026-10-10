@@ -101,6 +101,14 @@ public final class SistemaUtil extends JavaPlugin {
         return utilidadesPreferences == null || utilidadesPreferences.receivesTell(player);
     }
 
+    public boolean receivesClanInvites(Player player) {
+        return utilidadesPreferences == null || utilidadesPreferences.receivesClanInvites(player);
+    }
+
+    public boolean receivesMarriageRequests(Player player) {
+        return utilidadesPreferences == null || utilidadesPreferences.receivesMarriageRequests(player);
+    }
+
     public void openMessageSettings(Player player) {
         if (player == null || utilidadesGui == null) return;
         utilidadesGui.openPreferences(player);
