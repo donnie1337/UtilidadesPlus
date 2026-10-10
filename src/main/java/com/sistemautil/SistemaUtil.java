@@ -109,6 +109,26 @@ public final class SistemaUtil extends JavaPlugin {
         return utilidadesPreferences == null || utilidadesPreferences.receivesMarriageRequests(player);
     }
 
+    public boolean confirmTerrainRemoval(Player player) {
+        return utilidadesPreferences == null || utilidadesPreferences.confirmTerrainRemoval(player);
+    }
+
+    public boolean confirmDivorce(Player player) {
+        return utilidadesPreferences == null || utilidadesPreferences.confirmDivorce(player);
+    }
+
+    public boolean confirmClanDelete(Player player) {
+        return utilidadesPreferences == null || utilidadesPreferences.confirmClanDelete(player);
+    }
+
+    public String terrainSort(Player player) {
+        return utilidadesPreferences == null ? "recente" : utilidadesPreferences.terrainSort(player);
+    }
+
+    public String homeSort(Player player) {
+        return utilidadesPreferences == null ? "nome" : utilidadesPreferences.homeSort(player);
+    }
+
     public void openMessageSettings(Player player) {
         if (player == null || utilidadesGui == null) return;
         utilidadesGui.openPreferences(player);
